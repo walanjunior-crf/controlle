@@ -1,40 +1,39 @@
 interface CLogoProps {
   size?: number
   color?: string
-  /** desenha o C (stroke-dasharray animado) ao montar */
+  /** desenha o C e o check (stroke-dasharray animado) e depois mostra o ponto */
   animated?: boolean
   title?: string
   className?: string
 }
 
 /**
- * O logo: C-anel aberto à direita (~300°), pontas redondas.
- * Mesma geometria de public/brand/logo-c-ring.svg (raio 170, traço 108 em 512).
+ * O logo: um C cuja ponta de baixo vira um traço de "feito" e se solta num ponto.
+ * Mesma geometria de brand/src/mark.py (caixa 100x100, traço 18, pontas redondas).
  */
+export const MARK_PATH = 'M48.46 22.43 A28 28 0 1 0 61.60 71.45 L70.02 64.38'
+export const MARK_DOT = { cx: 85.35, cy: 51.52, r: 8 }
+
 export function CLogo({ size = 48, color = 'var(--primary)', animated = false, title = 'Controlle', className }: CLogoProps) {
-  // arco do ponto a 32° acima da direita até 32° abaixo, passando pela esquerda
-  const r = 170.24
-  const a = (32 * Math.PI) / 180
-  const x = 256 + r * Math.cos(a)
-  const y1 = 256 - r * Math.sin(a)
-  const y2 = 256 + r * Math.sin(a)
   return (
     <svg
       className={`clogo${animated ? ' clogo-draw' : ''}${className ? ` ${className}` : ''}`}
       width={size}
       height={size}
-      viewBox="0 0 512 512"
+      viewBox="0 0 100 100"
       role="img"
       aria-label={title}
     >
       <path
-        d={`M ${x.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 1 0 ${x.toFixed(2)} ${y2.toFixed(2)}`}
+        d={MARK_PATH}
         fill="none"
         stroke={color}
-        strokeWidth={107.52}
+        strokeWidth={18}
         strokeLinecap="round"
+        strokeLinejoin="round"
         pathLength={100}
       />
+      <circle className="clogo-dot" cx={MARK_DOT.cx} cy={MARK_DOT.cy} r={MARK_DOT.r} fill={color} />
     </svg>
   )
 }

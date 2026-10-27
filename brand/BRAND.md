@@ -1,3 +1,7 @@
+# Controlle: marca
+
+> **Atualização (27/10/2026):** o logo passou a ser a **opção B**: um C cuja ponta de baixo vira um traço de "feito" e se solta num ponto. A geometria fica em `src/mark.py`; `python3 src/build_fonts.py && python3 src/build_web.py` regenera fontes, logo, ícones, favicon e wordmark. Nos "c" de texto (fonte Controlle C) o C ganha só o traço de check, sem o ponto, para não atrapalhar o espaçamento. O anel de progresso do dia continua sendo o anel em C que se fecha a 100%.
+
 # Controlle: regras da marca
 
 ## Logo: o C-anel

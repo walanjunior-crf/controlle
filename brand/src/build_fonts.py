@@ -1,4 +1,4 @@
-"""Gera a fonte ConstanciaC (C c Ç ç em C-anel) em 3 pesos, CFF/.otf.
+"""Gera a fonte ConstanciaC (C c Ç ç no desenho da marca: C com a ponta de baixo em check) em 3 pesos, CFF/.otf.
 
 Uso: python3 build_fonts.py   -> Resources/Fonts/ConstanciaC-*.otf
 O traço é construído como linha central (arco elíptico) + stroke com pontas
@@ -12,7 +12,7 @@ from fontTools.pens.areaPen import AreaPen
 from fontTools.pens.recordingPen import RecordingPen, DecomposingRecordingPen
 from fontTools.pens.boundsPen import BoundsPen
 
-OUT = '/home/claude/Constancia/Resources/Fonts'
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'fonts')
 UPM, ASC, DESC, CAP, XH = 1000, 950, -250, 705, 500
 OVERSHOOT = 10
 GAP = 70.0      # abertura (graus) na linha central — um pouco maior que o logo p/ ler como letra no texto
@@ -119,10 +119,36 @@ def _contains(o, c):
     ox0, oy0, ox1, oy1 = o.bounds; x0, y0, x1, y1 = c.bounds
     return ox0 < x0 and oy0 < y0 and ox1 > x1 and oy1 > y1 and (ox1-ox0) > (x1-x0)
 
+# Desenho da marca (opção B): o C começa no alto (A_TOP) e termina embaixo à direita
+# (A_BOT), onde sai um traço curto de "feito". Mesmos ângulos de mark.py.
+A_TOP, A_BOT = 80.0, 310.0
+TAIL_FRAC = 11.0 / 28.0   # traço de feito, em fração do raio vertical (como no logo)
+
+def ring_check(height_top, w, cx):
+    """C com a ponta de baixo em check: linha central + traço de pontas redondas."""
+    bottom = -OVERSHOOT
+    top = height_top + OVERSHOOT
+    H = top - bottom
+    Wd = H * RATIO
+    b = (H - w) / 2; a = (Wd - w) / 2
+    cy = bottom + H / 2
+    c = pathops.Path()
+    # em y para cima, ir de +80° a -50° pela esquerda = ângulos de 80 a 310 crescendo
+    ellipse_arc(c, cx, cy, a, b, A_TOP, A_BOT)
+    t = math.radians(A_BOT)
+    ex, ey = cx + a * math.cos(t), cy + b * math.sin(t)
+    tx, ty = -a * math.sin(t), b * math.cos(t)
+    n = math.hypot(tx, ty); tx, ty = tx / n, ty / n
+    L = TAIL_FRAC * b
+    c.lineTo(ex + tx * L, ey + ty * L)
+    c.stroke(w, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
+    c.convertConicsToQuads(0.25)
+    return c, Wd, a, cy
+
 def glyph(height, w, cedil=False, scale=1.0):
     W_est = (height + 2 * OVERSHOOT) * RATIO
     cx = LSB + W_est / 2
-    p, W, a, cy = ring(height, w, cx)
+    p, W, a, cy = ring_check(height, w, cx)
     if cedil:
         p = pathops.op(p, cedilla(cx, w, scale), pathops.PathOp.UNION)
     else:

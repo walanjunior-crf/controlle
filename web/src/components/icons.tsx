@@ -16,11 +16,11 @@ const base = (size: number) => ({
   'aria-hidden': true,
 })
 
-/** Hoje: o C-anel com um ponto (o toque do dia). */
+/** Hoje: a marca do Controlle (C com check que termina num ponto), em traço de ícone. */
 export const IconToday = ({ size = 26, className }: IconProps) => (
-  <svg {...base(size)} className={className}>
-    <path d="M18.4 7.3A8 8 0 1 0 18.4 16.7" strokeWidth={2.4} />
-    <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+  <svg {...base(size)} viewBox="0 0 100 100" strokeWidth={10.5} className={className}>
+    <path d="M48.46 22.43 A28 28 0 1 0 61.60 71.45 L70.02 64.38" />
+    <circle cx="85.35" cy="51.52" r="7" fill="currentColor" stroke="none" />
   </svg>
 )
 

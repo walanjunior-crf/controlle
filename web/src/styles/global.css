@@ -623,6 +623,24 @@ input[type='time'].input {
     stroke-dashoffset: 0;
   }
 }
+.clogo-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.clogo-draw .clogo-dot {
+  opacity: 0;
+  transform: scale(0.2);
+  animation: clogo-dot 380ms var(--ease-spring, cubic-bezier(.34,1.56,.64,1)) 1.15s forwards;
+}
+@keyframes clogo-dot {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .clogo-draw path, .clogo-draw .clogo-dot { animation: none; stroke-dashoffset: 0; opacity: 1; transform: none; }
+}
 
 /* ---------- Hoje ---------- */
 .today-head {
