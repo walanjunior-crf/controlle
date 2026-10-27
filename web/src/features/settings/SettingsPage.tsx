@@ -4,6 +4,7 @@ import { saveSettings } from '../../db/db'
 import { reorderTrackers, setArchived } from '../../db/actions'
 import type { Settings, Tracker } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
+import { CalendarSheet } from '../../components/CalendarSheet'
 import { CLogo } from '../../components/CLogo'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { SegmentedControl } from '../../components/controls'
@@ -38,6 +39,7 @@ export function SettingsPage() {
   const [pending, setPending] = useState<File | null>(null)
   const [mode, setMode] = useState<'merge' | 'replace'>('merge')
   const [installOpen, setInstallOpen] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
   const [nameDraft, setNameDraft] = useState<string | null>(null)
   const { canPrompt, prompt } = useInstallPrompt()
 
@@ -182,6 +184,15 @@ export function SettingsPage() {
       </Group>
 
       <Group
+        title="Lembretes"
+        footer="Adicione os horários dos seus trackers ao calendário do celular para receber o aviso mesmo com o app fechado."
+      >
+        <button type="button" className="settings-row settings-link" onClick={() => setCalendarOpen(true)}>
+          Adicionar lembretes ao calendário
+        </button>
+      </Group>
+
+      <Group
         title="Backup"
         footer="Seus dados ficam só neste aparelho, sem conta e sem nuvem. Exporte um backup de vez em quando e guarde no Arquivos ou no seu e-mail."
       >
@@ -236,6 +247,8 @@ export function SettingsPage() {
         <p className="muted num">Versão {APP_VERSION}</p>
         <p className="muted">Feito para usar entre amigos.</p>
       </section>
+
+      <CalendarSheet open={calendarOpen} onClose={() => setCalendarOpen(false)} />
 
       <ConfirmDialog
         open={pending !== null}

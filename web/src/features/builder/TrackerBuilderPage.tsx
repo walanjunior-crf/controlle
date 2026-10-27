@@ -8,7 +8,8 @@ import type { Goal, GoalComparison, GoalPeriod, NumericAggregation, Tracker, Tra
 import { BrandText } from '../../components/BrandText'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { SegmentedControl, Stepper, WeekdayPicker } from '../../components/controls'
-import { IconChevronLeft, IconPlus, IconTrash } from '../../components/icons'
+import { IconCalendarPlus, IconChevronLeft, IconPlus, IconTrash } from '../../components/icons'
+import { CalendarSheet } from '../../components/CalendarSheet'
 import { ColorPicker, EmojiPicker } from '../../components/pickers'
 import { TrackerCard } from '../../components/TrackerCard'
 import { useToast } from '../../components/Toast'
@@ -130,6 +131,7 @@ export function TrackerBuilderPage() {
   const [errors, setErrors] = useState<{ name?: string; target?: string }>({})
   const [confirm, setConfirm] = useState<'archive' | 'delete' | null>(null)
   const [saving, setSaving] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
 
   useEffect(() => {
     if (loaded || !existing) return
@@ -483,9 +485,17 @@ export function TrackerBuilderPage() {
           <IconPlus size={18} /> Adicionar horário
         </button>
         <p className="field-hint">
-          Como o Controlle funciona sem servidor, o lembrete aparece quando você abre o app e no número do ícone.
-          Notificações com o app fechado chegam numa próxima versão.
+          O lembrete aparece quando você abre o app e no número do ícone. Para ser avisado com o app fechado, adicione os
+          horários ao calendário do celular{isNew ? ' depois de salvar (em Ajustes → Lembretes)' : ''}.
         </p>
+        {!isNew && existing && existing.reminders.length > 0 && (
+          <button type="button" className="btn btn-ghost" onClick={() => setCalendarOpen(true)}>
+            <IconCalendarPlus /> Adicionar ao calendário
+          </button>
+        )}
+        {!isNew && existing && (
+          <CalendarSheet open={calendarOpen} onClose={() => setCalendarOpen(false)} trackerId={existing.tracker.id} />
+        )}
       </section>
 
       {!isNew && existing && (

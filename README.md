@@ -216,11 +216,14 @@ Para trocar de celular: exporte no antigo, instale no novo e importe.
 
 ## 5. Limitações atuais
 
-- **Lembretes só aparecem com o app aberto.** Sem servidor não há notificação push com o
-  app fechado. Quando você abre o app, ele mostra o que já passou da hora e ainda não foi
-  feito, e o ícone exibe um **número (badge)** com quantos hábitos faltam hoje
-  (no Android/computador e no iPhone com iOS 16.4+ e app instalado; o número é atualizado
-  quando o app é aberto).
+- **Lembretes com o app fechado vêm do calendário do celular.** Em Ajustes → Lembretes →
+  "Adicionar lembretes ao calendário", o Controlle gera eventos repetidos com alerta na
+  hora; no iPhone, abra essa opção pelo **Safari** e toque em "Adicionar Tudo". Dica: crie
+  antes um calendário chamado "Controlle" no app Calendário e escolha ele, para poder
+  apagar tudo de uma vez. O calendário avisa sempre no horário, mesmo se você já registrou;
+  se mudar os horários, apague os eventos antigos e adicione de novo. Com o app aberto, ele
+  também mostra o que passou da hora e o ícone exibe um **número (badge)** com o que falta
+  hoje (Android/computador e iPhone com iOS 16.4+ e app instalado).
 - **Sem sincronização entre aparelhos.** Celular e computador têm dados separados; use o
   backup para levar de um para o outro.
 - **Uso individual.** Cada amigo tem seu próprio app e seus dados; ainda não há
@@ -233,8 +236,8 @@ Para trocar de celular: exporte no antigo, instale no novo e importe.
 - **Grupos e desafios entre amigos** usando o plano gratuito do
   [Supabase](https://supabase.com) (banco + login), opcional: quem não quiser continua
   100% local.
-- **Notificações push** de lembretes mesmo com o app fechado (Web Push — funciona no
-  Android e no iPhone com o app instalado), o que exige um pequeno serviço no servidor.
+- **Notificações push inteligentes** (que não avisam quando a meta já foi cumprida),
+  junto com os grupos, usando o mesmo serviço gratuito.
 - Sincronização opcional entre aparelhos.
 
 ---
