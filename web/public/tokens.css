@@ -1,0 +1,129 @@
+/* Controlle: tokens de marca (Frente B).
+ * Gerado à mão; as fontes vêm de Constancia/Brand/src/build_web.py.
+ *
+ * Tipografia: --font-base usa "Controlle C" primeiro. Essa fonte só contém
+ * C c Ç ç (unicode-range), então apenas esses caracteres usam o glifo C-anel;
+ * o resto cai para Nunito (arredondada, OFL, self-hosted p/ funcionar offline).
+ * Para o corpo de texto use --font-text (sem o C-anel).
+ */
+
+/* ---------- Fontes ---------- */
+@font-face {
+  font-family: "Controlle C";
+  src: url("fonts/controlle-c-400.woff2") format("woff2");
+  font-weight: 100 549;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+0043, U+0063, U+00C7, U+00E7;
+}
+@font-face {
+  font-family: "Controlle C";
+  src: url("fonts/controlle-c-600.woff2") format("woff2");
+  font-weight: 550 649;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+0043, U+0063, U+00C7, U+00E7;
+}
+@font-face {
+  font-family: "Controlle C";
+  src: url("fonts/controlle-c-700.woff2") format("woff2");
+  font-weight: 650 1000;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+0043, U+0063, U+00C7, U+00E7;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("fonts/nunito-latin-var.woff2") format("woff2-variations"),
+       url("fonts/nunito-latin-var.woff2") format("woff2");
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00FF, U+2013-2014, U+2018-2019, U+201C-201D,
+                 U+2022, U+2026, U+20AC, U+2212;
+}
+
+:root {
+  /* ---------- Paleta fixa ---------- */
+  --green-900: #1A331A;
+  --green-700: #264D26;
+  --green-500: #336633; /* principal */
+  --green-400: #4D8C4D;
+  --green-200: #8FBF8F;
+  --green-100: #D6EAD6;
+  --green-50:  #F1F7F1;
+  --amber:     #E0A43A; /* só sequências e conquistas */
+  --graphite:  #1C1C1E;
+
+  /* ---------- Semânticos (claro) ---------- */
+  --bg:        #F1F7F1;
+  --card:      #FFFFFF;
+  --primary:   #336633;
+  --primary-strong: #264D26;  /* pressionado / alto contraste */
+  --on-primary: #FFFFFF;
+  --primary-soft: #D6EAD6;    /* fundos de chip, trilho do anel */
+  --text:      #1C1C1E;
+  --text-2:    #5A665A;       /* secundário, ≥ 4.5:1 sobre --bg e --card */
+  --line:      #D6E3D6;       /* divisores e bordas */
+  --ring-track: rgba(51, 102, 51, 0.15);
+  --amber-text: #8A5A0B;      /* âmbar legível como texto sobre claro */
+  --danger:    #B3261E;
+
+  /* ---------- Tipografia ---------- */
+  --font-text: "Nunito", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-brand: "Controlle C", var(--font-text);
+
+  /* ---------- Forma ---------- */
+  --radius-sm: 10px;
+  --radius:    16px;
+  --radius-lg: 24px;
+  --shadow-card: 0 1px 2px rgba(26, 51, 26, 0.06), 0 4px 16px rgba(26, 51, 26, 0.06);
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --green-900: #D6EAD6; /* a escala inverte: tons “900” viram os mais claros */
+    --green-700: #A9D3A9;
+    --green-500: #5FA35F;
+    --green-400: #4D8C4D;
+    --green-200: #2E5A2E;
+    --green-100: #1F3A1F;
+    --green-50:  #142214;
+    --amber:     #F0B54D;
+
+    --bg:        #0F1A0F;
+    --card:      #172617;
+    --primary:   #5FA35F;
+    --primary-strong: #7DBA7D;
+    --on-primary: #0F1A0F;
+    --primary-soft: #1F3A1F;
+    --text:      #ECF3EC;
+    --text-2:    #9DB09D;
+    --line:      #243A24;
+    --ring-track: rgba(95, 163, 95, 0.18);
+    --amber-text: #F0B54D;
+    --danger:    #F2867E;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Alto contraste: verde mais fechado no claro, mais aberto no escuro */
+@media (prefers-contrast: more) {
+  :root { --primary: #264D26; --text-2: #3D473D; }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root { --primary: #8FCB8F; --text-2: #C2D1C2; }
+}
+
+/* ---------- Utilitários de marca ---------- */
+/* Cada c/C/ç/Ç de um título vai em <span class="brand-c">. */
+.brand-c {
+  font-family: var(--font-brand);
+  color: var(--primary);
+}
+/* Opcional: aplica o glifo C-anel a todo o elemento (sem cor), p/ títulos inteiros. */
+.brand-font {
+  font-family: var(--font-brand);
+}
