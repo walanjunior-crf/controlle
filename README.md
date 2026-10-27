@@ -218,7 +218,10 @@ Para trocar de celular: exporte no antigo, instale no novo e importe.
 
 - **Lembretes com o app fechado vêm do calendário do celular.** Em Ajustes → Lembretes →
   "Adicionar lembretes ao calendário", o Controlle gera eventos repetidos com alerta na
-  hora; no iPhone, abra essa opção pelo **Safari** e toque em "Adicionar Tudo". Dica: crie
+  hora; no iPhone, toque em "Adicionar ao calendário" e depois em "Adicionar Tudo". Se nada
+  acontecer no app instalado, use "Compartilhar arquivo" → "Salvar em Arquivos" e abra o
+  arquivo no app Arquivos. (Não use o Safari para isso: no iPhone, o app instalado e o
+  Safari guardam dados separados, então lá a lista estaria vazia.) Dica: crie
   antes um calendário chamado "Controlle" no app Calendário e escolha ele, para poder
   apagar tudo de uma vez. O calendário avisa sempre no horário, mesmo se você já registrou;
   se mudar os horários, apague os eventos antigos e adicione de novo. Com o app aberto, ele

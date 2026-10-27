@@ -1928,3 +1928,12 @@ input[type='time'].input {
 .calendar-tips .field-hint { margin: 0; }
 .calendar-actions { display: grid; gap: 8px; }
 .calendar-actions .btn { width: 100%; }
+
+/* Onboarding: meta e lembrete empilhados para caber valores como 2000 ml */
+.onb-adjust-card .field-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.onb-adjust-card .field-time .input { max-width: 180px; }
+
+/* Tela de erro (ErrorBoundary) */
+.crash { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 32px var(--gutter, 20px); max-width: 520px; margin: 0 auto; }
+.crash h1 { margin: 0; }
+.crash pre { white-space: pre-wrap; word-break: break-word; background: var(--primary-soft, #D6EAD6); border-radius: 12px; padding: 12px; font-size: 12px; }

@@ -118,7 +118,8 @@ export function CalendarSheet({ open, onClose, trackerId }: Props) {
         </p>
         {calendarNeedsSafariHint() && (
           <p className="field-hint">
-            Se nada acontecer no app instalado, abra o Controlle no Safari e use esta opção por lá.
+            Se nada acontecer, toque em <strong>Compartilhar arquivo</strong> → <strong>Salvar em Arquivos</strong>. Depois
+            abra o arquivo no app Arquivos e toque em <strong>Adicionar Tudo</strong>.
           </p>
         )}
       </div>

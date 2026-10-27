@@ -126,7 +126,7 @@ export function useInstallPrompt(): { canPrompt: boolean; prompt: () => Promise<
 export function useDueReminders(): Array<{ reminder: Reminder; tracker: Tracker; dueAt: number }>
   // lembretes cujo horário de hoje já passou e cuja meta do dia ainda não foi cumprida
 export async function updateAppBadge(count: number): Promise<void> // navigator.setAppBadge quando existir
-// sw: vite-plugin-pwa (registerType 'prompt'), manifest pt-BR, ícones de public/icons
+// sw: vite-plugin-pwa (registerType 'autoUpdate'), manifest pt-BR, ícones de public/icons
 export function useUpdateAvailable(): { needRefresh: boolean; update: () => void }
 ```
 

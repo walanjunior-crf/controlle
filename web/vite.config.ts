@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'icons/*.svg', 'fonts/*.woff2', 'brand/*.svg', 'tokens.css'],
       manifest: {
         name: 'Controlle',

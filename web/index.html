@@ -19,9 +19,62 @@
     <link rel="preload" href="fonts/nunito-latin-var.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="fonts/controlle-c-700.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="tokens.css" />
+    <style>
+      /* Estilo mínimo embutido: a tela nunca fica branca enquanto o app carrega. */
+      html, body { margin: 0; background: #F1F7F1; color: #1C1C1E; }
+      @media (prefers-color-scheme: dark) { html, body { background: #0F1A0F; color: #E8F2E8; } }
+      #boot-static { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px; box-sizing: border-box; font: 600 16px/1.45 system-ui, -apple-system, sans-serif; text-align: center; }
+      #boot-static svg { width: 72px; height: 72px; animation: boot-pulse 1.4s ease-in-out infinite; }
+      @keyframes boot-pulse { 50% { opacity: .45; } }
+      #boot-static .boot-msg { color: #56605A; }
+      #boot-static .boot-err { display: none; max-width: 420px; text-align: left; font-weight: 500; font-size: 14px; }
+      #boot-static .boot-err pre { white-space: pre-wrap; word-break: break-word; background: rgba(51,102,51,.08); border-radius: 12px; padding: 12px; font-size: 12px; }
+      #boot-static button { font: inherit; font-weight: 800; color: #fff; background: #336633; border: 0; border-radius: 14px; padding: 14px 22px; margin-top: 8px; }
+    </style>
+    <script>
+      // Diagnóstico de inicialização: guarda erros e, se o app não abrir em 10 s,
+      // mostra o motivo na tela em vez de uma página em branco.
+      (function () {
+        var errs = (window.__bootErrors = [])
+        window.addEventListener('error', function (e) {
+          var t = e.target
+          if (t && t !== window && (t.src || t.href)) errs.push('Falha ao carregar: ' + (t.src || t.href))
+          else errs.push((e.message || 'Erro') + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : ''))
+        }, true)
+        window.addEventListener('unhandledrejection', function (e) {
+          var r = e.reason
+          errs.push('Promessa rejeitada: ' + (r && (r.name ? r.name + ': ' : '') + (r && r.message ? r.message : String(r))))
+        })
+        window.__showBootError = function (title) {
+          var box = document.getElementById('boot-static')
+          if (!box) return
+          box.querySelector('.boot-msg').textContent = title || 'Não foi possível abrir o Controlle.'
+          var info = (errs.length ? errs.join('\n') : 'Nenhum erro registrado.') +
+            '\n\nEndereço: ' + location.href +
+            '\nNavegador: ' + navigator.userAgent +
+            '\nIndexedDB: ' + (typeof indexedDB !== 'undefined' ? 'sim' : 'não')
+          var err = box.querySelector('.boot-err')
+          err.querySelector('pre').textContent = info
+          err.style.display = 'block'
+        }
+        setTimeout(function () {
+          if (document.getElementById('boot-static')) window.__showBootError('O Controlle demorou demais para abrir.')
+        }, 10000)
+      })()
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="boot-static" role="status">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M78.3 30.2A34 34 0 1 0 78.3 69.8" fill="none" stroke="#336633" stroke-width="22" stroke-linecap="round"/></svg>
+        <div class="boot-msg">Carregando o Controlle…</div>
+        <div class="boot-err">
+          <p>Tire um print desta tela e mande para quem te passou o link. Os detalhes abaixo ajudam a achar o problema:</p>
+          <pre></pre>
+          <button type="button" onclick="location.reload()">Tentar de novo</button>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
