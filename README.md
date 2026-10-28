@@ -259,3 +259,21 @@ Sempre dentro da pasta `web`:
 | `npm run preview` | Abre localmente a versão gerada pelo build |
 
 Estrutura e contratos entre as partes do código: veja [`CONTRACTS.md`](CONTRACTS.md).
+
+## Novidades da versão 0.3
+
+- **Agenda** (aba nova): calendário por **mês** ou **semana**, com compromissos coloridos, hábitos nos horários dos lembretes e **feriados nacionais** (calculados no aparelho, sem internet; dá para ocultar em ⋯).
+- **Compromissos** com repetição, alerta (na hora até 1 dia antes), local, notas e **cores/tons** à vontade (14 famílias × 4 tons, mais cor personalizada).
+- **Lembretes no iPhone**: Agenda → ⋯ → *Exportar para a agenda do celular*. Gera um .ics com compromissos e hábitos; o iPhone avisa mesmo com o app fechado.
+- **Importar** um .ics (Calendário do Mac, Google Agenda, link público do iCloud): Agenda → ⋯ → *Importar de um arquivo .ics*.
+- **Histórico em Mês | Ano**, com o percentual do ano.
+- **Perfil** com foto ou 16 avatares.
+
+O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
+
+## v0.4 — Avatar montável, níveis e conquistas
+
+- Editor de avatar (`/perfil/avatar`): gato, raposa, urso ou coelho, com pelagem, olhos, chapéu, óculos, roupa, fundo e padrão. O avatar reage ao humor (feliz quando o dia fecha completo).
+- Check = hábito cumprido em um dia. Os checks formam o nível (1 a 40), calculado do histórico, sem gastar nem salvar nada.
+- Itens bloqueados abrem por nível ou conquista (ex.: coroa no nível 10, Medalha C com 7 dias perfeitos).
+- 27 conquistas em 5 grupos, com barra de progresso (`/conquistas`).

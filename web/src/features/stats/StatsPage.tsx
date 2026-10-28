@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { addDays, ACHIEVEMENTS, daysBetween, formatValue, goalOn, overallProgress, overallStreak, trackerStats, trackerStreak, unlockedAchievements } from '../../domain'
+import { Link } from 'react-router-dom'
+import { addDays, ACHIEVEMENTS, daysBetween, formatValue, goalOn, overallProgress, overallStreak, trackerStats, trackerStreak } from '../../domain'
 import { BrandText } from '../../components/BrandText'
 import { CRing } from '../../components/CRing'
 import { colorFor } from '../../components/colors'
@@ -7,6 +8,8 @@ import { EmptyState, SegmentedControl, StreakChip } from '../../components/contr
 import { useEngineOptions } from '../../hooks/useEngineOptions'
 import { useRestDays, useSnapshots } from '../../hooks/useSnapshots'
 import { useToday } from '../../hooks/useToday'
+import { useRewards } from '../../hooks/useRewards'
+import { LevelCard } from '../rewards/LevelCard'
 import { BarChart } from './BarChart'
 
 type Range = 7 | 30 | 90
@@ -53,7 +56,7 @@ export function StatsPage() {
     [snapshots, restDays, range, today, o],
   )
 
-  const unlocked = useMemo(() => unlockedAchievements(snapshots ?? [], restDays, today, o), [snapshots, restDays, today, o])
+  const rewards = useRewards()
 
   return (
     <div className="page stats-page">
@@ -168,21 +171,14 @@ export function StatsPage() {
           })}
 
           <section className="achievements" aria-label="Conquistas">
-            <h2 className="section-title">Conquistas</h2>
-            <ul className="achievement-grid">
-              {ACHIEVEMENTS.map((a) => {
-                const on = unlocked.has(a.id)
-                return (
-                  <li key={a.id} className={`achievement${on ? ' is-on' : ''}`}>
-                    <span className="achievement-icon" aria-hidden="true">
-                      {a.icon}
-                    </span>
-                    <strong>{a.title}</strong>
-                    <span className="achievement-detail">{on ? 'Desbloqueada' : a.detail}</span>
-                  </li>
-                )
-              })}
-            </ul>
+            <h2 className="section-title">Nível e conquistas</h2>
+            <LevelCard level={rewards.level} />
+            <Link to="/conquistas" className="card ach-link" style={{ marginTop: 10 }}>
+              <span>
+                🏆 Conquistas <span className="ach-count num">{rewards.unlocked.size}/{ACHIEVEMENTS.length}</span>
+              </span>
+              <span aria-hidden="true">›</span>
+            </Link>
           </section>
         </>
       )}

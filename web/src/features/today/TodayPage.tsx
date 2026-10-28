@@ -30,6 +30,8 @@ import { useDueReminders } from '../../platform/reminders'
 import { InstallBanner } from './InstallBanner'
 import { LogSheet, SCALE_FACES } from './LogSheet'
 import { Avatar, useProfile } from '../profile/Avatar'
+import { LevelChip } from '../rewards/LevelCard'
+import { useRewards } from '../../hooks/useRewards'
 import { UpcomingEvents } from '../agenda/UpcomingEvents'
 
 function greeting(hour: number): string {
@@ -50,6 +52,7 @@ export function TodayPage() {
   const navigate = useNavigate()
   const due = useDueReminders()
   const profile = useProfile()
+  const rewards = useRewards()
 
   const [detailsId, setDetailsId] = useState<string | null>(null)
   const [pulseId, setPulseId] = useState<string | null>(null)
@@ -124,10 +127,12 @@ export function TodayPage() {
       <header className="today-head">
         <div className="today-who">
           <Link to="/perfil" className="today-avatar" aria-label="Seu perfil">
-            <Avatar profile={profile} size={44} decorative />
+            <Avatar profile={profile} size={44} decorative mood={overall.complete ? 'happy' : hour >= 22 && overall.met === 0 && overall.active > 0 ? 'sleepy' : 'neutral'} />
           </Link>
           <div>
-            <p className="today-date">{formatDayLong(today)}</p>
+            <p className="today-date">
+              {formatDayLong(today)} {rewards.ready && <LevelChip level={rewards.level.level} />}
+            </p>
             <h1 className="today-greet">
               {greeting(hour)}
               {name ? ', ' : ''}

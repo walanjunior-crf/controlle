@@ -156,8 +156,22 @@ export interface CalendarEvent {
 // ---------------------------------------------------------------------------------
 // Perfil (v0.2) — local por enquanto; pensado para os grupos no futuro
 
+/** Avatar montado em camadas (v0.4). Todos os campos são ids do catálogo, menos as cores (#RRGGBB). */
+export interface AvatarConfig {
+  species: string
+  fur: string
+  eyes: string
+  hat: string
+  glasses: string
+  outfit: string
+  bg: string
+  pattern: string
+}
+
 export type AvatarChoice =
   | { kind: 'preset'; id: string }
+  /** personagem montado pela pessoa, com itens liberados por nível e conquistas */
+  | { kind: 'custom'; config: AvatarConfig }
   /** foto recortada em quadrado, JPEG pequeno (~256 px) como data URL */
   | { kind: 'photo'; dataUrl: string }
   | { kind: 'initials' }

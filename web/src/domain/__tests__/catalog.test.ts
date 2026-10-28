@@ -41,8 +41,11 @@ describe('TEMPLATES', () => {
 
 describe('achievements', () => {
   it('catálogo', () => {
-    expect(ACHIEVEMENTS.map((a) => a.id)).toEqual(['firstEntry', 'firstPerfectDay', 'perfectWeek', 'streak7', 'streak30', 'streak100', 'streak365'])
-    expect(ACHIEVEMENTS.find((a) => a.id === 'perfectWeek')?.title).toBe('Semana perfeita')
+    const ids = ACHIEVEMENTS.map((a) => a.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    expect(ids.length).toBe(27)
+    expect(ids).toEqual(expect.arrayContaining(['firstEntry', 'firstPerfectDay', 'streak7', 'streak30', 'streak100', 'streak365']))
+    expect(ACHIEVEMENTS.find((a) => a.id === 'streak7')?.title).toBe('Semana perfeita')
   })
 
   it('nada sem registros', () => {
@@ -58,10 +61,10 @@ describe('achievements', () => {
 
   it('dia completo e semana perfeita', () => {
     const six = snap(created, {}, daily(daysBetween('2026-10-21', '2026-10-26')))
-    expect(unlockedAchievements([six], [], TODAY, OPTS)).toEqual(new Set(['firstEntry', 'firstPerfectDay']))
+    expect(unlockedAchievements([six], [], TODAY, OPTS)).toEqual(new Set(['firstEntry', 'firstPerfectDay', 'streak3']))
     const seven = snap(created, {}, daily(daysBetween('2026-10-21', TODAY)))
     expect(unlockedAchievements([seven], [], TODAY, OPTS)).toEqual(
-      new Set(['firstEntry', 'firstPerfectDay', 'perfectWeek', 'streak7']),
+      new Set(['firstEntry', 'firstPerfectDay', 'streak3', 'streak7']),
     )
   })
 

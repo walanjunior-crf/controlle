@@ -5,6 +5,7 @@ import type { Profile } from '../../domain/types'
 import { CLogo } from '../../components/CLogo'
 import { colorFor } from '../../components/colors'
 import { findAvatar, type PresetAvatar } from './avatars'
+import { customAvatarSvg, type Mood } from './avatarParts'
 import { initialsOf } from './profileText'
 import './profile.css'
 
@@ -29,13 +30,15 @@ interface AvatarProps {
   ring?: boolean
   /** quando o nome já é lido ao lado (ou o botão já tem rótulo) */
   decorative?: boolean
+  /** só avatares montados reagem: feliz, neutro ou sonolento */
+  mood?: Mood
   className?: string
 }
 
 /** Cor do texto sobre o fundo do perfil (âmbar pede tinta escura). */
 const inkOn = (token: string) => (token === 'amber' ? '#1F2A1F' : '#FFFFFF')
 
-export function Avatar({ profile, size = 44, ring = false, decorative = false, className }: AvatarProps) {
+export function Avatar({ profile, size = 44, ring = false, decorative = false, mood = 'neutral', className }: AvatarProps) {
   const name = profile.displayName.trim()
   const label = name ? `Avatar de ${name}` : 'Seu avatar'
   const a11y = decorative ? { 'aria-hidden': true as const } : { role: 'img' as const, 'aria-label': label }
@@ -51,6 +54,14 @@ export function Avatar({ profile, size = 44, ring = false, decorative = false, c
     return (
       <span className={cls} style={style} {...(decorative ? { 'aria-hidden': true } : {})}>
         <img src={choice.dataUrl} alt={decorative ? '' : label} width={size} height={size} draggable={false} />
+      </span>
+    )
+  }
+
+  if (choice.kind === 'custom') {
+    return (
+      <span className={cls} style={style} {...a11y}>
+        <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: customAvatarSvg(choice.config, mood) }} />
       </span>
     )
   }

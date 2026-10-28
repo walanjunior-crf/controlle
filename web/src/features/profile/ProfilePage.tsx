@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { saveProfile } from '../../db/db'
 import type { AvatarChoice, Profile } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
@@ -7,7 +7,10 @@ import { ColorPicker } from '../../components/pickers'
 import { IconCamera, IconChevronLeft, IconTrash, IconUpload } from '../../components/icons'
 import { useToast } from '../../components/Toast'
 import { AVATARS } from './avatars'
+import { DEFAULT_AVATAR } from './avatarParts'
 import { Avatar, PresetSvg, useProfileLoaded } from './Avatar'
+import { LevelCard } from '../rewards/LevelCard'
+import { useRewards } from '../../hooks/useRewards'
 import { usePhotoFlow } from './PhotoCropSheet'
 import { BIO_MAX, NAME_MAX, HANDLE_MAX, handleError, normalizeHandle } from './profileText'
 import './profile.css'
@@ -19,6 +22,7 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const toast = useToast()
+  const rewards = useRewards()
   const ids = { name: useId(), handle: useId(), bio: useId(), handleHint: useId(), bioCount: useId() }
 
   const [name, setName] = useState<string | null>(null)
@@ -83,6 +87,12 @@ export function ProfilePage() {
         </button>
       </section>
 
+      {rewards.ready && (
+        <section className="profile-section" aria-label="Seu nível">
+          <LevelCard level={rewards.level} />
+        </section>
+      )}
+
       <section className="profile-section" aria-labelledby="profile-avatar-title">
         <h2 className="section-title" id="profile-avatar-title">
           Foto ou avatar
@@ -98,6 +108,11 @@ export function ProfilePage() {
               <span>Tirar foto</span>
             </button>
           </div>
+
+          <Link to="/perfil/avatar" className="profile-action ae-build">
+            <Avatar profile={{ ...draft, avatar: choice.kind === 'custom' ? choice : { kind: 'custom', config: DEFAULT_AVATAR } }} size={28} decorative />
+            <span>{choice.kind === 'custom' ? 'Editar meu avatar' : 'Montar meu avatar'}</span>
+          </Link>
 
           <div className="avatar-grid" role="group" aria-label="Avatares prontos">
             {AVATARS.map((a) => {

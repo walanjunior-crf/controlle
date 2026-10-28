@@ -7,6 +7,9 @@ import { HistoryPage } from './features/history/HistoryPage'
 import { AgendaPage } from './features/agenda/AgendaPage'
 import { EventEditorPage } from './features/agenda/EventEditorPage'
 import { ProfilePage } from './features/profile/ProfilePage'
+import { AvatarEditorPage } from './features/profile/AvatarEditorPage'
+import { ConquistasPage } from './features/rewards/ConquistasPage'
+import { useRewardToasts } from './features/rewards/useRewardToasts'
 import { OnboardingPage } from './features/onboarding/OnboardingPage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { StatsPage } from './features/stats/StatsPage'
@@ -51,6 +54,11 @@ function UpdateBand() {
 
 function BadgeSync() {
   useBadgeSync()
+  return null
+}
+
+function RewardSync() {
+  useRewardToasts()
   return null
 }
 
@@ -103,6 +111,7 @@ function Shell() {
   return (
     <>
       <BadgeSync />
+      <RewardSync />
       <UpdateBand />
       <ScrollToTop />
       <Routes>
@@ -111,6 +120,8 @@ function Shell() {
         <Route path="/agenda/novo" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
         <Route path="/agenda/:id" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
         <Route path="/perfil" element={<main className="app-main no-tabs"><ProfilePage /></main>} />
+        <Route path="/perfil/avatar" element={<main className="app-main no-tabs"><AvatarEditorPage /></main>} />
+        <Route path="/conquistas" element={<main className="app-main no-tabs"><ConquistasPage /></main>} />
         <Route path="/historico" element={<WithTabs><HistoryPage /></WithTabs>} />
         <Route path="/estatisticas" element={<WithTabs><StatsPage /></WithTabs>} />
         <Route path="/ajustes" element={<WithTabs><SettingsPage /></WithTabs>} />

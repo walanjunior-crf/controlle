@@ -18,7 +18,7 @@ import { isStandalone, platformHint, useInstallPrompt } from '../../platform/ins
 import { IosInstallSteps } from '../today/InstallBanner'
 import { Avatar, useProfile } from '../profile/Avatar'
 
-export const APP_VERSION = '0.3.0'
+export const APP_VERSION = '0.4.0'
 
 function Group({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) {
   return (
