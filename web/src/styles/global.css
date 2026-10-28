@@ -1352,8 +1352,62 @@ input[type='time'].input {
 }
 .color-picker {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.color-row {
+  display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+.color-group-label {
+  margin: 4px 0 -2px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-2);
+}
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px 4px;
+  justify-items: center;
+}
+.color-custom {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--text-2);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+}
+.color-custom.is-on {
+  border-style: solid;
+  border-color: var(--swatch);
+}
+.color-custom-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1.5px var(--text-2);
+  background-image: conic-gradient(#e45b4f, #e8a33a, #f1d84a, #57b36a, #3aa6c9, #4a67d6, #9a58b8, #e45b4f);
+}
+.color-custom.is-on .color-custom-dot {
+  background-image: none;
+}
+.color-custom input[type='color'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 .color-picker button {
   width: 44px;

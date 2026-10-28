@@ -146,7 +146,7 @@ export function AgendaImportSheet({ open, onClose }: { open: boolean; onClose: (
 
           <div className="field ag-sheet-field">
             <span className="field-label">Cor dos compromissos importados</span>
-            <ColorPicker value={color} onChange={setColor} />
+            <ColorPicker extended value={color} onChange={setColor} />
           </div>
 
           {parsed.warnings.length > 0 && (

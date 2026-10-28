@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { addMonths } from 'date-fns'
 import { deleteEntry, logEntry, restoreEntry } from '../../db/actions'
 import {
   addDays,
@@ -17,6 +18,10 @@ import {
 import { agendaDay, eventsOn, formatTimeRange, type EventOccurrence, type HabitSlot } from '../../domain/agenda'
 import type { DayKey, Tracker } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
+import { SegmentedControl } from '../../components/controls'
+import { readLocal, writeLocal } from '../../hooks/storage'
+import { holidaysByDay } from '../../domain/holidays'
+import { MonthView } from './MonthView'
 import { colorFor } from '../../components/colors'
 import { IconCalendarPlus, IconChevronLeft, IconChevronRight, IconMore, IconPin, IconPlus, IconUpload } from '../../components/icons'
 import { useToast } from '../../components/Toast'
@@ -27,6 +32,14 @@ import { AgendaExportSheet } from './AgendaExportSheet'
 import { AgendaImportSheet } from './AgendaImportSheet'
 import { capitalize, useCalendarNow, useEvents, useReminders } from './hooks'
 import './agenda.css'
+
+type AgendaView = 'semana' | 'mes'
+const VIEW_KEY = 'controlle.agenda.view'
+const HOLIDAYS_KEY = 'controlle.agenda.feriados'
+const VIEW_OPTIONS: Array<{ value: AgendaView; label: string }> = [
+  { value: 'semana', label: 'Semana' },
+  { value: 'mes', label: 'Mês' },
+]
 
 const isDayKey = (s: string | null): s is DayKey => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s)
 
@@ -44,6 +57,24 @@ export function AgendaPage() {
   const reminders = useReminders()
   const snapshots = useSnapshots()
   const restDays = useRestDays()
+
+  const [view, setViewState] = useState<AgendaView>(() => (readLocal(VIEW_KEY) === 'semana' ? 'semana' : 'mes'))
+  const setView = (v: AgendaView) => {
+    setViewState(v)
+    writeLocal(VIEW_KEY, v)
+  }
+  const [showHolidays, setShowHolidaysState] = useState(() => readLocal(HOLIDAYS_KEY) !== '0')
+  const setShowHolidays = (v: boolean) => {
+    setShowHolidaysState(v)
+    writeLocal(HOLIDAYS_KEY, v ? '1' : '0')
+  }
+  const dayRef = useRef<HTMLElement>(null)
+  const shiftMonth = (n: number) => select(format(addMonths(parseDayKey(selected), n), 'yyyy-MM-dd'))
+  const selectAndShow = (d: DayKey) => {
+    select(d)
+    window.setTimeout(() => dayRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+  }
+  const dayHolidays = showHolidays ? (holidaysByDay(selected, selected).get(selected) ?? []) : []
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [sheet, setSheet] = useState<'export' | 'import' | null>(null)
@@ -131,6 +162,8 @@ export function AgendaPage() {
             setOpen={setMenuOpen}
             onExport={() => setSheet('export')}
             onImport={() => setSheet('import')}
+            showHolidays={showHolidays}
+            onToggleHolidays={() => setShowHolidays(!showHolidays)}
           />
           <Link to={`/agenda/novo?dia=${selected}`} className="icon-btn icon-btn-filled" aria-label="Novo compromisso">
             <IconPlus />
@@ -138,21 +171,47 @@ export function AgendaPage() {
         </div>
       </header>
 
-      <WeekStrip
-        days={weekDays}
-        selected={selected}
-        today={today}
-        events={events ?? []}
-        onSelect={select}
-        onShift={(n) => select(addDays(selected, n * 7))}
-        onToday={() => select(today)}
-      />
+      <SegmentedControl className="ag-view-toggle" ariaLabel="Visualização da agenda" options={VIEW_OPTIONS} value={view} onChange={setView} />
 
-      <section className="ag-day" aria-labelledby="ag-day-title">
+      {view === 'mes' ? (
+        <MonthView
+          selected={selected}
+          today={today}
+          events={events ?? []}
+          weekStartsOn={settings.weekStartsOn}
+          showHolidays={showHolidays}
+          onSelect={selectAndShow}
+          onShiftMonth={shiftMonth}
+          onToday={() => select(today)}
+        />
+      ) : (
+        <WeekStrip
+          days={weekDays}
+          selected={selected}
+          today={today}
+          events={events ?? []}
+          onSelect={select}
+          onShift={(n) => select(addDays(selected, n * 7))}
+          onToday={() => select(today)}
+        />
+      )}
+
+      <section className="ag-day" aria-labelledby="ag-day-title" ref={dayRef}>
         <h2 id="ag-day-title" className="ag-day-title">
           <span className="ag-day-name">{capitalize(formatDayLong(selected))}</span>
           {isToday && <span className="ag-today-chip">Hoje</span>}
         </h2>
+
+        {dayHolidays.length > 0 && (
+          <p className="ag-holidays-line">
+            {dayHolidays.map((h) => (
+              <span key={h.name} className={`ag-holiday-pill${h.kind === 'data' ? ' is-date' : ''}`}>
+                {h.kind === 'data' ? '🎈' : '🇧🇷'} {h.name}
+                {h.kind === 'facultativo' ? ' · ponto facultativo' : ''}
+              </span>
+            ))}
+          </p>
+        )}
 
         {loading ? (
           <div className="ag-skeleton" aria-busy="true" />
@@ -495,18 +554,22 @@ function AgendaMenu({
   setOpen,
   onExport,
   onImport,
+  showHolidays,
+  onToggleHolidays,
 }: {
   open: boolean
   setOpen: (v: boolean) => void
   onExport: () => void
   onImport: () => void
+  showHolidays: boolean
+  onToggleHolidays: () => void
 }) {
   const root = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (!open) return
-    root.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
+    root.current?.querySelector<HTMLElement>('[role^="menuitem"]')?.focus()
     const onDown = (e: PointerEvent) => {
       if (!root.current?.contains(e.target as Node)) setOpen(false)
     }
@@ -516,7 +579,7 @@ function AgendaMenu({
         button.current?.focus()
       } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault()
-        const items = Array.from(root.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
+        const items = Array.from(root.current?.querySelectorAll<HTMLElement>('[role^="menuitem"]') ?? [])
         const i = items.indexOf(document.activeElement as HTMLElement)
         const next = items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length]
         next?.focus()
@@ -550,6 +613,10 @@ function AgendaMenu({
       </button>
       {open && (
         <div className="ag-menu" role="menu" aria-label="Opções da agenda">
+          <button type="button" role="menuitemcheckbox" aria-checked={showHolidays} className="ag-menu-item" onClick={() => pick(onToggleHolidays)}>
+            <span aria-hidden="true" className="ag-menu-flag">🇧🇷</span>
+            <span>{showHolidays ? 'Ocultar feriados' : 'Mostrar feriados'}</span>
+          </button>
           <button type="button" role="menuitem" className="ag-menu-item" onClick={() => pick(onExport)}>
             <IconCalendarPlus size={20} />
             <span>Exportar para a agenda do celular</span>

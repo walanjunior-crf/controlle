@@ -433,7 +433,7 @@ export function EventEditorPage() {
 
       <section className="form-section">
         <h2 className="section-title">Cor</h2>
-        <ColorPicker value={form.color} onChange={(v) => set('color', v)} />
+        <ColorPicker extended value={form.color} onChange={(v) => set('color', v)} />
       </section>
 
       {existing && (
