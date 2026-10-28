@@ -28,7 +28,7 @@ function localStamp(d: Date, minuteOfDay: number): string {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(h)}${pad(m)}00`
 }
 
-function utcStamp(d: Date): string {
+export function utcStamp(d: Date): string {
   return (
     `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}` +
     `T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`
@@ -81,14 +81,14 @@ export function reminderMessage(tracker: Tracker): string {
 }
 
 /**
- * Gera o conteúdo .ics com um evento recorrente por lembrete habilitado
- * de tracker não arquivado. Retorna também quantos eventos entraram.
+ * Linhas VEVENT (sem VCALENDAR) dos lembretes habilitados de trackers não arquivados,
+ * em ordem de horário. Compartilhado com a exportação da agenda.
  */
-export function buildICS(
+export function reminderVEventLines(
   trackers: Tracker[],
   reminders: Reminder[],
   opts: CalendarOptions = {},
-): { ics: string; count: number } {
+): { lines: string[]; count: number } {
   const start = opts.start ?? new Date()
   const now = opts.now ?? new Date()
   const duration = opts.durationMinutes ?? 5
@@ -98,15 +98,7 @@ export function buildICS(
     .filter((r) => r.enabled && byId.has(r.trackerId))
     .sort((a, b) => a.minuteOfDay - b.minuteOfDay)
 
-  const lines: string[] = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Controlle//Lembretes//PT-BR',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    'X-WR-CALNAME:Controlle',
-  ]
-
+  const lines: string[] = []
   for (const r of active) {
     const t = byId.get(r.trackerId)!
     const endMinute = Math.min(r.minuteOfDay + duration, 23 * 60 + 59)
@@ -124,6 +116,8 @@ export function buildICS(
       `DESCRIPTION:${escapeText(description)}`,
       ...(opts.appUrl ? [`URL:${escapeText(opts.appUrl)}`] : []),
       'TRANSP:TRANSPARENT',
+      // marca para a importação do Controlle reconhecer e ignorar os próprios hábitos
+      'X-CONTROLLE-KIND:habit',
       'BEGIN:VALARM',
       'ACTION:DISPLAY',
       `DESCRIPTION:${escapeText(message)}`,
@@ -132,8 +126,30 @@ export function buildICS(
       'END:VEVENT',
     )
   }
-  lines.push('END:VCALENDAR')
-  return { ics: lines.map(foldLine).join('\r\n') + '\r\n', count: active.length }
+  return { lines, count: active.length }
+}
+
+/**
+ * Gera o conteúdo .ics com um evento recorrente por lembrete habilitado
+ * de tracker não arquivado. Retorna também quantos eventos entraram.
+ */
+export function buildICS(
+  trackers: Tracker[],
+  reminders: Reminder[],
+  opts: CalendarOptions = {},
+): { ics: string; count: number } {
+  const { lines: events, count } = reminderVEventLines(trackers, reminders, opts)
+  const lines: string[] = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Controlle//Lembretes//PT-BR',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Controlle',
+    ...events,
+    'END:VCALENDAR',
+  ]
+  return { ics: lines.map(foldLine).join('\r\n') + '\r\n', count }
 }
 
 /** Endereço do app (sem o #rota), para colocar nos eventos. */
@@ -184,12 +200,12 @@ export function openCalendarFile(ics: string, filename: string): void {
 }
 
 /** Alternativa: compartilha o arquivo pela folha de compartilhamento. Retorna false se não suportado. */
-export async function shareCalendarFile(ics: string, filename: string): Promise<boolean> {
+export async function shareCalendarFile(ics: string, filename: string, title = 'Lembretes do Controlle'): Promise<boolean> {
   if (typeof navigator.share !== 'function' || typeof navigator.canShare !== 'function') return false
   const file = new File([ics], filename, { type: 'text/calendar' })
   if (!navigator.canShare({ files: [file] })) return false
   try {
-    await navigator.share({ files: [file], title: 'Lembretes do Controlle' })
+    await navigator.share({ files: [file], title })
   } catch (err) {
     if (!(err instanceof DOMException && err.name === 'AbortError')) return false
   }

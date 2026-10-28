@@ -48,7 +48,7 @@ describe('exportJSON', () => {
     await seed(d)
     const data = JSON.parse(await (await exportJSON(d)).text())
     expect(data.app).toBe('controlle')
-    expect(data.schemaVersion).toBe(1)
+    expect(data.schemaVersion).toBe(2)
     expect(typeof data.exportedAt).toBe('string')
     expect(data.settings.name).toBe('Ana')
     expect(data.trackers).toHaveLength(2)

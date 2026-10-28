@@ -230,7 +230,7 @@ svg {
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   padding: 4px calc(8px + var(--safe-right)) calc(var(--safe-bottom) + 4px) calc(8px + var(--safe-left));
   background: color-mix(in srgb, var(--bg) 78%, transparent);
   -webkit-backdrop-filter: saturate(1.6) blur(18px);
@@ -1893,7 +1893,7 @@ input[type='time'].input {
     left: 50%;
     right: auto;
     bottom: 16px;
-    width: 440px;
+    width: 520px;
     transform: translateX(-50%);
     border-radius: 22px;
     border: 1px solid var(--line);

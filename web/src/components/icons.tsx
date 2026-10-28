@@ -124,3 +124,39 @@ export const IconCalendarPlus = ({ size = 18, className }: IconProps) => (
     <path d="M8 3v4M16 3v4M3.5 10h17M12 13.5v4M10 15.5h4" />
   </svg>
 )
+
+/** Agenda: folha de calendário com um horário marcado. */
+export const IconAgenda = ({ size = 26, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <rect x="3.5" y="5" width="17" height="15.5" rx="4" />
+    <path d="M8 3v4M16 3v4M3.5 10h17" />
+    <path d="M8 14h5M8 17h8" />
+  </svg>
+)
+
+export const IconCamera = ({ size = 20, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.7l1.3-2h5l1.3 2h1.7A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z" />
+    <circle cx="12" cy="12.5" r="3.5" />
+  </svg>
+)
+
+export const IconUpload = ({ size = 20, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 15v3.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V15" />
+  </svg>
+)
+
+export const IconClock = ({ size = 18, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7.5V12l3 2" />
+  </svg>
+)
+
+export const IconPin = ({ size = 18, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" />
+    <circle cx="12" cy="10" r="2.3" />
+  </svg>
+)

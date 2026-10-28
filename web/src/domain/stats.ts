@@ -113,3 +113,92 @@ export function monthHeatmap(
     return { day, value: null, fraction: p.fraction, isMet: p.complete, isActive: p.active > 0, isRest }
   })
 }
+
+export interface YearMonthSummary {
+  month0: number
+  /** mesmo formato de `monthHeatmap` (um DailyValue por dia do mês) */
+  cells: DailyValue[]
+  /** dias ativos (isActive) até hoje */
+  activeDays: number
+  metDays: number
+  /** média de `fraction` nos dias ativos do mês (0 se nenhum) */
+  fraction: number
+}
+
+export interface YearSummary {
+  year: number
+  /** 12 meses, jan → dez */
+  months: YearMonthSummary[]
+  /**
+   * "% do ano cumprido" (0–1): média de `fraction` (overallProgress, ou dayProgress do
+   * tracker quando filtrado) nos dias ATIVOS do ano até hoje. Dias sem tracker ativo,
+   * folgas e dias futuros ficam fora da conta. 0 se não há dia ativo.
+   */
+  fraction: number
+  activeDays: number
+  /** dias ativos completos (overall complete / meta do tracker cumprida) */
+  metDays: number
+  /** mês com maior média de fraction (empate → o mais cedo); null sem dias ativos */
+  bestMonth: { month0: number; fraction: number } | null
+  /**
+   * Maior sequência de dias completos DENTRO do ano (não herda do ano anterior).
+   * Dias inativos/folgas são pulados (não quebram nem somam); hoje incompleto não quebra.
+   */
+  longestStreak: number
+}
+
+/**
+ * Resumo anual construído sobre `monthHeatmap` (mesma semântica dia a dia).
+ * Sem `trackerId`: geral; com `trackerId`: só aquele tracker.
+ */
+export function yearSummary(
+  all: TrackerSnapshot[],
+  restDays: RestDay[],
+  year: number,
+  o: EngineOptions,
+  trackerId?: string,
+  today: DayKey = todayKey(o.dayStartHour),
+): YearSummary {
+  let fractionSum = 0
+  let activeDays = 0
+  let metDays = 0
+  let run = 0
+  let longestStreak = 0
+  let bestMonth: YearSummary['bestMonth'] = null
+
+  const months: YearMonthSummary[] = []
+  for (let m = 0; m < 12; m++) {
+    const cells = monthHeatmap(all, restDays, year, m, o, trackerId, today)
+    let mSum = 0
+    let mActive = 0
+    let mMet = 0
+    for (const c of cells) {
+      if (c.day > today || !c.isActive) continue
+      mActive++
+      mSum += c.fraction
+      if (c.isMet) {
+        mMet++
+        run++
+        if (run > longestStreak) longestStreak = run
+      } else if (c.day !== today) {
+        run = 0
+      }
+    }
+    const fraction = mActive === 0 ? 0 : mSum / mActive
+    if (mActive > 0 && (bestMonth === null || fraction > bestMonth.fraction)) bestMonth = { month0: m, fraction }
+    months.push({ month0: m, cells, activeDays: mActive, metDays: mMet, fraction })
+    fractionSum += mSum
+    activeDays += mActive
+    metDays += mMet
+  }
+
+  return {
+    year,
+    months,
+    fraction: activeDays === 0 ? 0 : fractionSum / activeDays,
+    activeDays,
+    metDays,
+    bestMonth,
+    longestStreak,
+  }
+}

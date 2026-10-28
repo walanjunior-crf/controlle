@@ -1,10 +1,10 @@
 import { db, type ControlleDB } from '../db/db'
-import type { Entry, Goal, Reminder, RestDay, Settings, Tracker } from '../domain/types'
+import type { CalendarEvent, Entry, Goal, Profile, Reminder, RestDay, Settings, Tracker } from '../domain/types'
 
 // Backup local: tudo fica no aparelho, então exportar é a única cópia de segurança.
 
 export const BACKUP_APP = 'controlle'
-export const BACKUP_SCHEMA_VERSION = 1
+export const BACKUP_SCHEMA_VERSION = 2
 
 export interface BackupFile {
   app: typeof BACKUP_APP
@@ -17,6 +17,10 @@ export interface BackupFile {
   entries: Entry[]
   restDays: RestDay[]
   reminders: Reminder[]
+  /** v2+; ausente em backups v1 */
+  events?: CalendarEvent[]
+  /** v2+; ausente em backups v1 */
+  profile?: Profile | null
 }
 
 export class BackupFormatError extends Error {
@@ -28,13 +32,15 @@ export class BackupFormatError extends Error {
 
 /** Monta o objeto de backup (útil para testes e para o Blob). */
 export async function buildBackup(database: ControlleDB = db): Promise<BackupFile> {
-  const [settings, trackers, goals, entries, restDays, reminders] = await Promise.all([
+  const [settings, trackers, goals, entries, restDays, reminders, events, profile] = await Promise.all([
     database.settings.get('settings'),
     database.trackers.toArray(),
     database.goals.toArray(),
     database.entries.toArray(),
     database.restDays.toArray(),
     database.reminders.toArray(),
+    database.events.toArray(),
+    database.profile.get('me'),
   ])
   return {
     app: BACKUP_APP,
@@ -46,6 +52,8 @@ export async function buildBackup(database: ControlleDB = db): Promise<BackupFil
     entries,
     restDays,
     reminders,
+    events,
+    profile: profile ?? null,
   }
 }
 
@@ -122,6 +130,8 @@ export async function importJSON(
     database.restDays,
     database.reminders,
     database.settings,
+    database.events,
+    database.profile,
   ]
   await database.transaction('rw', tables, async () => {
     if (mode === 'replace') {
@@ -132,6 +142,23 @@ export async function importJSON(
     await database.entries.bulkPut(data.entries)
     await database.restDays.bulkPut(data.restDays)
     await database.reminders.bulkPut(data.reminders)
+    // v2: agenda e perfil (backups v1 não têm esses campos)
+    if (Array.isArray(data.events)) {
+      await database.events.bulkPut(
+        data.events.map((e) => ({
+          ...e,
+          exceptions: Array.isArray(e.exceptions) ? e.exceptions : [],
+          repeatWeekdays: Array.isArray(e.repeatWeekdays) ? e.repeatWeekdays : [],
+          alertMinutes: e.alertMinutes ?? null,
+        })),
+      )
+    }
+    if (data.profile) {
+      const currentProfile = await database.profile.get('me')
+      if (mode === 'replace' || !currentProfile) {
+        await database.profile.put({ ...data.profile, id: 'me' })
+      }
+    }
     if (data.settings) {
       const current = await database.settings.get('settings')
       // No merge, configurações locais prevalecem; só preenche se não houver.

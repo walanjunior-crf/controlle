@@ -1,12 +1,20 @@
 import { useId, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { saveTracker } from '../../db/actions'
-import { requestPersistentStorage, saveSettings } from '../../db/db'
+import { requestPersistentStorage, saveProfile, saveSettings } from '../../db/db'
 import { TEMPLATES, formatMinuteOfDay, formatTarget, type TemplateId } from '../../domain'
+import type { AvatarChoice } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
 import { CLogo } from '../../components/CLogo'
 import { Stepper } from '../../components/controls'
+import { IconCamera } from '../../components/icons'
 import { templateToDraft } from '../../hooks/templateDraft'
+import { AVATARS } from '../profile/avatars'
+import { Avatar, PresetSvg } from '../profile/Avatar'
+import { usePhotoFlow } from '../profile/PhotoCropSheet'
+
+/** avatares oferecidos no primeiro acesso (o resto fica no perfil) */
+const ONB_AVATARS = AVATARS.filter((a) => ['raposa', 'coruja', 'gato', 'urso', 'sapo', 'coelho', 'panda'].includes(a.id))
 
 interface Choice {
   target: number
@@ -28,6 +36,8 @@ export function OnboardingPage() {
   const [ownOnly, setOwnOnly] = useState(false)
   const [choices, setChoices] = useState<Record<string, Choice>>({})
   const [busy, setBusy] = useState(false)
+  const [avatar, setAvatar] = useState<AvatarChoice>({ kind: 'initials' })
+  const photo = usePhotoFlow((dataUrl) => setAvatar({ kind: 'photo', dataUrl }))
 
   const toggle = (id: TemplateId) => {
     setOwnOnly(false)
@@ -56,6 +66,7 @@ export function OnboardingPage() {
         )
       }
       void requestPersistentStorage()
+      await saveProfile({ displayName: name.trim(), avatar })
       await saveSettings({ onboarded: true, name: name.trim() })
       navigate(ownOnly && picked.length === 0 ? '/tracker/new' : '/', { replace: true })
     } finally {
@@ -94,6 +105,7 @@ export function OnboardingPage() {
               Como posso te chamar?
             </BrandText>
             <p className="muted">Aparece na saudação da tela Hoje. É opcional.</p>
+            <Avatar profile={{ displayName: name, avatar, color: 'green-500' }} size={88} ring className="onb-avatar-preview" />
             <input
               id={nameId}
               className="input input-lg"
@@ -106,6 +118,36 @@ export function OnboardingPage() {
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && next()}
             />
+            <p className="field-label onb-avatar-label">Escolha um avatar (opcional)</p>
+            <div className="onb-avatars" role="group" aria-label="Avatares">
+              <button
+                type="button"
+                className={`onb-photo-btn${avatar.kind === 'photo' ? ' is-on' : ''}`}
+                aria-label="Usar foto"
+                aria-pressed={avatar.kind === 'photo'}
+                onClick={photo.openGallery}
+              >
+                <IconCamera size={22} />
+              </button>
+              {ONB_AVATARS.map((a) => {
+                const on = avatar.kind === 'preset' && avatar.id === a.id
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    className={`avatar-option${on ? ' is-on' : ''}`}
+                    aria-pressed={on}
+                    aria-label={a.label}
+                    onClick={() => setAvatar(on ? { kind: 'initials' } : { kind: 'preset', id: a.id })}
+                  >
+                    <span className="avatar-option-art">
+                      <PresetSvg avatar={a} />
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+            {photo.elements}
           </div>
         )}
 

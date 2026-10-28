@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { saveSettings } from '../../db/db'
 import { reorderTrackers, setArchived } from '../../db/actions'
 import type { Settings, Tracker } from '../../domain/types'
@@ -16,8 +16,9 @@ import { useAllTrackers } from '../../hooks/useSnapshots'
 import { backupFilename, downloadBlob, exportCSV, exportJSON, importJSON } from '../../platform/backup'
 import { isStandalone, platformHint, useInstallPrompt } from '../../platform/install'
 import { IosInstallSteps } from '../today/InstallBanner'
+import { Avatar, useProfile } from '../profile/Avatar'
 
-export const APP_VERSION = '0.1.0'
+export const APP_VERSION = '0.2.0'
 
 function Group({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) {
   return (
@@ -34,13 +35,13 @@ export function SettingsPage() {
   const trackers = useAllTrackers() ?? []
   const navigate = useNavigate()
   const toast = useToast()
-  const ids = { name: useId(), day: useId() }
+  const ids = { day: useId() }
+  const profile = useProfile()
   const fileRef = useRef<HTMLInputElement>(null)
   const [pending, setPending] = useState<File | null>(null)
   const [mode, setMode] = useState<'merge' | 'replace'>('merge')
   const [installOpen, setInstallOpen] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
-  const [nameDraft, setNameDraft] = useState<string | null>(null)
   const { canPrompt, prompt } = useInstallPrompt()
 
   const active = trackers.filter((t) => !t.archived)
@@ -77,7 +78,7 @@ export function SettingsPage() {
     }
   }
 
-  const name = nameDraft ?? settings.name
+  const profileName = profile.displayName.trim() || settings.name.trim()
   const hint = platformHint()
 
   return (
@@ -88,27 +89,16 @@ export function SettingsPage() {
         </BrandText>
       </header>
 
-      <Group title="Você">
-        <div className="settings-row stack">
-          <label htmlFor={ids.name} className="field-label">
-            Seu nome
-          </label>
-          <input
-            id={ids.name}
-            className="input"
-            type="text"
-            value={name}
-            placeholder="Como posso te chamar?"
-            maxLength={30}
-            autoComplete="given-name"
-            onChange={(e) => setNameDraft(e.target.value)}
-            onBlur={() => {
-              if (nameDraft !== null) update({ name: nameDraft.trim() })
-              setNameDraft(null)
-            }}
-          />
-        </div>
-      </Group>
+      <section className="settings-group" aria-label="Seu perfil">
+        <Link to="/perfil" className="card profile-row">
+          <Avatar profile={{ ...profile, displayName: profileName }} size={52} decorative />
+          <span className="profile-row-text">
+            <span className="profile-row-name">{profileName || 'Seu perfil'}</span>
+            <span className="profile-row-sub">{profile.handle ? `@${profile.handle}` : profileName ? 'Foto, apelido e cor' : 'Adicione seu nome e uma foto'}</span>
+          </span>
+          <IconChevronRight />
+        </Link>
+      </section>
 
       <Group title="Trackers">
         {active.length === 0 && <p className="settings-row muted">Nenhum tracker ativo.</p>}

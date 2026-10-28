@@ -112,3 +112,67 @@ export interface TrackerSnapshot {
   goals: Goal[]
   entries: Entry[]
 }
+
+// ---------------------------------------------------------------------------------
+// Agenda (v0.2)
+
+/** Repetição de um compromisso. */
+export type EventRepeat = 'none' | 'daily' | 'weekdays' | 'weekly' | 'monthly' | 'yearly'
+
+/**
+ * Compromisso livre da agenda. Datas e horários são de calendário (não de dia lógico)
+ * e "flutuantes": valem no fuso do aparelho.
+ */
+export interface CalendarEvent {
+  id: string
+  title: string
+  notes?: string
+  location?: string
+  /** dia da primeira ocorrência, "YYYY-MM-DD" */
+  date: DayKey
+  allDay: boolean
+  /** minutos desde 00:00 (ignorado se allDay) */
+  startMinute: number
+  /** minutos desde 00:00; pode passar de 1440 se terminar no dia seguinte */
+  endMinute: number
+  repeat: EventRepeat
+  /** para repeat 'weekly': dias da semana (vazio = o dia da semana de `date`) */
+  repeatWeekdays: Weekday[]
+  /** última data em que repete (inclusiva) */
+  repeatUntil?: DayKey
+  /** ocorrências apagadas individualmente */
+  exceptions: DayKey[]
+  /** token da paleta ou "#RRGGBB" */
+  color: string
+  /** alerta antes do início, em minutos (null = sem alerta) */
+  alertMinutes: number | null
+  source: 'app' | 'import'
+  /** UID do arquivo .ics de origem, para não duplicar ao importar de novo */
+  importUid?: string
+  createdAt: number
+  updatedAt: number
+}
+
+// ---------------------------------------------------------------------------------
+// Perfil (v0.2) — local por enquanto; pensado para os grupos no futuro
+
+export type AvatarChoice =
+  | { kind: 'preset'; id: string }
+  /** foto recortada em quadrado, JPEG pequeno (~256 px) como data URL */
+  | { kind: 'photo'; dataUrl: string }
+  | { kind: 'initials' }
+
+export interface Profile {
+  id: 'me'
+  /** id estável do perfil, para identificar a pessoa em grupos no futuro */
+  uid: string
+  displayName: string
+  /** apelido curto e único entre amigos, sem @ (ex.: "walan") */
+  handle: string
+  bio: string
+  /** token da paleta usado no fundo do avatar e em destaques */
+  color: string
+  avatar: AvatarChoice
+  createdAt: number
+  updatedAt: number
+}

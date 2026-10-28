@@ -1,9 +1,12 @@
 import { useEffect, type ReactNode } from 'react'
 import { HashRouter, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { IconHistory, IconSettings, IconStats, IconToday } from './components/icons'
+import { IconAgenda, IconHistory, IconSettings, IconStats, IconToday } from './components/icons'
 import { ToastProvider } from './components/Toast'
 import { TrackerBuilderPage } from './features/builder/TrackerBuilderPage'
 import { HistoryPage } from './features/history/HistoryPage'
+import { AgendaPage } from './features/agenda/AgendaPage'
+import { EventEditorPage } from './features/agenda/EventEditorPage'
+import { ProfilePage } from './features/profile/ProfilePage'
 import { OnboardingPage } from './features/onboarding/OnboardingPage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { StatsPage } from './features/stats/StatsPage'
@@ -14,6 +17,7 @@ import { useUpdateAvailable } from './platform/update'
 
 const TABS = [
   { to: '/', label: 'Hoje', Icon: IconToday, end: true },
+  { to: '/agenda', label: 'Agenda', Icon: IconAgenda, end: false },
   { to: '/historico', label: 'Histórico', Icon: IconHistory, end: false },
   { to: '/estatisticas', label: 'Estatísticas', Icon: IconStats, end: false },
   { to: '/ajustes', label: 'Ajustes', Icon: IconSettings, end: false },
@@ -103,6 +107,10 @@ function Shell() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<WithTabs><TodayPage /></WithTabs>} />
+        <Route path="/agenda" element={<WithTabs><AgendaPage /></WithTabs>} />
+        <Route path="/agenda/novo" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
+        <Route path="/agenda/:id" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
+        <Route path="/perfil" element={<main className="app-main no-tabs"><ProfilePage /></main>} />
         <Route path="/historico" element={<WithTabs><HistoryPage /></WithTabs>} />
         <Route path="/estatisticas" element={<WithTabs><StatsPage /></WithTabs>} />
         <Route path="/ajustes" element={<WithTabs><SettingsPage /></WithTabs>} />

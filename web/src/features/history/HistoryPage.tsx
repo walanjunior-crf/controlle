@@ -1,22 +1,32 @@
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { deleteEntry, restoreEntry, toggleRestDay } from '../../db/actions'
-import { formatDayLong, formatValue, monthHeatmap, parseDayKey, weekdayOf, type DailyValue } from '../../domain'
+import { dayKeyFor, formatDayLong, formatValue, monthHeatmap, parseDayKey, weekdayOf, yearSummary, type DailyValue } from '../../domain'
 import type { DayKey, Entry, Tracker } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
 import { colorFor } from '../../components/colors'
-import { EmptyState } from '../../components/controls'
+import { EmptyState, SegmentedControl } from '../../components/controls'
 import { IconChevronLeft, IconChevronRight, IconTrash } from '../../components/icons'
 import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
+import { readLocal, writeLocal } from '../../hooks/storage'
 import { useEngineOptions } from '../../hooks/useEngineOptions'
 import { useSettings } from '../../hooks/useSettings'
 import { useRestDays, useSnapshots } from '../../hooks/useSnapshots'
 import { useToday } from '../../hooks/useToday'
 import { SCALE_FACES } from '../today/LogSheet'
+import { heatFraction } from './heat'
+import { YearView } from './YearGrid'
 
 const WD = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
+
+type HistoryView = 'month' | 'year'
+const VIEW_KEY = 'controlle.history.view'
+const VIEW_OPTIONS: Array<{ value: HistoryView; label: string }> = [
+  { value: 'month', label: 'Mês' },
+  { value: 'year', label: 'Ano' },
+]
 
 export function describeEntry(e: Entry, t: Tracker): string {
   if (t.kind === 'binary') return 'Feito'
@@ -37,6 +47,36 @@ export function HistoryPage() {
   const [filter, setFilter] = useState<string>('')
   const [selected, setSelected] = useState<DayKey | null>(null)
   const swipe = useRef<{ x: number; y: number } | null>(null)
+  const [view, setViewState] = useState<HistoryView>(() => (readLocal(VIEW_KEY) === 'year' ? 'year' : 'month'))
+  const [year, setYear] = useState(() => todayDate.getFullYear())
+  const setView = (v: HistoryView) => {
+    setViewState(v)
+    writeLocal(VIEW_KEY, v)
+    if (v === 'year') setYear(ym.y)
+  }
+
+  const currentYear = todayDate.getFullYear()
+  const firstYear = useMemo(() => {
+    let min = currentYear
+    for (const s of snapshots ?? []) {
+      const y = parseInt(dayKeyFor(s.tracker.createdAt, o.dayStartHour).slice(0, 4), 10)
+      if (y < min) min = y
+    }
+    return min
+  }, [snapshots, o.dayStartHour, currentYear])
+
+  // Só calcula na visão Ano; não depende do mês exibido (trocar de mês não recomputa).
+  const summary = useMemo(
+    () => (view === 'year' ? yearSummary(snapshots ?? [], restDays, year, o, filter || undefined, today) : null),
+    [view, snapshots, restDays, year, o, filter, today],
+  )
+  const pickYearDay = useCallback((day: DayKey) => {
+    const d = parseDayKey(day)
+    setYm({ y: d.getFullYear(), m: d.getMonth() })
+    setViewState('month')
+    writeLocal(VIEW_KEY, 'month')
+    setSelected(day)
+  }, [])
 
   const cells = useMemo(
     () => monthHeatmap(snapshots ?? [], restDays, ym.y, ym.m, o, filter || undefined, today),
@@ -79,6 +119,14 @@ export function HistoryPage() {
         </BrandText>
       </header>
 
+      <SegmentedControl
+        className="history-view-toggle"
+        ariaLabel="Visualização do histórico"
+        options={VIEW_OPTIONS}
+        value={view}
+        onChange={setView}
+      />
+
       {snapshots && snapshots.length > 0 && (
         <div className="chip-row filter-row" role="radiogroup" aria-label="Filtrar por tracker">
           <button type="button" role="radio" aria-checked={!filter} className={`chip${!filter ? ' is-on' : ''}`} onClick={() => setFilter('')}>
@@ -99,53 +147,69 @@ export function HistoryPage() {
         </div>
       )}
 
-      <section
-        className="card calendar"
-        onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY })}
-        onPointerUp={(e) => {
-          const s = swipe.current
-          swipe.current = null
-          if (!s) return
-          const dx = e.clientX - s.x
-          const dy = e.clientY - s.y
-          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1)
-        }}
-        style={filter ? { ['--heat' as string]: colorFor(trackerById.get(filter)?.color) } : undefined}
-      >
-        <div className="calendar-head">
-          <button type="button" className="icon-btn" aria-label="Mês anterior" onClick={() => go(-1)}>
-            <IconChevronLeft />
-          </button>
-          <h2 className="calendar-title" aria-live="polite">
-            {monthTitle}
-          </h2>
-          <button type="button" className="icon-btn" aria-label="Próximo mês" onClick={() => go(1)} disabled={isCurrentMonth}>
-            <IconChevronRight />
-          </button>
-        </div>
-        <div className="calendar-grid" role="grid" aria-label={`Calendário de ${monthTitle}`}>
-          {header.map((d, i) => (
-            <div key={i} className="calendar-wd" aria-hidden="true">
-              {d}
-            </div>
-          ))}
-          {Array.from({ length: lead }, (_, i) => (
-            <div key={`l${i}`} aria-hidden="true" />
-          ))}
-          {cells.map((c) => (
-            <DayCell key={c.day} cell={c} today={today} onOpen={() => setSelected(c.day)} />
-          ))}
-        </div>
-        <div className="calendar-legend" aria-hidden="true">
-          <span>menos</span>
-          {[0.15, 0.4, 0.7, 1].map((f) => (
-            <i key={f} style={{ ['--f' as string]: `${Math.round(f * 100)}%` }} />
-          ))}
-          <span>mais</span>
-          <span className="legend-sep" />
-          <span className="num">{metCount} {metCount === 1 ? 'dia completo' : 'dias completos'}</span>
-        </div>
-      </section>
+      {view === 'year' && summary && (
+        <YearView
+          summary={summary}
+          today={today}
+          weekStartsOn={settings.weekStartsOn}
+          canPrev={year > firstYear}
+          canNext={year < currentYear}
+          onPrev={() => setYear((y) => Math.max(firstYear, y - 1))}
+          onNext={() => setYear((y) => Math.min(currentYear, y + 1))}
+          onPickDay={pickYearDay}
+          heat={filter ? colorFor(trackerById.get(filter)?.color) : undefined}
+        />
+      )}
+
+      {view === 'month' && (
+        <section
+          className="card calendar"
+          onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY })}
+          onPointerUp={(e) => {
+            const s = swipe.current
+            swipe.current = null
+            if (!s) return
+            const dx = e.clientX - s.x
+            const dy = e.clientY - s.y
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1)
+          }}
+          style={filter ? { ['--heat' as string]: colorFor(trackerById.get(filter)?.color) } : undefined}
+        >
+          <div className="calendar-head">
+            <button type="button" className="icon-btn" aria-label="Mês anterior" onClick={() => go(-1)}>
+              <IconChevronLeft />
+            </button>
+            <h2 className="calendar-title" aria-live="polite">
+              {monthTitle}
+            </h2>
+            <button type="button" className="icon-btn" aria-label="Próximo mês" onClick={() => go(1)} disabled={isCurrentMonth}>
+              <IconChevronRight />
+            </button>
+          </div>
+          <div className="calendar-grid" role="grid" aria-label={`Calendário de ${monthTitle}`}>
+            {header.map((d, i) => (
+              <div key={i} className="calendar-wd" aria-hidden="true">
+                {d}
+              </div>
+            ))}
+            {Array.from({ length: lead }, (_, i) => (
+              <div key={`l${i}`} aria-hidden="true" />
+            ))}
+            {cells.map((c) => (
+              <DayCell key={c.day} cell={c} today={today} onOpen={() => setSelected(c.day)} />
+            ))}
+          </div>
+          <div className="calendar-legend" aria-hidden="true">
+            <span>menos</span>
+            {[0.15, 0.4, 0.7, 1].map((f) => (
+              <i key={f} style={{ ['--f' as string]: `${Math.round(f * 100)}%` }} />
+            ))}
+            <span>mais</span>
+            <span className="legend-sep" />
+            <span className="num">{metCount} {metCount === 1 ? 'dia completo' : 'dias completos'}</span>
+          </div>
+        </section>
+      )}
 
       {snapshots && snapshots.length === 0 && (
         <EmptyState title="Nada por aqui ainda">Seus registros aparecem neste calendário.</EmptyState>
@@ -195,7 +259,7 @@ function DayCell({ cell, today, onOpen }: { cell: DailyValue; today: DayKey; onO
   const future = cell.day > today
   const isToday = cell.day === today
   const n = parseInt(cell.day.slice(8), 10)
-  const f = cell.isActive && !future ? Math.max(0, Math.min(1, cell.fraction)) : 0
+  const f = heatFraction(cell, today)
   const cls = [
     'day-cell',
     future && 'is-future',

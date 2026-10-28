@@ -29,6 +29,8 @@ import { templateToDraft } from '../../hooks/templateDraft'
 import { useDueReminders } from '../../platform/reminders'
 import { InstallBanner } from './InstallBanner'
 import { LogSheet, SCALE_FACES } from './LogSheet'
+import { Avatar, useProfile } from '../profile/Avatar'
+import { UpcomingEvents } from '../agenda/UpcomingEvents'
 
 function greeting(hour: number): string {
   if (hour >= 5 && hour < 12) return 'Bom dia'
@@ -47,6 +49,7 @@ export function TodayPage() {
   const toast = useToast()
   const navigate = useNavigate()
   const due = useDueReminders()
+  const profile = useProfile()
 
   const [detailsId, setDetailsId] = useState<string | null>(null)
   const [pulseId, setPulseId] = useState<string | null>(null)
@@ -114,18 +117,23 @@ export function TodayPage() {
 
   const detailsSnapshot = snapshots?.find((s) => s.tracker.id === detailsId) ?? null
   const hour = new Date().getHours()
-  const name = settings.name.trim()
+  const name = (profile.displayName || settings.name).trim()
 
   return (
     <div className="page today-page">
       <header className="today-head">
-        <div>
-          <p className="today-date">{formatDayLong(today)}</p>
-          <h1 className="today-greet">
-            {greeting(hour)}
-            {name ? ', ' : ''}
-            {name && <BrandText>{name}</BrandText>}
-          </h1>
+        <div className="today-who">
+          <Link to="/perfil" className="today-avatar" aria-label="Seu perfil">
+            <Avatar profile={profile} size={44} decorative />
+          </Link>
+          <div>
+            <p className="today-date">{formatDayLong(today)}</p>
+            <h1 className="today-greet">
+              {greeting(hour)}
+              {name ? ', ' : ''}
+              {name && <BrandText>{name}</BrandText>}
+            </h1>
+          </div>
         </div>
         <Link to="/tracker/new" className="icon-btn icon-btn-filled" aria-label="Criar tracker">
           <IconPlus />
@@ -212,6 +220,8 @@ export function TodayPage() {
             </div>
             {celebrating && <Confetti />}
           </section>
+
+          <UpcomingEvents />
 
           <section className="tracker-grid" aria-label="Seus trackers">
             {rows.map(({ s, goal, progress, streak: st }) => (
