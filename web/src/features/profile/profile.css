@@ -455,7 +455,10 @@
 }
 .ae-moods {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 360px;
 }
 .ae-tabs {
   display: flex;

@@ -309,3 +309,12 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 ### v0.4.5 — Sugestões
 
 - Convite na próxima abertura do app para mandar sugestões, e atalho fixo em Ajustes → Sugestões. Abre o e-mail já preenchido para sugestoescontrolle@gmail.com, com opção de copiar o endereço.
+
+### v0.4.6 — Avatar vivo em papel recortado (motor v2)
+
+- Motor novo em `web/src/avatar/`: cada bicho tem um esqueleto (olhos, nariz, boca, topo da cabeça, orelhas), e chapéus, óculos, brincos e peruca se encaixam e mudam de tamanho a partir dele.
+- Traço papel recortado: folhas com borda de tesoura, sombra curta e textura de papel; cores com sombra e luz calculadas em OKLCH. Guia em `web/src/avatar/STYLE.md`.
+- Corpo com braços e poses. Oito humores: normal, feliz, comemorando, carinho, acenando, orgulho (medalha), folga (touca) e sono.
+- Avatar vivo: pisca, respira, mexe a orelha e reage ao check, ao dia completo, ao carinho (toque) e à volta depois de uma pausa. Na tela Hoje ele fica dentro do anel de progresso.
+- Folha de contato para revisão: `npx tsx scripts/avatar-sheet.ts --out /tmp/x --cols hat=bone,cartola`.
+- Avatares salvos continuam com as mesmas peças, agora no traço novo.

@@ -10,9 +10,10 @@ import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
 import {
   BEARD_SPECIES, CATALOG, COATS, COSTUMES, FURS, SHARK_COATS, SHARK_FURS, DEFAULT_AVATAR, HAIR_SPECIES, SPECIES_FUR,
-  customAvatarSvg, isUnlocked, normalizeAvatar, unlockHint, unlockRank,
-  type ColorPart, type Key, type Mood, type Part,
+  isUnlocked, normalizeAvatar, unlockHint, unlockRank,
+  type ColorPart, type Key, type Part,
 } from './avatarParts'
+import { renderAvatar, type Mood } from '../../avatar'
 import './profile.css'
 
 interface Section {
@@ -76,7 +77,12 @@ const TABS: Tab[] = [
 const MOODS: { id: Mood; label: string }[] = [
   { id: 'neutral', label: 'Normal' },
   { id: 'happy', label: 'Feliz' },
-  { id: 'sleepy', label: 'Sonolento' },
+  { id: 'celebrate', label: 'Comemorando' },
+  { id: 'love', label: 'Carinho' },
+  { id: 'wave', label: 'Acenando' },
+  { id: 'proud', label: 'Orgulho' },
+  { id: 'rest', label: 'Folga' },
+  { id: 'sleepy', label: 'Sono' },
 ]
 
 /** chance de "nenhum" no Surpreenda-me, para não virar um carnaval toda vez */
@@ -181,7 +187,7 @@ export function AvatarEditorPage() {
       </header>
 
       <section className="ae-stage" aria-label="Pré-visualização">
-        <Avatar profile={preview} size={150} ring mood={mood} />
+        <Avatar profile={preview} size={150} ring mood={mood} alive pettable />
         <div className="ae-moods" role="group" aria-label="Humor do avatar">
           {MOODS.map((m) => (
             <button key={m.id} type="button" className="btn btn-small btn-ghost" aria-pressed={mood === m.id} onClick={() => setMood(m.id)}>
@@ -248,7 +254,7 @@ export function AvatarEditorPage() {
                         </span>
                       ) : (
                         <span className={`ae-opt-art${zoom ? ' is-zoom' : ''}`}>
-                          <svg viewBox={zoom ?? '0 0 100 100'} aria-hidden="true" dangerouslySetInnerHTML={{ __html: customAvatarSvg(thumbCfg, 'neutral') }} />
+                          <svg viewBox={zoom ?? '0 0 100 100'} aria-hidden="true" dangerouslySetInnerHTML={{ __html: renderAvatar(thumbCfg, { detail: 'lite' }) }} />
                         </span>
                       )}
                       {!(cat.color && key !== 'fur') && <span>{p.label}</span>}

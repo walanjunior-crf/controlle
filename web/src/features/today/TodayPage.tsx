@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { deleteEntry, logEntry, saveTracker } from '../../db/actions'
 import {
+  daysBetween,
   TEMPLATES,
   dayProgress,
   formatDayLong,
@@ -31,6 +32,7 @@ import { InstallBanner } from './InstallBanner'
 import { LogSheet, SCALE_FACES } from './LogSheet'
 import { Avatar, useProfile } from '../profile/Avatar'
 import { LevelChip } from '../rewards/LevelCard'
+import { emitReaction } from '../../avatar/reactions'
 import { useRewards } from '../../hooks/useRewards'
 import { UpcomingEvents } from '../agenda/UpcomingEvents'
 
@@ -54,6 +56,7 @@ export function TodayPage() {
   const profile = useProfile()
   const rewards = useRewards()
 
+  const hour = new Date().getHours()
   const [detailsId, setDetailsId] = useState<string | null>(null)
   const [pulseId, setPulseId] = useState<string | null>(null)
   const [celebrating, setCelebrating] = useState(false)
@@ -80,11 +83,33 @@ export function TodayPage() {
     if (was === false && overall.complete && readLocal(CELEBRATED_KEY) !== today) {
       writeLocal(CELEBRATED_KEY, today)
       setCelebrating(true)
+      emitReaction('day')
       navigator.vibrate?.([10, 40, 10])
       const t = window.setTimeout(() => setCelebrating(false), 2600)
       return () => window.clearTimeout(t)
     }
   }, [overall.complete, snapshots, today])
+
+  // Avatar vivo: reage aos checks (em qualquer tela de registro), ao dia completo e à volta depois de pausa
+  const todayEntries = useMemo(() => (snapshots ?? []).reduce((n, sn) => n + sn.entries.filter((e) => e.day === today).length, 0), [snapshots, today])
+  const prevEntries = useRef<number | null>(null)
+  useEffect(() => {
+    if (!snapshots) return
+    const was = prevEntries.current
+    prevEntries.current = todayEntries
+    if (was !== null && todayEntries > was && !overall.complete) emitReaction('check')
+  }, [todayEntries, snapshots, overall.complete])
+  const greeted = useRef(false)
+  useEffect(() => {
+    if (!snapshots || greeted.current) return
+    greeted.current = true
+    let last = ''
+    for (const sn of snapshots) for (const e of sn.entries) if (e.day < today && e.day > last) last = e.day
+    if (last && daysBetween(last, today).length - 1 >= 7) window.setTimeout(() => emitReaction('back'), 900)
+  }, [snapshots, today])
+  const buddy = profile.avatar.kind === 'custom'
+  const restToday = restDays.some((r) => r.day === today && r.trackerId === null)
+  const baseMood = restToday ? 'rest' : overall.complete ? 'happy' : hour >= 22 && overall.met === 0 && overall.active > 0 ? 'sleepy' : 'neutral'
 
   const flash = (id: string) => {
     setPulseId(id)
@@ -119,7 +144,6 @@ export function TodayPage() {
   }
 
   const detailsSnapshot = snapshots?.find((s) => s.tracker.id === detailsId) ?? null
-  const hour = new Date().getHours()
   const name = (profile.displayName || settings.name).trim()
 
   return (
@@ -127,7 +151,7 @@ export function TodayPage() {
       <header className="today-head">
         <div className="today-who">
           <Link to="/perfil" className="today-avatar" aria-label="Seu perfil">
-            <Avatar profile={profile} size={44} decorative mood={overall.complete ? 'happy' : hour >= 22 && overall.met === 0 && overall.active > 0 ? 'sleepy' : 'neutral'} />
+            <Avatar profile={profile} size={44} decorative mood={baseMood} />
           </Link>
           <div>
             <p className="today-date">
@@ -200,10 +224,14 @@ export function TodayPage() {
               ariaLabel="Progresso geral de hoje"
               className="hero-ring"
               label={
-                <span className="hero-ring-label">
-                  <span className="hero-pct num">{Math.round(overall.fraction * 100)}</span>
-                  <span className="hero-pct-unit">%</span>
-                </span>
+                buddy ? (
+                  <Avatar profile={profile} size={104} alive pettable mood={baseMood} className="hero-buddy" />
+                ) : (
+                  <span className="hero-ring-label">
+                    <span className="hero-pct num">{Math.round(overall.fraction * 100)}</span>
+                    <span className="hero-pct-unit">%</span>
+                  </span>
+                )
               }
             />
             <div className="hero-copy">
@@ -215,6 +243,7 @@ export function TodayPage() {
                 ) : (
                   <>
                     <strong>{overall.met}</strong> de {overall.active} hoje
+                    {buddy && <span className="hero-pct-inline">{Math.round(overall.fraction * 100)}% do dia</span>}
                   </>
                 )}
               </p>

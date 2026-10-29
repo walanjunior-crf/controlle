@@ -2009,3 +2009,19 @@ input[type='time'].input {
 .crash { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 32px var(--gutter, 20px); max-width: 520px; margin: 0 auto; }
 .crash h1 { margin: 0; }
 .crash pre { white-space: pre-wrap; word-break: break-word; background: var(--primary-soft, #D6EAD6); border-radius: 12px; padding: 12px; font-size: 12px; }
+
+/* Avatar vivo dentro do anel (motor v2) */
+.hero-buddy {
+  cursor: pointer;
+  background: transparent;
+}
+.hero-buddy > svg {
+  border-radius: 50%;
+}
+.hero-pct-inline {
+  display: block;
+  margin-top: 2px;
+  font-size: 15px;
+  color: var(--text-2);
+  font-weight: 700;
+}
