@@ -9,29 +9,48 @@ import { useToast } from '../../components/Toast'
 import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
 import {
-  BGS, DEFAULT_AVATAR, EYES, FURS, GLASSES, HATS, OUTFITS, PATTERNS, SPECIES,
+  CATALOG, COAT_FUR, COSTUMES, DEFAULT_AVATAR, SPECIES_FUR,
   customAvatarSvg, isUnlocked, normalizeAvatar, unlockHint,
-  type ColorPart, type Mood, type Part,
+  type ColorPart, type Key, type Mood, type Part,
 } from './avatarParts'
 import './profile.css'
 
-type Key = keyof AvatarConfig
-interface Tab {
+interface Section {
   key: Key
+  /** recorte das miniaturas (viewBox) para peças pequenas */
+  zoom?: string
+}
+interface Tab {
+  id: string
   label: string
-  parts: Part[] | ColorPart[]
-  color?: boolean
+  sections: Section[]
 }
 
 const TABS: Tab[] = [
-  { key: 'species', label: 'Bichinho', parts: SPECIES },
-  { key: 'fur', label: 'Pelagem', parts: FURS, color: true },
-  { key: 'eyes', label: 'Olhos', parts: EYES },
-  { key: 'hat', label: 'Chapéu', parts: HATS },
-  { key: 'glasses', label: 'Óculos', parts: GLASSES },
-  { key: 'outfit', label: 'Roupa', parts: OUTFITS },
-  { key: 'bg', label: 'Fundo', parts: BGS, color: true },
-  { key: 'pattern', label: 'Padrão', parts: PATTERNS },
+  { id: 'bicho', label: 'Bicho', sections: [{ key: 'species' }] },
+  { id: 'pelagem', label: 'Pelagem', sections: [{ key: 'fur' }, { key: 'coat' }] },
+  {
+    id: 'rosto',
+    label: 'Rosto',
+    sections: [
+      { key: 'eyes', zoom: '27 29 46 46' },
+      { key: 'eyeColor' },
+      { key: 'brows', zoom: '29 25 42 42' },
+      { key: 'mouth', zoom: '33 47 34 34' },
+      { key: 'cheeks', zoom: '22 34 56 56' },
+    ],
+  },
+  { id: 'cabelo', label: 'Cabelo', sections: [{ key: 'hair' }, { key: 'hairColor' }, { key: 'beard', zoom: '24 44 52 52' }] },
+  { id: 'chapeu', label: 'Chapéu', sections: [{ key: 'hat' }, { key: 'hatColor' }] },
+  { id: 'oculos', label: 'Óculos', sections: [{ key: 'glasses', zoom: '22 24 56 56' }, { key: 'glassesColor' }] },
+  {
+    id: 'joias',
+    label: 'Brincos e piercing',
+    sections: [{ key: 'earrings', zoom: '12 36 76 76' }, { key: 'piercing', zoom: '30 32 40 40' }, { key: 'metal' }],
+  },
+  { id: 'roupa', label: 'Roupa', sections: [{ key: 'outfit', zoom: '10 30 80 80' }, { key: 'outfitColor' }] },
+  { id: 'fantasia', label: 'Fantasia', sections: [{ key: 'costume' }] },
+  { id: 'fundo', label: 'Fundo', sections: [{ key: 'bg' }, { key: 'pattern' }] },
 ]
 
 const MOODS: { id: Mood; label: string }[] = [
@@ -40,7 +59,22 @@ const MOODS: { id: Mood; label: string }[] = [
   { id: 'sleepy', label: 'Sonolento' },
 ]
 
+/** chance de "nenhum" no Surpreenda-me, para não virar um carnaval toda vez */
+const NONE_WEIGHT: Partial<Record<Key, number>> = {
+  costume: 0.8,
+  beard: 0.8,
+  piercing: 0.75,
+  earrings: 0.55,
+  glasses: 0.55,
+  hat: 0.45,
+  hair: 0.45,
+  brows: 0.5,
+  cheeks: 0.4,
+  pattern: 0.5,
+}
+
 const achTitle = (id: AchievementId) => ACHIEVEMENTS.find((a) => a.id === id)?.title ?? id
+const valueOf = (p: Part | ColorPart) => ('hex' in p ? p.hex : p.id)
 
 export function AvatarEditorPage() {
   const profile = useProfileLoaded()
@@ -49,7 +83,7 @@ export function AvatarEditorPage() {
   const location = useLocation()
   const toast = useToast()
   const [draft, setDraft] = useState<AvatarConfig | null>(null)
-  const [tab, setTab] = useState<Key>('species')
+  const [tab, setTab] = useState('bicho')
   const [mood, setMood] = useState<Mood>('neutral')
   const [hint, setHint] = useState('')
 
@@ -60,29 +94,34 @@ export function AvatarEditorPage() {
   if (!profile || !rewards.ready) return <div className="page" aria-busy="true" />
 
   const { level, unlocked } = rewards
-  const current = TABS.find((t) => t.key === tab) ?? TABS[0]
+  const current = TABS.find((t) => t.id === tab) ?? TABS[0]
   const open = (p: Part) => isUnlocked(p.unlock, level.level, unlocked)
+  const costume = COSTUMES.find((c) => c.id === cfg.costume)
 
-  const choose = (p: Part | ColorPart) => {
+  const choose = (key: Key, p: Part | ColorPart) => {
     if (!open(p)) {
       setHint(`${p.label}: desbloqueia com ${unlockHint(p.unlock, achTitle).toLowerCase()}.`)
       return
     }
     setHint('')
-    const value = 'hex' in p ? p.hex : p.id
-    setDraft({ ...cfg, [current.key]: value })
+    const next: AvatarConfig = { ...cfg, [key]: valueOf(p) }
+    // trocar de bicho troca também a pelagem, se a pessoa ainda não tinha mexido nela
+    if (key === 'species' && cfg.fur.toLowerCase() === (SPECIES_FUR[cfg.species] ?? '').toLowerCase()) next.fur = SPECIES_FUR[p.id] ?? cfg.fur
+    if (key === 'coat' && COAT_FUR[p.id]) next.fur = COAT_FUR[p.id]
+    setDraft(next)
   }
 
   const randomize = () => {
-    const pickOne = (list: Part[] | ColorPart[]) => {
-      const ok = (list as Part[]).filter(open)
-      return ok[Math.floor(Math.random() * ok.length)]
-    }
     const next = { ...cfg }
-    for (const t of TABS) {
-      const p = pickOne(t.parts) as Part | ColorPart
-      next[t.key] = 'hex' in p ? p.hex : p.id
+    for (const key of Object.keys(CATALOG) as Key[]) {
+      const ok = (CATALOG[key].parts as Part[]).filter(open)
+      const none = ok.find((p) => p.id === 'nenhum')
+      const pickNone = none && Math.random() < (NONE_WEIGHT[key] ?? 0)
+      const pool = none ? ok.filter((p) => p !== none) : ok
+      const p = pickNone || !pool.length ? none! : pool[Math.floor(Math.random() * pool.length)]
+      next[key] = valueOf(p)
     }
+    next.fur = Math.random() < 0.6 ? (COAT_FUR[next.coat] ?? SPECIES_FUR[next.species] ?? next.fur) : next.fur
     setDraft(next)
     setHint('')
   }
@@ -98,8 +137,17 @@ export function AvatarEditorPage() {
     }
   }
 
-  const selected = (p: Part | ColorPart) => ('hex' in p ? cfg[current.key].toLowerCase() === p.hex.toLowerCase() : cfg[current.key] === p.id)
-  const preview: Profile2 = { ...profile, avatar: { kind: 'custom', config: cfg } }
+  const isOn = (key: Key, p: Part | ColorPart) => ('hex' in p ? cfg[key].toLowerCase() === p.hex.toLowerCase() : cfg[key] === p.id)
+  const preview = { ...profile, avatar: { kind: 'custom' as const, config: cfg } }
+
+  /** aviso quando a fantasia cobre o que a pessoa está escolhendo */
+  const coveredBy = (key: Key): string | null => {
+    if (cfg.costume === 'nenhum' || !costume) return null
+    const hood = cfg.costume === 'dinossauro' || cfg.costume === 'tubarao'
+    if (key === 'outfit') return costume.label
+    if ((key === 'hat' && cfg.costume !== 'terno') || (hood && (key === 'hair' || key === 'earrings'))) return costume.label
+    return null
+  }
 
   return (
     <div className="page profile-page">
@@ -128,41 +176,64 @@ export function AvatarEditorPage() {
 
       <div className="ae-tabs" role="tablist" aria-label="Partes do avatar">
         {TABS.map((t) => (
-          <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} className="ae-tab" onClick={() => { setTab(t.key); setHint('') }}>
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            className="ae-tab"
+            onClick={() => {
+              setTab(t.id)
+              setHint('')
+            }}
+          >
             {t.label}
           </button>
         ))}
       </div>
 
-      <div className="card profile-card">
-        <div className="ae-options" role="group" aria-label={current.label}>
-          {(current.parts as (Part | ColorPart)[]).map((p) => {
-            const locked = !open(p)
-            const on = selected(p)
-            return (
-              <button
-                key={p.id}
-                type="button"
-                className={`ae-opt${locked ? ' is-locked' : ''}`}
-                aria-pressed={on}
-                aria-label={locked ? `${p.label} (bloqueado: ${unlockHint(p.unlock, achTitle)})` : p.label}
-                onClick={() => choose(p)}
-              >
-                <span className="ae-opt-art">
-                  {'hex' in p && current.key === 'fur' ? (
-                    <svg viewBox="0 0 100 100" aria-hidden="true" dangerouslySetInnerHTML={{ __html: customAvatarSvg({ ...cfg, fur: p.hex }, 'neutral') }} />
-                  ) : 'hex' in p ? (
-                    <span className="ae-swatch" style={{ background: p.hex }} />
-                  ) : (
-                    <svg viewBox="0 0 100 100" aria-hidden="true" dangerouslySetInnerHTML={{ __html: customAvatarSvg({ ...cfg, [current.key]: p.id }, 'neutral') }} />
-                  )}
-                </span>
-                <span>{p.label}</span>
-                {locked && <span className="ae-lock">🔒 {unlockHint(p.unlock, achTitle)}</span>}
-              </button>
-            )
-          })}
-        </div>
+      <div className="card profile-card ae-panel" role="tabpanel" aria-label={current.label}>
+        {current.sections.map(({ key, zoom }) => {
+          const cat = CATALOG[key]
+          const cover = coveredBy(key)
+          return (
+            <div key={key} className="ae-section">
+              {current.sections.length > 1 && <h3 className="ae-section-title">{cat.label}</h3>}
+              {cover && <p className="ae-note">A fantasia {cover} cobre esta parte. Tire a fantasia para ver.</p>}
+              <div className={`ae-options${cat.color && key !== 'fur' ? ' is-colors' : ''}`} role="group" aria-label={cat.label}>
+                {(cat.parts as (Part | ColorPart)[]).map((p) => {
+                  const locked = !open(p)
+                  const on = isOn(key, p)
+                  const lockText = unlockHint(p.unlock, achTitle)
+                  const thumbCfg = { ...cfg, ...(key === 'costume' ? {} : { costume: 'nenhum' }), [key]: valueOf(p) }
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`ae-opt${locked ? ' is-locked' : ''}`}
+                      aria-pressed={on}
+                      aria-label={locked ? `${p.label} (bloqueado: ${lockText})` : p.label}
+                      title={p.label}
+                      onClick={() => choose(key, p)}
+                    >
+                      {'hex' in p && key !== 'fur' ? (
+                        <span className="ae-swatch" style={{ background: p.hex }} aria-hidden="true">
+                          {locked && <span className="ae-swatch-lock">🔒</span>}
+                        </span>
+                      ) : (
+                        <span className={`ae-opt-art${zoom ? ' is-zoom' : ''}`}>
+                          <svg viewBox={zoom ?? '0 0 100 100'} aria-hidden="true" dangerouslySetInnerHTML={{ __html: customAvatarSvg(thumbCfg, 'neutral') }} />
+                        </span>
+                      )}
+                      {!(cat.color && key !== 'fur') && <span>{p.label}</span>}
+                      {locked && !(cat.color && key !== 'fur') && <span className="ae-lock">🔒 {lockText}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
         <p className="ae-hint" role="status" aria-live="polite">
           {hint}
         </p>
@@ -179,5 +250,3 @@ export function AvatarEditorPage() {
     </div>
   )
 }
-
-type Profile2 = NonNullable<ReturnType<typeof useProfileLoaded>>

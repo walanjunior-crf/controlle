@@ -277,3 +277,13 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Check = hábito cumprido em um dia. Os checks formam o nível (1 a 40), calculado do histórico, sem gastar nem salvar nada.
 - Itens bloqueados abrem por nível ou conquista (ex.: coroa no nível 10, Medalha C com 7 dias perfeitos).
 - 27 conquistas em 5 grupos, com barra de progresso (`/conquistas`).
+
+### v0.4.1 — Avatar caprichado
+
+- Arte nova: sombreado, olhos grandes com íris colorida, mais expressões.
+- 8 bichos: gato, cachorro, raposa, urso, coelho, rato, dinossauro e tubarão. Estampas: dálmata, salsicha, listrada, mancha no olho, bicolor e pintinhas.
+- Rosto: 10 olhos, 7 cores de olhos, sobrancelhas, 9 bocas, sardas/pinta/curativo, barba e bigode.
+- Cabelo (ondulado, black power, chanel, longo, coque, chiquinhas, topete, moicano) com 10 cores.
+- Chapéus com cor livre (boina, cartola, chapéu de sol, laço…), óculos com cor da armação, brincos e piercings em prata, ouro, rosé, bronze, preto.
+- Roupas com cor livre e fantasias: pirata, terno, policial, dinossauro, tubarão, chef e astronauta.
+- Avatares da v0.4 continuam iguais (o app completa os campos novos).

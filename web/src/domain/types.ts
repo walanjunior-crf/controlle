@@ -157,13 +157,33 @@ export interface CalendarEvent {
 // Perfil (v0.2) — local por enquanto; pensado para os grupos no futuro
 
 /** Avatar montado em camadas (v0.4). Todos os campos são ids do catálogo, menos as cores (#RRGGBB). */
+/**
+ * Avatar montado. Cores são `#RRGGBB`; o resto são ids do catálogo em
+ * features/profile/avatarParts.ts. Configurações antigas (v0.4) só tinham parte
+ * dos campos: `normalizeAvatar` completa o que faltar.
+ */
 export interface AvatarConfig {
   species: string
   fur: string
+  coat: string
   eyes: string
+  eyeColor: string
+  brows: string
+  mouth: string
+  cheeks: string
+  beard: string
+  hair: string
+  hairColor: string
   hat: string
+  hatColor: string
   glasses: string
+  glassesColor: string
+  earrings: string
+  piercing: string
+  metal: string
   outfit: string
+  outfitColor: string
+  costume: string
   bg: string
   pattern: string
 }
