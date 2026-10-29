@@ -5,8 +5,18 @@
  * Cor do chapéu: x.c.hatColor (use ramp() para sombra/luz).
  */
 import { mix, ramp } from '../color'
-import { cut, cutEllipse, cutPoly, layer } from '../paper'
+import { cut, cutEllipse, cutPoly, f, layer, look } from '../paper'
 import type { Ctx } from '../types'
+
+/** pelúcia: linha de costura (tracejado curto) */
+const seam = (d: string, color: string, w = 0.6, op = 0.75) =>
+  `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-opacity="${op}" stroke-linecap="round" stroke-dasharray="${f(w * 1.7)} ${f(w * 1.5)}"/>`
+
+/** recorta o conteúdo pela silhueta (ids fixos: a geometria nunca muda) */
+const clipTo = (id: string, d: string, inner: string) => `<clipPath id="${id}"><path d="${d}"/></clipPath><g clip-path="url(#${id})">${inner}</g>`
+
+const plush = () => look.style === 'pelucia'
+const flat = () => look.style === 'chapado'
 
 const GOLD = '#F2C14E'
 const CREAM = '#F7EBD3'
@@ -15,9 +25,16 @@ export const HATS: Record<string, (x: Ctx) => string> = {
   nenhum: () => '',
   bone: (x) => {
     const r = ramp(x.c.hatColor)
+    const dome = cut([[-24, 11], [-22, -2], [-13, -10.5], [0, -13], [13, -10.5], [22, -2], [24, 11], [0, 8]], 'bone-dome', 0.3)
+    // pelúcia: gomos costurados saindo do botão e pesponto na aba
+    const gomos = plush()
+      ? clipTo('avc-bone', dome, seam('M0 -12Q-9 -4 -15 10', r.deep) + seam('M0 -12Q-3 -2 -5 9', r.deep) + seam('M0 -12Q3 -2 5 9', r.deep) + seam('M0 -12Q9 -4 15 10', r.deep)) +
+        seam('M13.5 11.2Q24 8.2 32 10.2', r.deep, 0.5)
+      : ''
     return (
-      layer(cut([[-24, 11], [-22, -2], [-13, -10.5], [0, -13], [13, -10.5], [22, -2], [24, 11], [0, 8]], 'bone-dome', 0.3), r.base) +
+      layer(dome, r.base) +
       layer(cut([[10, 8.5], [27, 5.5], [35, 8.5], [30, 13], [12, 13]], 'bone-brim', 0.25), r.shade) +
+      gomos +
       layer(cutEllipse(0, -12, 2.4, 2, 'bone-btn'), r.light, { lift: 0.4 })
     )
   },
@@ -25,11 +42,20 @@ export const HATS: Record<string, (x: Ctx) => string> = {
   gorro: (x) => {
     const r = ramp(x.c.hatColor)
     const pom = ramp(CREAM)
+    const dome = cut([[-23, 10], [-22.5, -3], [-16, -13], [-6, -18.5], [6, -18.5], [16, -13], [22.5, -3], [23, 10]], 'gorro-dome', 0.3)
+    // pelúcia: tricô de pontinhos em V, em fileiras
+    let knit = ''
+    if (plush()) {
+      for (let row = 0, y = -17; y < 4; row++, y += 3.1)
+        for (let cx = -21 + (row % 2) * 1.8; cx < 22; cx += 3.6) knit += `M${f(cx - 1.4)} ${f(y - 1)}L${f(cx)} ${f(y + 0.9)}L${f(cx + 1.4)} ${f(y - 1)}`
+      knit = clipTo('avc-gorro', dome, `<path d="${knit}" fill="none" stroke="${r.deep}" stroke-opacity="0.55" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>`)
+    }
     return (
-      layer(cut([[-23, 10], [-22.5, -3], [-16, -13], [-6, -18.5], [6, -18.5], [16, -13], [22.5, -3], [23, 10]], 'gorro-dome', 0.3), r.base) +
-      // gomos de tricô: folhas mais escuras entre as costuras
-      layer(cut([[-15, 9], [-14.5, -3], [-10, -12], [-5, -17], [-4, -4], [-5, 9]], 'gorro-g1', 0.2), r.shade, { shadow: false, edge: false }) +
-      layer(cut([[5, 9], [4, -4], [5, -17], [10, -12], [14.5, -3], [15, 9]], 'gorro-g2', 0.2), r.shade, { shadow: false, edge: false }) +
+      layer(dome, r.base) +
+      knit +
+      // gomos de tricô: folhas mais escuras entre as costuras (chapado fica limpo, sem textura)
+      (flat() ? '' : layer(cut([[-15, 9], [-14.5, -3], [-10, -12], [-5, -17], [-4, -4], [-5, 9]], 'gorro-g1', 0.2), r.shade, { shadow: false, edge: false, opacity: plush() ? 0.35 : 1 }) +
+      layer(cut([[5, 9], [4, -4], [5, -17], [10, -12], [14.5, -3], [15, 9]], 'gorro-g2', 0.2), r.shade, { shadow: false, edge: false, opacity: plush() ? 0.35 : 1 })) +
       layer(cut([[-26.5, 5], [-24, 2], [0, 0.8], [24, 2], [26.5, 5], [26.5, 12], [24, 15.5], [0, 16.5], [-24, 15.5], [-26.5, 12]], 'gorro-cuff', 0.3), r.light) +
       layer(cut([[-14, 5], [-13.5, 15.5], [-12, 15.5], [-12.5, 5]], 'gorro-r1', 0.1), r.base, { shadow: false, edge: false }) +
       layer(cut([[-3, 1.5], [-2.5, 16.5], [-1, 16.5], [-1.5, 1.5]], 'gorro-r2', 0.1), r.base, { shadow: false, edge: false }) +

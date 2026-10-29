@@ -1,6 +1,7 @@
 /** Rato / Bartolomeu: hamster gorducho, bochechas cheias e orelhinhas redondas. */
 import { mix } from '../color'
 import { cut, cutEllipse, layer, mirror, stroke } from '../paper'
+import { felt, glint, isFlat, isPlush, stitchedNose, thread } from './gato'
 import type { SpeciesDef } from '../types'
 
 const HEAD = [
@@ -25,21 +26,26 @@ const rato: SpeciesDef = {
   back: (x) => {
     const ear =
       layer(cutEllipse(30.5, 35, 7.4, 7.2, 'rato-ear'), x.fur.base) +
-      layer(cutEllipse(30.8, 35.6, 4.2, 4, 'rato-ear-in'), mix(x.fur.light, '#F2A0A0', 0.6), { lift: 0.5 })
+      felt(cutEllipse(30.8, 35.6, 4.2, 4, 'rato-ear-in'), mix(x.fur.light, '#F2A0A0', 0.6), 30.8, 35.6, { lift: isPlush() ? 0.65 : 0.5, s: 0.62 })
     return `<g class="av-ear av-ear-l">${ear}</g><g class="av-ear av-ear-r">${mirror(ear)}</g>`
   },
   head: (x) =>
     layer(cut(HEAD, 'rato-head', 0.4), x.fur.base) +
     layer(cutEllipse(50, 39, 4, 5.4, 'rato-stripe'), x.fur.shade, { shadow: false, edge: false, opacity: 0.55 }) +
-    layer(cutEllipse(37.5, 41, 6.4, 3, 'rato-shine', { rotate: -26 }), x.fur.light, { shadow: false, edge: false, opacity: 0.55 }) +
-    layer(cutEllipse(33.2, 65.6, 10.2, 8.8, 'rato-ch-l'), x.muzzle.base, { lift: 0.7 }) +
-    layer(cutEllipse(66.8, 65.6, 10.2, 8.8, 'rato-ch-r'), x.muzzle.base, { lift: 0.7 }) +
-    layer(cutEllipse(50, 64.6, 9.6, 8.2, 'rato-mz'), mix(x.muzzle.base, '#FFFFFF', 0.4), { lift: 0.6 }),
+    glint(layer(cutEllipse(37.5, 41, 6.4, 3, 'rato-shine', { rotate: -26 }), x.fur.light, { shadow: false, edge: false, opacity: 0.55 })) +
+    felt(cutEllipse(33.2, 65.6, 10.2, 8.8, 'rato-ch-l'), x.muzzle.base, 33.2, 65.6, { lift: 0.7, s: 0.86 }) +
+    felt(cutEllipse(66.8, 65.6, 10.2, 8.8, 'rato-ch-r'), x.muzzle.base, 66.8, 65.6, { lift: 0.7, s: 0.86 }) +
+    felt(cutEllipse(50, 64.6, 9.6, 8.2, 'rato-mz'), mix(x.muzzle.base, '#FFFFFF', 0.4), 50, 64.6, { lift: 0.6, s: 0.82 }),
   front: (x) => {
-    const w = stroke('M26.5 61L34.5 62.2M27 65.6L34.5 64.8', x.fur.ink === '#F6F1E8' ? '#F6F1E8' : '#2A1F18', 1.1, 'stroke-opacity="0.4"')
+    const ink = x.fur.ink === '#F6F1E8' ? '#F6F1E8' : '#2A1F18'
+    const w = isFlat()
+      ? stroke('M29.6 61.4L35 62.4M30 65.4L35 64.8', ink, 1.7, 'stroke-opacity="0.55"')
+      : isPlush()
+        ? thread('M25.4 60.6Q30 60.4 34.6 62.2M25.8 66Q30.2 66.2 34.6 64.8', ink, 0.65, 0.55, '1.4 1.2')
+        : stroke('M26.5 61L34.5 62.2M27 65.6L34.5 64.8', ink, 1.1, 'stroke-opacity="0.4"')
     return w + mirror(w)
   },
-  nose: () => layer(cut([[47.8, 56.5], [50, 55.8], [52.2, 56.5], [51.4, 58.6], [50, 59.4], [48.6, 58.6]], 'rato-nose', 0.1), '#E58A94', { lift: 0.5 }),
+  nose: () => stitchedNose(cut([[47.8, 56.5], [50, 55.8], [52.2, 56.5], [51.4, 58.6], [50, 59.4], [48.6, 58.6]], 'rato-nose', 0.1), '#E58A94', 50, 57.6, 4.4, 3),
 }
 
 export default rato

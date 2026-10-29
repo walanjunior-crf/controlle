@@ -46,7 +46,7 @@ export const SPECIES: Part[] = [
   { id: 'urso', label: 'Urso' },
   { id: 'coelho', label: 'Coelho' },
   { id: 'rato', label: 'Bartolomeu' },
-  { id: 'dinossauro', label: 'T-rex' },
+  { id: 'dinossauro', label: 'Tricerátops' },
   { id: 'tubarao', label: 'Tubarão' },
 ]
 
@@ -311,6 +311,13 @@ export const PATTERNS: Part[] = [
   { id: 'confete', label: 'Confete' },
 ]
 
+/** estilos de desenho do avatar (o mesmo bicho, pintado de três jeitos) */
+export const STYLES: Part[] = [
+  { id: 'chapado', label: 'Chapado' },
+  { id: 'pelucia', label: 'Pelúcia' },
+  { id: 'papel', label: 'Papel recortado' },
+]
+
 export const PERSONAS: Part[] = [
   { id: 'normal', label: 'Normal' },
   { id: 'sonolento', label: 'Sonolento' },
@@ -353,6 +360,7 @@ export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; 
   bg: { label: 'Cor do fundo', parts: BGS, color: true },
   pattern: { label: 'Padrão', parts: PATTERNS },
   persona: { label: 'Jeito', parts: PERSONAS },
+  style: { label: 'Estilo', parts: STYLES },
   earringSide: { label: 'Lado dos brincos', parts: SIDES },
   piercingSide: { label: 'Lado do piercing', parts: SIDES },
 }
@@ -372,7 +380,7 @@ const PRICE_BY_KEY: Record<Key, number> = {
   hat: 2, glasses: 2, outfit: 2, hair: 2, eyes: 2, coat: 2,
   fur: 1, eyeColor: 1, brows: 1, mouth: 1, cheeks: 1, beard: 1, hairColor: 1,
   hatColor: 1, glassesColor: 1, outfitColor: 1, earrings: 1, piercing: 1, metal: 1, pattern: 1,
-  bg: 0, persona: 0, earringSide: 0, piercingSide: 0,
+  bg: 0, persona: 0, earringSide: 0, piercingSide: 0, style: 0,
 }
 
 /** recompensas de conquista (não se compram) */
@@ -516,6 +524,7 @@ export const DEFAULT_AVATAR: AvatarConfig = {
   bg: '#336633',
   pattern: 'nenhum',
   persona: 'normal',
+  style: 'chapado',
   earringSide: 'ambos',
   piercingSide: 'direito',
 }

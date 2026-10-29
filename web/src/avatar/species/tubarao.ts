@@ -1,5 +1,6 @@
 /** Tubarão de frente: torpedo, barbatana dorsal, barriga branca, guelras e dentinhos. */
 import { cut, cutEllipse, cutPoly, layer, mirror, stroke } from '../paper'
+import { glint, isFlat, isPlush, poly, thread } from './gato'
 import type { SpeciesDef } from '../types'
 
 const HEAD = [
@@ -25,19 +26,23 @@ const shark: SpeciesDef = {
   muzzle: () => '#F2F5F7',
   back: (x) => {
     const fin =
-      layer(cutPoly([[40, 32], [43, 17], [53, 7], [61, 3.5], [58, 14], [59.5, 24], [62, 33]], 'shark-fin', 0.3), x.fur.shade) +
-      layer(cutPoly([[48, 28], [51, 17], [57.5, 9.5], [56, 18], [56.5, 28]], 'shark-fin-in', 0.2), x.fur.deep, { shadow: false, edge: false, opacity: 0.4 })
+      layer(poly([[40, 32], [43, 17], [53, 7], [61, 3.5], [58, 14], [59.5, 24], [62, 33]], 'shark-fin', 0.3), x.fur.shade) +
+      layer(poly([[48, 28], [51, 17], [57.5, 9.5], [56, 18], [56.5, 28]], 'shark-fin-in', 0.2), x.fur.deep, { shadow: false, edge: false, opacity: 0.4 })
     return `<g class="av-ear av-ear-l">${fin}</g>`
   },
   head: (x) =>
     layer(HEAD_D, x.fur.base) +
     `<clipPath id="shk-hd"><path d="${HEAD_D}"/></clipPath>` +
     `<g clip-path="url(#shk-hd)"><path d="${BELLY_D}" fill="${x.fur.shade}" transform="translate(0 -1)"/><path d="${BELLY_D}" fill="${x.muzzle.base}"/></g>` +
-    layer(cutEllipse(40, 30, 6, 2.6, 'shark-shine', { rotate: -34 }), x.fur.light, { shadow: false, edge: false, opacity: 0.55 }),
+    glint(layer(cutEllipse(40, 30, 6, 2.6, 'shark-shine', { rotate: -34 }), x.fur.light, { shadow: false, edge: false, opacity: 0.55 })),
   front: (x) => {
     const gill = (dx: number) => `M${24.8 + dx} 45.2Q${23.2 + dx} 48.4 ${24.6 + dx} 52`
     const d = `${gill(0)}${gill(2.8)}${gill(5.6)}`
-    const g = stroke(d, x.fur.deep, 1.2, 'stroke-opacity="0.85"')
+    const g = isPlush()
+      ? thread(d, x.fur.deep, 0.75, 0.9, '1.6 1.1')
+      : isFlat()
+        ? stroke(d, x.fur.deep, 1.6, 'stroke-opacity="0.9"')
+        : stroke(d, x.fur.deep, 1.2, 'stroke-opacity="0.85"')
     let teeth = ''
     if (x.c.mouth === 'sorriso' && x.expr.mouth === null) {
       const gy = (px: number) => 61.2 + 7.4 * (1 - ((px - 50) / 17.5) ** 2) * 0.5 - 0

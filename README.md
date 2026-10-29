@@ -326,3 +326,9 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Brincos no topo das orelhas em quem tem orelha em pé; brincos e piercing do lado esquerdo, direito ou nos dois.
 - Os 16 avatares prontos foram refeitos no traço papel recortado (e também ficam vivos).
 - Prata com contorno (lê em pelagem clara), bigode não cobre mais a boca, chapéus maiores no coelho.
+
+### v0.4.8 — Três estilos de avatar e Tricerátops
+
+- Aba Estilo no editor: **chapado** (padrão, formas gordas com sombra recortada), **pelúcia** (olhos de botão, bordados, costuras e tecido) ou **papel recortado**. Todos os bichos e peças existem nos três.
+- O dinossauro virou um Tricerátops, e a fantasia de dinossauro virou um pijama kigurumi com placas e focinho.
+- Recompensas retroativas: créditos dos níveis já alcançados e peças de conquistas já cumpridas vêm do histórico; na primeira abertura, um aviso mostra o que a pessoa recebeu.

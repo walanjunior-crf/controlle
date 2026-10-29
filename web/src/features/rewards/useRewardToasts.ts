@@ -2,9 +2,11 @@ import { useEffect, useRef } from 'react'
 import { ACHIEVEMENTS } from '../../domain'
 import { useToast } from '../../components/Toast'
 import { useRewards } from '../../hooks/useRewards'
-import { CREDITS_PER_LEVEL } from '../profile/avatarParts'
+import { ACHIEVEMENT_REWARDS, CREDITS_PER_LEVEL } from '../profile/avatarParts'
 
 const KEY = 'controlle.rewards.seen'
+/** aviso único da loja: créditos e peças que a pessoa já tinha direito */
+const SHOP_KEY = 'controlle.shop.welcome.v1'
 
 interface Seen {
   level: number
@@ -35,6 +37,25 @@ export function useRewardToasts() {
   const r = useRewards()
   const toast = useToast()
   const started = useRef(false)
+
+  // primeira abertura com a loja: conta o que a pessoa já ganhou com o histórico
+  const welcomed = useRef(false)
+  useEffect(() => {
+    if (!r.ready || welcomed.current) return
+    welcomed.current = true
+    let seen = false
+    try {
+      seen = localStorage.getItem(SHOP_KEY) === '1'
+      localStorage.setItem(SHOP_KEY, '1')
+    } catch {
+      seen = true
+    }
+    if (seen) return
+    const items = ACHIEVEMENT_REWARDS.filter(([, , a]) => r.unlocked.has(a)).length
+    if (r.credits.earned > 0)
+      toast.show(`🪙 Você recebeu ${r.credits.earned} créditos pelos níveis e conquistas que já tinha. Use em Perfil → Montar avatar.`)
+    if (items > 0) toast.show(`🏆 ${items} ${items === 1 ? 'peça especial liberada' : 'peças especiais liberadas'} pelas suas conquistas.`)
+  }, [r.ready, r.credits.earned, r.unlocked, toast])
 
   useEffect(() => {
     if (!r.ready) return

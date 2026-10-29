@@ -39,6 +39,7 @@ interface Tab {
 
 const TABS: Tab[] = [
   { id: 'bicho', label: 'Bicho', sections: [{ key: 'species' }, { key: 'breed', when: isDog }] },
+  { id: 'estilo', label: 'Estilo', sections: [{ key: 'style' }] },
   { id: 'jeito', label: 'Jeito', sections: [{ key: 'persona', zoom: '22 30 56 56' }] },
   { id: 'pelagem', label: 'Pelagem', sections: [{ key: 'fur', when: (c) => !hasBreed(c), parts: (c) => (isShark(c) ? SHARK_FURS : FURS) },
       { key: 'coat', when: (c) => !hasBreed(c), parts: (c) => (isShark(c) ? COATS.filter((p) => SHARK_COATS.has(p.id)) : COATS) },
@@ -107,7 +108,7 @@ export function AvatarEditorPage() {
   const location = useLocation()
   const toast = useToast()
   const [draft, setDraft] = useState<AvatarConfig | null>(null)
-  const [tab, setTab] = useState('bicho')
+  const [tab, setTab] = useState('estilo')
   const [buying, setBuying] = useState<{ key: Key; part: Part | ColorPart } | null>(null)
   const [hint, setHint] = useState('')
 

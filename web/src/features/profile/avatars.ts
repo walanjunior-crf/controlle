@@ -21,7 +21,7 @@ export const AVATARS: PresetAvatar[] = [
   { id: 'sapo', label: 'Dálmata', config: { species: 'cachorro', breed: 'dalmata', mouth: 'lingua', outfit: 'cachecol', outfitColor: '#D64545', bg: '#5E9AD0' } },
   { id: 'pinguim', label: 'Tubarão marinheiro', config: { species: 'tubarao', fur: '#7C9CB5', outfit: 'listrada', outfitColor: '#22305A', hat: 'bone', hatColor: '#F4F1EA', bg: '#2F7F7A', pattern: 'ondas' } },
   { id: 'panda', label: 'Urso de mancha', config: { species: 'urso', fur: '#F2EDE4', coat: 'mancha', outfit: 'camiseta', outfitColor: '#336633', bg: '#4D8C4D' } },
-  { id: 'tartaruga', label: 'T-rex simpático', config: { species: 'dinossauro', fur: '#5FA040', outfit: 'camiseta', outfitColor: '#F2C14E', bg: '#C0643F' } },
+  { id: 'tartaruga', label: 'Tricerátops simpático', config: { species: 'dinossauro', fur: '#5FA040', outfit: 'camiseta', outfitColor: '#F2C14E', bg: '#C0643F' } },
   { id: 'peixe', label: 'Tubarão-baleia', config: { species: 'tubarao', fur: '#3F5466', coat: 'pintas', outfit: 'regata', outfitColor: '#2FA3A0', bg: '#5E9AD0' } },
   { id: 'abelha', label: 'Bartolomeu musical', config: { species: 'rato', fur: '#E3A857', hat: 'fone', hatColor: '#F2C14E', outfit: 'listrada', outfitColor: '#2B2B2B', bg: '#E0A43A' } },
   { id: 'cacto', label: 'Cachorro chef', config: { species: 'cachorro', fur: '#D9A066', costume: 'chef', bg: '#C0643F' } },

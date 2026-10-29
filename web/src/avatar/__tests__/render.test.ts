@@ -32,9 +32,17 @@ describe('motor v2 do avatar', () => {
     expect(renderAvatar(cfg, { mood: 'happy' })).toBe(renderAvatar(cfg, { mood: 'happy' }))
   })
 
-  it('modo leve tira a textura de papel', () => {
-    expect(renderAvatar(DEFAULT_AVATAR)).toContain('avPaperGrain')
-    expect(renderAvatar(DEFAULT_AVATAR, { detail: 'lite' })).not.toContain('avPaperGrain')
+  it('textura só no estilo certo e só no modo completo', () => {
+    const papel = { ...DEFAULT_AVATAR, style: 'papel' }
+    expect(renderAvatar(papel)).toContain('avPaperGrain')
+    expect(renderAvatar(papel, { detail: 'lite' })).not.toContain('avPaperGrain')
+    expect(renderAvatar({ ...DEFAULT_AVATAR, style: 'pelucia' })).toContain('avFelt')
+    expect(renderAvatar(DEFAULT_AVATAR)).not.toMatch(/avPaperGrain|avFelt/)
+  })
+
+  it('o padrão é chapado e avatares antigos sem estilo também', () => {
+    const { style: _s, ...old } = DEFAULT_AVATAR
+    expect(renderAvatar(old)).toBe(renderAvatar({ ...DEFAULT_AVATAR, style: 'chapado' }))
   })
 
   it('cores inválidas nunca chegam ao SVG', () => {

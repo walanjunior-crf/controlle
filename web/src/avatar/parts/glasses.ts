@@ -3,12 +3,15 @@
  * O motor escala pela distância real entre os olhos. Cor: x.c.glassesColor.
  */
 import { mix } from '../color'
-import { cut, cutEllipse, f, layer, rng, stroke } from '../paper'
+import { cut, cutEllipse, f, layer, look, rng, stroke } from '../paper'
 import type { Ctx, Pt } from '../types'
 
 /** aro de papel: forma externa menos a interna */
 export const ring = (cx: number, cy: number, r: number, w: number, seed: string) =>
   `${cutEllipse(cx, cy, r, r, `${seed}o`, { jitter: 0.012 })}${cutEllipse(cx, cy, r - w, r - w, `${seed}i`, { jitter: 0.012 })}`
+
+/** espessura do aro: pelúcia (feltro) bem grossa, chapado um pouco mais gordinha */
+const thick = () => (look.style === 'pelucia' ? 1.2 : look.style === 'chapado' ? 1.05 : 1)
 
 const EO = 'fill-rule="evenodd"'
 const LENS = '<path d="{d}" fill="#FFFFFF" fill-opacity="0.22"/>'
@@ -54,7 +57,7 @@ function ringPts(pts: Pt[], w: number, seed: string): string {
   return outline(pts, `${seed}o`) + outline(inner, `${seed}i`, 0.12)
 }
 
-const frame = (color: string, pts: Pt[], w: number, seed: string, lift = 0.6) => layer(ringPts(pts, w, seed), color, { attrs: EO, lift })
+const frame = (color: string, pts: Pt[], w: number, seed: string, lift = 0.6) => layer(ringPts(pts, w * thick(), seed), color, { attrs: EO, lift })
 const mirrorPts = (pts: Pt[]): Pt[] => pts.map(([x, y]) => [-x, y] as Pt)
 const temples = (color: string, y = -2.5) =>
   layer(cut([[-19.4, y - 0.8], [-23, y - 1.6], [-23, y + 0.2], [-19.4, y + 1.2]], 'tmpl-l', 0.1), color, { lift: 0.4 }) +
@@ -64,8 +67,8 @@ export const GLASSES: Record<string, (x: Ctx) => string> = {
   nenhum: () => '',
   redondo: (x) =>
     `<path d="${cutEllipse(-10, 0, 7, 7, 'lensL')}" fill="#FFFFFF" fill-opacity="0.22"/><path d="${cutEllipse(10, 0, 7, 7, 'lensR')}" fill="#FFFFFF" fill-opacity="0.22"/>` +
-    layer(ring(-10, 0, 8.2, 1.9, 'rl'), x.c.glassesColor, { attrs: 'fill-rule="evenodd"', lift: 0.6 }) +
-    layer(ring(10, 0, 8.2, 1.9, 'rr'), x.c.glassesColor, { attrs: 'fill-rule="evenodd"', lift: 0.6 }) +
+    layer(ring(-10, 0, 8.2, 1.9 * thick(), 'rl'), x.c.glassesColor, { attrs: 'fill-rule="evenodd"', lift: 0.6 }) +
+    layer(ring(10, 0, 8.2, 1.9 * thick(), 'rr'), x.c.glassesColor, { attrs: 'fill-rule="evenodd"', lift: 0.6 }) +
     layer(`M-2.4 ${f(-1.4)}Q0 -3.4 2.4 ${f(-1.4)}L2.4 0Q0 -2 -2.4 0Z`, x.c.glassesColor, { lift: 0.4 }),
 
   quadrado: (x) => {
@@ -98,7 +101,7 @@ export const GLASSES: Record<string, (x: Ctx) => string> = {
     const tint = mix(c, '#7FB6E8', 0.55)
     return (
       `<path d="${outline(pts, 'v-lens')}" fill="${tint}" fill-opacity="0.5"/>` +
-      layer(ringPts(pts, 1.7, 'v-fr'), c, { attrs: EO, lift: 0.7 }) +
+      layer(ringPts(pts, 1.7 * thick(), 'v-fr'), c, { attrs: EO, lift: 0.7 }) +
       layer(cut([[-23, -4.8], [-16, -8.6], [0, -9.8], [16, -8.6], [23, -4.8], [16, -6.2], [0, -7.2], [-16, -6.2]], 'v-top', 0.15), c, { lift: 0.5 }) +
       layer(cut([[-17, -3], [-8, -4.7], [-6, -4.2], [-15.5, -1.4]], 'v-hl', 0.1), '#FFFFFF', { shadow: false, edge: false, opacity: 0.5 }) +
       layer(cut([[-4.5, -2.8], [-1.6, -3.5], [-2.4, -1.2]], 'v-hl2', 0.08), '#FFFFFF', { shadow: false, edge: false, opacity: 0.4 })
@@ -109,7 +112,7 @@ export const GLASSES: Record<string, (x: Ctx) => string> = {
     const c = x.c.glassesColor
     return (
       lens(cutEllipse(10, 0, 7.4, 7.4, 'm-lens')) +
-      layer(ring(10, 0, 9, 2, 'm-r'), c, { attrs: EO, lift: 0.7 }) +
+      layer(ring(10, 0, 9, 2 * thick(), 'm-r'), c, { attrs: EO, lift: 0.7 }) +
       layer(cutEllipse(17.6, 5.8, 1.5, 1.5, 'm-cl'), c, { lift: 0.4 }) +
       stroke('M18 7C23 11 21 17 24 23S21 31 24 36', c, 1, 'stroke-dasharray="1.7 1.1"')
     )

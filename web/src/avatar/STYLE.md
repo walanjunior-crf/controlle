@@ -39,3 +39,10 @@ npx tsx scripts/avatar-sheet.ts --out /tmp/x --rows moods --cols outfit=camiseta
 npx tsx scripts/avatar-sheet.ts --out /tmp/x --cols eyes=brilho,anime --size 60 --lite   # tamanho pequeno
 ```
 Abra o PNG gerado (ferramenta Read) e confira: encaixe em todos os bichos, leitura a 60 px e no modo `--lite`, nada flutuando, nada cortado, cores coerentes em fundo claro e escuro (`--set bg=#F1E6D0` e `--set bg=#243B6B`).
+
+## Três estilos (desde a v0.4.8)
+O avatar tem três estilos de pintura sobre a MESMA geometria: `chapado` (padrão), `pelucia` e `papel`. O campo é `x.c.style`; durante o desenho, `look.style` (de `paper.ts`) diz qual está ativo. `layer()` já pinta cada forma conforme o estilo:
+- **chapado**: bordas lisas (sem jitter), cor sólida e uma sombra recortada embaixo à direita (cel shading). Referência: Duolingo — formas gordas e simples, olhos grandes e brilhantes, nada de textura. Lê muito bem pequeno.
+- **pelucia**: bordas lisas, degradê macio (luz em cima à esquerda), sombra suave e costura pontilhada na borda; textura de tecido no avatar grande. Referência: bichinho de pano — olhos de botão, nariz e boca bordados (pontos de linha), costuras aparentes, cantos mais arredondados.
+- **papel**: o traço original (borda de tesoura, sombra de papel, fio claro, textura).
+Quando uma peça precisar de um detalhe próprio de um estilo, use `look.style` dentro da função (ex.: `if (look.style === 'pelucia') { ...olho de botão... }`). Mantenha a mesma silhueta nos três para os encaixes (rig) continuarem valendo. Revise com `--cols style=chapado,pelucia,papel`.

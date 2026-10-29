@@ -14,7 +14,7 @@ import { body } from './body'
 import { adjust, mix, ramp } from './color'
 import { EXPRESSIONS, PERSONA_MOOD } from './expressions'
 import { BACKGROUND_DECOR } from './decor'
-import { GRAIN_PATTERN, cut, cutEllipse, cutPoly, detail, f, layer, mirror } from './paper'
+import { FELT_PATTERN, GRAIN_PATTERN, cut, cutEllipse, cutPoly, detail, f, layer, look, mirror, type AvatarStyle } from './paper'
 import { atCrown, atEyes, onHead } from './place'
 import { PATTERNS } from './parts/backgrounds'
 import { COATS } from './parts/coats'
@@ -94,6 +94,7 @@ export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {
   const expr = EXPRESSIONS[moodKey] ?? EXPRESSIONS.neutral
   const full = opts.detail !== 'lite'
   detail.full = full
+  look.style = (['chapado', 'pelucia', 'papel'].includes(c.style) ? c.style : 'chapado') as AvatarStyle
   const fur = ramp(c.fur)
   const muzzleHex = def.muzzle ? def.muzzle(c.fur) : fur.pale
   const x: Ctx = { c, rig: def.rig, fur, muzzle: ramp(muzzleHex), expr, full }
@@ -126,7 +127,7 @@ export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {
   const hat = expr.extra === 'nightcap' ? nightcap(x) : costume?.hat ? atCrown(x, costume.hat(x)) : hides.hat ? '' : atCrown(x, (HATS[c.hat] ?? HATS.nenhum)(x))
 
   const out =
-    `<defs><clipPath id="avc"><circle cx="50" cy="50" r="50"/></clipPath><clipPath id="avb"><path d="${BODY_CLIP}"/></clipPath>${full ? GRAIN_PATTERN : ''}</defs>` +
+    `<defs><clipPath id="avc"><circle cx="50" cy="50" r="50"/></clipPath><clipPath id="avb"><path d="${BODY_CLIP}"/></clipPath>${full && look.style === 'papel' ? GRAIN_PATTERN : ''}${full && look.style === 'pelucia' ? FELT_PATTERN : ''}</defs>` +
     `<g clip-path="url(#avc)">` +
     `<rect width="100" height="100" fill="${c.bg}"/>` +
     BACKGROUND_DECOR(c.bg, adjust, mix) +
@@ -156,8 +157,10 @@ export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {
     `</g>` +
     `</g>` +
     fx(x) +
-    (full ? `<rect width="100" height="100" fill="url(#avPaperGrain)" pointer-events="none"/>` : '') +
+    (full && look.style === 'papel' ? `<rect width="100" height="100" fill="url(#avPaperGrain)" pointer-events="none"/>` : '') +
+    (full && look.style === 'pelucia' ? `<rect width="100" height="100" fill="url(#avFelt)" pointer-events="none"/>` : '') +
     `</g>`
   detail.full = true
+  look.style = 'chapado'
   return out
 }

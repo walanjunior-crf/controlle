@@ -190,6 +190,8 @@ export interface AvatarConfig {
   pattern: string
   /** jeito padrão do rosto: normal, sonolento ou enjoado */
   persona: string
+  /** estilo do desenho: chapado (padrão), pelucia ou papel */
+  style: string
   /** lado dos brincos e do piercing (como aparece na tela) */
   earringSide: string
   piercingSide: string

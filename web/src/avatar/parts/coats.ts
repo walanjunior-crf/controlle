@@ -1,9 +1,20 @@
 /** Estampas da pelagem, desenhadas sobre a cabeça a partir do esqueleto. */
-import { lightness } from '../color'
-import { cut, cutEllipse, cutPoly, layer, mirror } from '../paper'
+import { adjust, lightness } from '../color'
+import { cut, cutEllipse, cutPoly, layer, look, mirror, stroke } from '../paper'
 import type { Ctx } from '../types'
 
-const paint = (d: string, fill: string, opacity = 0.9) => layer(d, fill, { shadow: false, edge: false, opacity })
+/**
+ * Mancha da pelagem. Chapado: cor sólida e limpa. Pelúcia: retalho aplicado, com sombra e
+ * costura tracejada na borda. Papel: tinta levemente translúcida.
+ */
+const paint = (d: string, fill: string, opacity = 0.9) => {
+  if (look.style === 'chapado') return layer(d, fill, { shadow: false, edge: false })
+  if (look.style === 'pelucia') {
+    const dark = lightness(fill) < 0.55
+    return layer(d, fill, { lift: 0.5, edge: false }) + stroke(d, adjust(fill, dark ? 0.2 : -0.22, 0.9), 0.4, 'stroke-dasharray="0.9 0.8" stroke-opacity="0.85"')
+  }
+  return layer(d, fill, { shadow: false, edge: false, opacity })
+}
 
 function listrado(x: Ctx): string {
   const { head, sides } = x.rig
