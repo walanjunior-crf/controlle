@@ -293,3 +293,10 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Dálmata e salsicha agora são raças do cachorro (aba Bicho), com pelagem própria; não aparecem para os outros bichos.
 - Sai a aba Cabelo: fica só a peruca ondulada (aba Cabeça), para gato, cachorro, urso, raposa e rato. Bigodes só para cachorro, urso e raposa.
 - Desbloqueio mais exclusivo: nível 1 traz o básico e cada nível do 2 ao 30 libera de 4 a 5 peças. O cartão de nível mostra o que vem no próximo.
+
+### v0.4.3 — Arte refinada e Bartolomeu
+
+- Acabamento novo na arte: volume com luz e sombra, contornos finos no tom da pelagem, tufos de pelo, pálpebras e íris com profundidade, sombra da cabeça no corpo, caimento nas roupas, fundo com luz, textura leve e aro.
+- O rato virou o Bartolomeu, um hamster de bochechas cheias.
+- Brincos agora ficam nas orelhas (gato, raposa, coelho, urso, Bartolomeu).
+- No editor, as peças aparecem na ordem em que desbloqueiam. Teto atual: nível 25, com 5 peças por nível.

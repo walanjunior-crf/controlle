@@ -10,7 +10,7 @@ import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
 import {
   BEARD_SPECIES, CATALOG, COSTUMES, DEFAULT_AVATAR, HAIR_SPECIES, SPECIES_FUR,
-  customAvatarSvg, isUnlocked, normalizeAvatar, unlockHint,
+  customAvatarSvg, isUnlocked, normalizeAvatar, unlockHint, unlockRank,
   type ColorPart, type Key, type Mood, type Part,
 } from './avatarParts'
 import './profile.css'
@@ -220,7 +220,7 @@ export function AvatarEditorPage() {
               {current.sections.filter((sec) => !sec.when || sec.when(cfg)).length > 1 && <h3 className="ae-section-title">{cat.label}</h3>}
               {cover && <p className="ae-note">A fantasia {cover} cobre esta parte. Tire a fantasia para ver.</p>}
               <div className={`ae-options${cat.color && key !== 'fur' ? ' is-colors' : ''}`} role="group" aria-label={cat.label}>
-                {(cat.parts as (Part | ColorPart)[]).map((p) => {
+                {[...(cat.parts as (Part | ColorPart)[])].sort((a, b) => unlockRank(a) - unlockRank(b)).map((p) => {
                   const locked = !open(p)
                   const on = isOn(key, p)
                   const lockText = unlockHint(p.unlock, achTitle)

@@ -65,7 +65,7 @@ export const SPECIES: Part[] = [
   { id: 'raposa', label: 'Raposa' },
   { id: 'urso', label: 'Urso' },
   { id: 'coelho', label: 'Coelho' },
-  { id: 'rato', label: 'Rato' },
+  { id: 'rato', label: 'Bartolomeu' },
   { id: 'dinossauro', label: 'Dinossauro' },
   { id: 'tubarao', label: 'Tubarão' },
 ]
@@ -77,7 +77,7 @@ export const SPECIES_FUR: Record<string, string> = {
   raposa: '#E07B39',
   urso: '#7A5230',
   coelho: '#F2EDE4',
-  rato: '#9AA39A',
+  rato: '#E3A857',
   dinossauro: '#6DBE45',
   tubarao: '#7C9CB5',
 }
@@ -352,39 +352,34 @@ export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; 
 
 /**
  * O que cada nível libera. Nível 1 traz o básico; daí em diante cada nível dá
- * de 3 a 4 peças, deixando bichos, raças e fantasias mais raros.
+ * de 4 a 9 peças (teto atual: nível 25), deixando bichos, raças e fantasias mais raros.
  * (Medalha C e chifre de unicórnio continuam presos a conquistas.)
  */
 export const LEVEL_PLAN: Record<number, [Key, string][]> = {
-  2: [['species', 'raposa'], ['eyes', 'cilios'], ['hatColor', 'vermelho'], ['bg', 'folha']],
-  3: [['hat', 'gorro'], ['mouth', 'sorrisao'], ['fur', 'laranja'], ['eyeColor', 'verde'], ['hatColor', 'folha']],
-  4: [['species', 'rato'], ['glasses', 'quadrado'], ['earrings', 'argola'], ['coat', 'listrado']],
-  5: [['costume', 'pirata'], ['brows', 'grossas'], ['metal', 'ouro'], ['pattern', 'bolinhas'], ['fur', 'preto']],
-  6: [['hair', 'ondulado'], ['hairColor', 'ruivo'], ['hat', 'boina'], ['cheeks', 'sardas']],
-  7: [['breed', 'dalmata'], ['outfit', 'moletom'], ['bg', 'ceu'], ['hatColor', 'laranja']],
-  8: [['eyes', 'anime'], ['mouth', 'lingua'], ['fur', 'chocolate'], ['eyes', 'piscada']],
-  9: [['costume', 'terno'], ['piercing', 'nariz'], ['metal', 'rose'], ['hatColor', 'rosa'], ['fur', 'creme']],
-  10: [['species', 'dinossauro'], ['hat', 'coroa'], ['outfit', 'listrada'], ['coat', 'mancha']],
-  11: [['glasses', 'gatinho'], ['earrings', 'gota'], ['hairColor', 'rosa'], ['bg', 'menta'], ['piercing', 'sobrancelha']],
-  12: [['breed', 'salsicha'], ['mouth', 'dentes'], ['bg', 'noite'], ['eyeColor', 'mel']],
-  13: [['costume', 'policial'], ['eyes', 'sonolento'], ['pattern', 'listras'], ['hatColor', 'turquesa']],
-  14: [['hat', 'chapeu'], ['outfit', 'sueter'], ['fur', 'lilas'], ['cheeks', 'pinta']],
-  15: [['species', 'tubarao'], ['outfit', 'capa'], ['eyeColor', 'cinza'], ['coat', 'bicolor']],
-  16: [['glasses', 'sol'], ['piercing', 'septo'], ['brows', 'arqueadas'], ['hairColor', 'platinado'], ['hatColor', 'marrom']],
-  17: [['costume', 'dinossauro'], ['beard', 'bigode'], ['metal', 'bronze'], ['bg', 'terracota']],
-  18: [['hat', 'laco'], ['earrings', 'duplo'], ['pattern', 'xadrez'], ['hatColor', 'roxo']],
-  19: [['eyes', 'bravo'], ['mouth', 'debochado'], ['fur', 'rosa'], ['brows', 'preocupadas']],
-  20: [['costume', 'tubarao'], ['glasses', 'monoculo'], ['bg', 'rosa'], ['mouth', 'surpreso']],
-  21: [['hat', 'flor'], ['outfit', 'jaqueta'], ['hairColor', 'azul'], ['coat', 'pintas']],
-  22: [['eyes', 'estrela'], ['piercing', 'labio'], ['pattern', 'ondas'], ['hatColor', 'marinho']],
-  23: [['hat', 'faixa'], ['outfit', 'cachecol'], ['fur', 'verde'], ['cheeks', 'curativo']],
-  24: [['costume', 'chef'], ['mouth', 'presas'], ['brows', 'bravas'], ['bg', 'ameixa']],
-  25: [['hat', 'fone'], ['earrings', 'perola'], ['fur', 'dourado'], ['hairColor', 'verde']],
-  26: [['eyes', 'coracao'], ['glasses', 'visor'], ['pattern', 'raios'], ['outfit', 'regata']],
-  27: [['hat', 'cartola'], ['beard', 'bigodefino'], ['metal', 'arcoiris'], ['eyeColor', 'violeta']],
-  28: [['costume', 'astronauta'], ['pattern', 'estrelas'], ['fur', 'esmeralda'], ['brows', 'unidas']],
-  29: [['hatColor', 'ouro'], ['hairColor', 'roxo'], ['bg', 'petroleo'], ['fur', 'azul']],
-  30: [['glasses', 'coracao'], ['pattern', 'confete'], ['hairColor', 'grisalho'], ['bg', 'grafite']],
+  2: [['species', 'raposa'], ['eyes', 'cilios'], ['hatColor', 'vermelho'], ['bg', 'folha'], ['hat', 'gorro'], ['mouth', 'sorrisao']],
+  3: [['fur', 'laranja'], ['eyeColor', 'verde'], ['hatColor', 'folha'], ['species', 'rato'], ['glasses', 'quadrado']],
+  4: [['earrings', 'argola'], ['coat', 'listrado'], ['costume', 'pirata'], ['brows', 'grossas'], ['metal', 'ouro']],
+  5: [['pattern', 'bolinhas'], ['fur', 'preto'], ['hair', 'ondulado'], ['hairColor', 'ruivo'], ['hat', 'boina']],
+  6: [['cheeks', 'sardas'], ['breed', 'dalmata'], ['outfit', 'moletom'], ['bg', 'ceu'], ['hatColor', 'laranja']],
+  7: [['eyes', 'anime'], ['mouth', 'lingua'], ['fur', 'chocolate'], ['eyes', 'piscada'], ['costume', 'terno']],
+  8: [['piercing', 'nariz'], ['metal', 'rose'], ['hatColor', 'rosa'], ['fur', 'creme'], ['species', 'dinossauro']],
+  9: [['hat', 'coroa'], ['outfit', 'listrada'], ['coat', 'mancha'], ['glasses', 'gatinho'], ['earrings', 'gota']],
+  10: [['hairColor', 'rosa'], ['bg', 'menta'], ['piercing', 'sobrancelha'], ['breed', 'salsicha'], ['mouth', 'dentes']],
+  11: [['bg', 'noite'], ['eyeColor', 'mel'], ['costume', 'policial'], ['eyes', 'sonolento'], ['pattern', 'listras']],
+  12: [['hatColor', 'turquesa'], ['hat', 'chapeu'], ['outfit', 'sueter'], ['fur', 'lilas'], ['cheeks', 'pinta']],
+  13: [['species', 'tubarao'], ['outfit', 'capa'], ['eyeColor', 'cinza'], ['coat', 'bicolor'], ['glasses', 'sol']],
+  14: [['piercing', 'septo'], ['brows', 'arqueadas'], ['hairColor', 'platinado'], ['hatColor', 'marrom'], ['costume', 'dinossauro']],
+  15: [['beard', 'bigode'], ['metal', 'bronze'], ['bg', 'terracota'], ['hat', 'laco'], ['earrings', 'duplo']],
+  16: [['pattern', 'xadrez'], ['hatColor', 'roxo'], ['eyes', 'bravo'], ['mouth', 'debochado'], ['fur', 'rosa']],
+  17: [['brows', 'preocupadas'], ['costume', 'tubarao'], ['glasses', 'monoculo'], ['bg', 'rosa'], ['mouth', 'surpreso']],
+  18: [['hat', 'flor'], ['outfit', 'jaqueta'], ['hairColor', 'azul'], ['coat', 'pintas'], ['eyes', 'estrela']],
+  19: [['piercing', 'labio'], ['pattern', 'ondas'], ['hatColor', 'marinho'], ['hat', 'faixa'], ['outfit', 'cachecol']],
+  20: [['fur', 'verde'], ['cheeks', 'curativo'], ['costume', 'chef'], ['mouth', 'presas'], ['brows', 'bravas']],
+  21: [['bg', 'ameixa'], ['hat', 'fone'], ['earrings', 'perola'], ['fur', 'dourado'], ['hairColor', 'verde']],
+  22: [['eyes', 'coracao'], ['glasses', 'visor'], ['pattern', 'raios'], ['outfit', 'regata'], ['hat', 'cartola']],
+  23: [['beard', 'bigodefino'], ['metal', 'arcoiris'], ['eyeColor', 'violeta'], ['costume', 'astronauta'], ['pattern', 'estrelas']],
+  24: [['fur', 'esmeralda'], ['brows', 'unidas'], ['hatColor', 'ouro'], ['hairColor', 'roxo'], ['bg', 'petroleo']],
+  25: [['fur', 'azul'], ['glasses', 'coracao'], ['pattern', 'confete'], ['hairColor', 'grisalho'], ['bg', 'grafite']],
 }
 
 for (const [lv, items] of Object.entries(LEVEL_PLAN)) {
@@ -443,6 +438,9 @@ export function unlockHint(u: Unlock | undefined, achievementTitle: (id: Achieve
 /** cores fixas que as peças tinham na v0.4 */
 const V04_OUTFIT: Record<string, string> = { moletom: '#C0643F', cachecol: '#C0392B', capa: '#7A4E7E' }
 const V04_HAT: Record<string, string> = { gorro: '#E0A43A', fone: '#4A4F4A', flor: '#F4A7A0' }
+
+/** posição de uma peça na fila: livres primeiro, depois por nível, conquistas no fim */
+export const unlockRank = (p: Part): number => (!p.unlock ? 0 : 'level' in p.unlock ? p.unlock.level : 100)
 
 /** Configuração segura para desenhar: valor desconhecido ou ausente vira o padrão. */
 export function normalizeAvatar(c: Partial<AvatarConfig> | null | undefined): AvatarConfig {
@@ -562,17 +560,48 @@ interface SpeciesArt {
   earring: [number, number]
 }
 
-/** cabeça oval com sombra interna embaixo à direita e brilho no alto à esquerda */
-function head(cx: number, cy: number, rx: number, ry: number, x: Ctx): string {
+/** contorno fino num tom escuro da própria cor: dá acabamento de ilustração */
+const contour = (fur: string) => `fill="none" stroke="${shade(fur, 0.6)}" stroke-opacity="0.38" stroke-width="1.1" ${R}`
+
+/**
+ * Forma com volume: sombra embaixo à direita, cor base, luz/sombra suave por
+ * cima (gradiente neutro, serve para qualquer cor) e contorno fino.
+ */
+function blob(d: string, x: Ctx): string {
   return (
-    `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${x.furShade}"/>` +
-    `<ellipse cx="${cx - 1}" cy="${cy - 1.6}" rx="${rx - 1}" ry="${ry - 1.6}" fill="${x.fur}"/>` +
-    `<ellipse cx="${f(cx - rx * 0.45)}" cy="${f(cy - ry * 0.55)}" rx="${f(rx * 0.22)}" ry="${f(ry * 0.11)}" fill="#FFFFFF" fill-opacity="0.22" transform="rotate(-28 ${f(cx - rx * 0.45)} ${f(cy - ry * 0.55)})"/>`
+    `<path d="${d}" fill="${x.furShade}"/>` +
+    `<path d="${d}" fill="${x.fur}" transform="translate(-0.9 -1.4)"/>` +
+    `<path d="${d}" fill="url(#avVol)"/>` +
+    `<path d="${d}" ${contour(x.fur)}/>`
   )
 }
 
+const ellipsePath = (cx: number, cy: number, rx: number, ry: number) =>
+  `M${cx - rx} ${cy}A${rx} ${ry} 0 1 0 ${cx + rx} ${cy}A${rx} ${ry} 0 1 0 ${cx - rx} ${cy}Z`
+
+/** cabeça oval com volume, brilho no alto e um tufinho de pelo */
+function head(cx: number, cy: number, rx: number, ry: number, x: Ctx, opts: { tuft?: boolean; cheekTufts?: boolean } = {}): string {
+  let s = ''
+  if (opts.cheekTufts) {
+    const t = `<path d="M${cx - rx + 1.5} ${cy + 1}L${cx - rx - 3.4} ${cy + 4.6}L${cx - rx + 0.6} ${cy + 6.2}L${cx - rx - 2.4} ${cy + 10}L${cx - rx + 3} ${cy + 11}Z" fill="${x.fur}" stroke="${shade(x.fur, 0.6)}" stroke-opacity="0.38" stroke-width="1.1" ${R}/>`
+    s += t + mirror(t)
+  }
+  s += blob(ellipsePath(cx, cy, rx, ry), x)
+  s += `<ellipse cx="${f(cx - rx * 0.42)}" cy="${f(cy - ry * 0.52)}" rx="${f(rx * 0.24)}" ry="${f(ry * 0.11)}" fill="#FFFFFF" fill-opacity="0.28" transform="rotate(-28 ${f(cx - rx * 0.42)} ${f(cy - ry * 0.52)})"/>`
+  if (opts.tuft) {
+    const top = cy - ry
+    s += `<path d="M${cx - 5} ${top + 2.2}Q${cx - 3.5} ${top - 3.6} ${cx - 0.6} ${top + 0.8}Q${cx + 0.6} ${top - 5} ${cx + 3.2} ${top + 0.6}Q${cx + 5.8} ${top - 2.2} ${cx + 5.6} ${top + 2.6}Z" fill="${x.fur}"/>` +
+      `<path d="M${cx - 5} ${top + 2.2}Q${cx - 3.5} ${top - 3.6} ${cx - 0.6} ${top + 0.8}Q${cx + 0.6} ${top - 5} ${cx + 3.2} ${top + 0.6}Q${cx + 5.8} ${top - 2.2} ${cx + 5.6} ${top + 2.6}" ${contour(x.fur)}/>`
+  }
+  return s
+}
+
+/** pelinhos sugeridos com três traços curtos */
+const furStrokes = (pts: [number, number, number][], x: Ctx) =>
+  pts.map(([px, py, a]) => `<path d="M${px} ${py}l${f(2.6 * Math.cos(a))} ${f(2.6 * Math.sin(a))}" ${ln(shade(x.fur, 0.35), 1)} stroke-opacity="0.45"/>`).join('')
+
 const blackNose = (cx: number, cy: number, rx: number, ry: number) =>
-  `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${INK}"/><ellipse cx="${f(cx - rx * 0.35)}" cy="${f(cy - ry * 0.4)}" rx="${f(rx * 0.32)}" ry="${f(ry * 0.25)}" fill="#FFFFFF" fill-opacity="0.55"/>`
+  `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${INK}"/><path d="M${cx} ${f(cy + ry * 0.4)}L${cx} ${f(cy + ry + 1.6)}" ${ln(INK, 1.2)}/><ellipse cx="${f(cx - rx * 0.35)}" cy="${f(cy - ry * 0.4)}" rx="${f(rx * 0.32)}" ry="${f(ry * 0.25)}" fill="#FFFFFF" fill-opacity="0.55"/>`
 
 const pinkNose = (cx: number, cy: number, s = 1) =>
   `<path d="M${f(cx - 3 * s)} ${f(cy - 1.2 * s)}Q${cx} ${f(cy - 2.6 * s)} ${f(cx + 3 * s)} ${f(cy - 1.2 * s)}Q${f(cx + 1.6 * s)} ${f(cy + 1.8 * s)} ${cx} ${f(cy + 2.2 * s)}Q${f(cx - 1.6 * s)} ${f(cy + 1.8 * s)} ${f(cx - 3 * s)} ${f(cy - 1.2 * s)}Z" fill="${PINK_DARK}"/>`
@@ -585,20 +614,23 @@ const mirror = (d: string) => `<g transform="translate(100 0) scale(-1 1)">${d}<
 const SPECIES_ART: Record<string, SpeciesArt> = {
   gato: {
     back: (x) => {
-      const ear = `<path d="M27 46L27.5 15L47 32Z" ${fs(x.fur, 5)}/><path d="M31.5 38L31.5 22.5L41.5 32Z" fill="${PINK}"/>`
+      const ear =
+        `<path d="M27 46L27.5 15L47 32Z" ${fs(x.fur, 5)}/><path d="M27 46L27.5 15L47 32Z" fill="url(#avVol)"/>` +
+        `<path d="M24.6 47.6L25 12.6L49.4 32.4" ${contour(x.fur)}/>` +
+        `<path d="M31.5 38L31.5 22.5L41.5 32Z" fill="${PINK}"/><path d="M31.5 38L31.5 22.5L41.5 32Z" fill="url(#avVol)"/>`
       return ear + mirror(ear)
     },
-    face: (x) => head(50, 53, 26, 23, x) + `<circle cx="45.2" cy="61.6" r="5.4" fill="${x.light}"/><circle cx="54.8" cy="61.6" r="5.4" fill="${x.light}"/>`,
+    face: (x) => head(50, 53, 26, 23, x, { tuft: true, cheekTufts: true }) + furStrokes([[30, 46, 2.6], [70, 46, 0.5]], x) + `<circle cx="45.2" cy="61.6" r="5.4" fill="${x.light}"/><circle cx="54.8" cy="61.6" r="5.4" fill="${x.light}"/>`,
     front: (x) => whiskers(61, lum(x.fur) < 0.3 ? '#FFFFFF' : INK),
     nose: () => pinkNose(50, 58),
     noseY: 58,
     mouthY: 63.5,
     mouthOnLight: true,
-    earring: [23.5, 62],
+    earring: [27.6, 37.5],
   },
   cachorro: {
     back: () => '',
-    face: (x) => head(50, 53, 25.5, 23, x) + `<ellipse cx="50" cy="62.5" rx="12.5" ry="9.5" fill="${x.light}"/>`,
+    face: (x) => head(50, 53, 25.5, 23, x, { tuft: true }) + `<ellipse cx="50" cy="62.5" rx="12.5" ry="9.5" fill="${x.light}"/>`,
     front: (x) => {
       const col = x.c.coat === 'dalmata' ? '#2A2A2A' : x.c.coat === 'salsicha' ? shade(x.fur, 0.15) : shade(x.fur, 0.3)
       const ear = `<path d="M31 33Q18 33 15.5 51Q14.5 66 23.5 69Q30.5 67 31.5 54Z" fill="${col}"/><path d="M27 37Q20 40 19 52" ${ln('#FFFFFF', 2)} stroke-opacity="0.18"/>`
@@ -618,54 +650,61 @@ const SPECIES_ART: Record<string, SpeciesArt> = {
         `<path d="M30 38.5L29.6 22L41.5 33Z" fill="${CREAM}"/>`
       return ear + mirror(ear)
     },
-    face: (x) => head(50, 53, 27, 23, x) + `<path d="M24.5 55.5Q37 53.5 50 63Q63 53.5 75.5 55.5Q72 74 50 75.8Q28 74 24.5 55.5Z" fill="${CREAM}"/>`,
+    face: (x) => head(50, 53, 27, 23, x, { cheekTufts: true }) + `<path d="M24.5 55.5Q37 53.5 50 63Q63 53.5 75.5 55.5Q72 74 50 75.8Q28 74 24.5 55.5Z" fill="${CREAM}"/>`,
     front: () => '',
     nose: () => blackNose(50, 60.5, 3.8, 2.8),
     noseY: 60.5,
     mouthY: 65.5,
     mouthOnLight: true,
-    earring: [23.5, 61],
+    earring: [25, 36],
   },
   urso: {
     back: (x) => {
-      const ear = `<circle cx="28" cy="34" r="9.6" fill="${x.fur}"/><circle cx="28" cy="34" r="5.2" fill="${mix(x.fur, PINK, 0.55)}"/>`
+      const ear = blob(ellipsePath(28, 34, 9.6, 9.6), x) + `<circle cx="28" cy="34" r="5.2" fill="${mix(x.fur, PINK, 0.55)}"/>`
       return ear + mirror(ear)
     },
-    face: (x) => head(50, 54, 27, 23, x) + `<ellipse cx="50" cy="63" rx="11.5" ry="8.6" fill="${x.light}"/>`,
+    face: (x) => head(50, 54, 27, 23, x, { tuft: true }) + furStrokes([[31, 48, 2.4], [69, 48, 0.7]], x) + `<ellipse cx="50" cy="63" rx="11.5" ry="8.6" fill="${x.light}"/>`,
     front: () => '',
     nose: () => blackNose(50, 59.4, 4.5, 3.2),
     noseY: 59.4,
     mouthY: 65.5,
     mouthOnLight: true,
-    earring: [23, 62],
+    earring: [21.2, 40],
   },
   coelho: {
     back: (x) => {
       const ear =
-        `<ellipse cx="38" cy="21" rx="7.6" ry="19" fill="${x.fur}" transform="rotate(-9 38 21)"/>` +
+        `<g transform="rotate(-9 38 21)">${blob(ellipsePath(38, 21, 7.6, 19), x)}</g>` +
         `<ellipse cx="38" cy="22" rx="3.7" ry="13.5" fill="${PINK}" transform="rotate(-9 38 22)"/>`
       return ear + mirror(ear)
     },
-    face: (x) => head(50, 55, 24.5, 21.5, x) + `<circle cx="45.4" cy="63" r="5" fill="${x.light}"/><circle cx="54.6" cy="63" r="5" fill="${x.light}"/>`,
+    face: (x) => head(50, 55, 24.5, 21.5, x, { tuft: true }) + `<circle cx="45.4" cy="63" r="5" fill="${x.light}"/><circle cx="54.6" cy="63" r="5" fill="${x.light}"/>`,
     front: () => '',
     nose: () => pinkNose(50, 60, 0.85),
     noseY: 60,
     mouthY: 64.5,
     mouthOnLight: true,
-    earring: [26, 64],
+    earring: [31.4, 31],
   },
   rato: {
+    // Bartolomeu: hamster gorducho, bochechas cheias e orelhinhas redondas
     back: (x) => {
-      const ear = `<circle cx="25" cy="33" r="13" fill="${x.furShade}"/><circle cx="24.4" cy="32.4" r="12.2" fill="${x.fur}"/><circle cx="25" cy="33" r="7.8" fill="${PINK}"/>`
+      const ear = blob(ellipsePath(31, 34.5, 7.4, 7.4), x) + `<circle cx="31" cy="34.5" r="4.1" fill="${PINK}"/><circle cx="31" cy="34.5" r="4.1" fill="url(#avVol)"/>`
       return ear + mirror(ear)
     },
-    face: (x) => head(50, 55, 24, 21.5, x) + `<ellipse cx="50" cy="62.5" rx="8.5" ry="6.4" fill="${x.light}"/>`,
-    front: (x) => whiskers(61.5, lum(x.fur) < 0.3 ? '#FFFFFF' : INK),
-    nose: () => `<circle cx="50" cy="59.4" r="2.9" fill="${PINK_DARK}"/><circle cx="49.1" cy="58.5" r="0.9" fill="#FFFFFF" fill-opacity="0.6"/>`,
-    noseY: 59.4,
-    mouthY: 64.2,
+    face: (x) =>
+      blob('M50 31.5Q73.5 31.5 75.5 51Q82.5 65 73 73.5Q63 79 50 79Q37 79 27 73.5Q17.5 65 24.5 51Q26.5 31.5 50 31.5Z', x) +
+      `<path d="M24.6 60.5Q30.5 54 40 57Q50 62.5 60 57Q69.5 54 75.4 60.5Q78.6 70 70.5 75Q61 79 50 79Q39 79 29.5 75Q21.4 70 24.6 60.5Z" fill="${x.light}"/>` +
+      `<path d="M24.6 60.5Q30.5 54 40 57Q50 62.5 60 57Q69.5 54 75.4 60.5" ${ln(shade(x.light, 0.25), 0.9)} stroke-opacity="0.5"/>` +
+      `<path d="M45 34.5Q50 30.8 55 34.5Q52.5 41 50 42Q47.5 41 45 34.5Z" fill="${shade(x.fur, 0.18)}" fill-opacity="0.55"/>` +
+      `<ellipse cx="36" cy="38" rx="5.4" ry="2.2" fill="#FFFFFF" fill-opacity="0.26" transform="rotate(-24 36 38)"/>` +
+      furStrokes([[22.5, 58, 3.4], [77.5, 58, -0.25], [23.5, 63, 2.9], [76.5, 63, 0.2]], x),
+    front: (x) => `<path d="M30 61.5L37.5 62.6M30.5 65.5L37.5 64.6M70 61.5L62.5 62.6M69.5 65.5L62.5 64.6" ${ln(lum(x.light) < 0.3 ? '#FFFFFF' : INK, 1.1)} stroke-opacity="0.4"/>`,
+    nose: () => `<path d="M47.6 58.2Q50 56.8 52.4 58.2Q51.4 60.6 50 60.8Q48.6 60.6 47.6 58.2Z" fill="${PINK_DARK}"/><circle cx="49.2" cy="58" r="0.7" fill="#FFFFFF" fill-opacity="0.6"/>`,
+    noseY: 59,
+    mouthY: 63.6,
     mouthOnLight: true,
-    earring: [27, 64],
+    earring: [26.2, 39.6],
   },
   dinossauro: {
     back: (x) => {
@@ -688,7 +727,9 @@ const SPECIES_ART: Record<string, SpeciesArt> = {
     face: (x) =>
       `<path d="M22.5 60Q21.5 28 50 27Q78.5 28 77.5 60Q77.5 77.5 50 77.5Q22.5 77.5 22.5 60Z" fill="${x.furShade}"/>` +
       `<path d="M21.6 58.6Q20.6 27 49 26Q76.5 27 75.6 58Q75.6 75.6 49 75.8Q21.6 75.8 21.6 58.6Z" fill="${x.fur}"/>` +
+      `<path d="M21.6 58.6Q20.6 27 49 26Q76.5 27 75.6 58Q75.6 75.6 49 75.8Q21.6 75.8 21.6 58.6Z" fill="url(#avVol)"/>` +
       `<path d="M23 61Q50 53 77 61Q76 77.5 50 77.5Q24 77.5 23 61Z" fill="#F4F7FA"/>` +
+      `<path d="M22.5 60Q21.5 28 50 27Q78.5 28 77.5 60Q77.5 77.5 50 77.5Q22.5 77.5 22.5 60Z" ${contour(x.fur)}/>` +
       `<ellipse cx="37" cy="35" rx="5" ry="2.2" fill="#FFFFFF" fill-opacity="0.22" transform="rotate(-28 37 35)"/>`,
     front: (x) => {
       const g = `<path d="M27.5 47Q25.5 51 27.5 55M30.5 46Q28.5 50.5 30.5 55" ${ln(shade(x.fur, 0.35), 1.7)}/>`
@@ -745,10 +786,17 @@ function eyes(x: Ctx): string {
   const ink = dark ? '#FFFFFF' : INK
   const sclera = (cx: number, rx = 6.3, ry = 7.2) =>
     `<ellipse cx="${cx}" cy="${EY}" rx="${rx}" ry="${ry}" fill="#FFFFFF" stroke="${INK}" stroke-opacity="0.16" stroke-width="1"/>`
+  const lid = (cx: number, rx = 6.3, ry = 7.2) =>
+    `<path d="M${f(cx - rx + 0.3)} ${f(EY - 1.6)}Q${cx} ${f(EY - ry - 1.6)} ${f(cx + rx - 0.3)} ${f(EY - 1.6)}Q${cx} ${f(EY - ry + 2.6)} ${f(cx - rx + 0.3)} ${f(EY - 1.6)}Z" fill="${INK}" fill-opacity="0.1"/>` +
+    `<path d="M${f(cx - rx + 0.4)} ${f(EY - 1.9)}Q${cx} ${f(EY - ry - 1.7)} ${f(cx + rx - 0.4)} ${f(EY - 1.9)}" ${ln(INK, 1.5)} stroke-opacity="0.8"/>`
+  const pupil = (cx: number, r: number, pr: number, dy = 1) =>
+    `<circle cx="${cx}" cy="${EY + dy}" r="${r}" fill="${iris}"/><circle cx="${cx}" cy="${EY + dy}" r="${r}" fill="url(#avIris)"/>` +
+    `<circle cx="${cx}" cy="${EY + dy}" r="${pr}" fill="${INK}"/>`
   const big = (cx: number) =>
     sclera(cx) +
-    `<circle cx="${cx + 0.6}" cy="${EY + 1}" r="4.4" fill="${iris}"/><circle cx="${cx + 0.6}" cy="${EY + 1}" r="2.4" fill="${INK}"/>` +
-    `<circle cx="${cx + 2.2}" cy="${EY - 1.5}" r="1.6" fill="#FFFFFF"/>`
+    pupil(cx + 0.6, 4.4, 2.4) +
+    lid(cx) +
+    `<circle cx="${cx + 2.2}" cy="${EY - 1.5}" r="1.6" fill="#FFFFFF"/><circle cx="${cx - 0.9}" cy="${EY + 3}" r="0.7" fill="#FFFFFF" fill-opacity="0.8"/>`
   const arc = (cx: number) => `<path d="M${cx - 4.6} ${EY + 1.5}Q${cx} ${EY - 5} ${cx + 4.6} ${EY + 1.5}" ${ln(ink, 3)}/>`
   const closed = (cx: number) => `<path d="M${cx - 4.8} ${EY}Q${cx} ${EY + 4} ${cx + 4.8} ${EY}" ${ln(ink, 2.8)}/>`
   const dot = (cx: number) => `<circle cx="${cx}" cy="${EY}" r="3.9" fill="${ink}"/><circle cx="${cx + 1.3}" cy="${EY - 1.3}" r="1.2" fill="${dark ? INK : '#FFFFFF'}"/>`
@@ -767,7 +815,8 @@ function eyes(x: Ctx): string {
       return both(
         (cx) =>
           sclera(cx, 7, 8) +
-          `<circle cx="${cx + 0.4}" cy="${EY + 1}" r="5.3" fill="${iris}"/><circle cx="${cx + 0.4}" cy="${EY + 1.6}" r="3" fill="${INK}"/>` +
+          pupil(cx + 0.4, 5.3, 3) +
+          lid(cx, 7, 8) +
           `<circle cx="${cx + 2.4}" cy="${EY - 1.8}" r="2.1" fill="#FFFFFF"/><circle cx="${cx - 1.6}" cy="${EY + 3.4}" r="1" fill="#FFFFFF"/>`,
       )
     case 'cilios':
@@ -1067,8 +1116,17 @@ function piercing(x: Ctx, sp: SpeciesArt): string {
 // ---------- desenho: corpo, roupas e fantasias ----------
 
 const BODY = 'M16 102Q18 80 50 77Q82 80 84 102Z'
+
+/** gradientes neutros (branco/preto translúcidos): dão volume a qualquer cor, então podem ter id fixo */
+const GRADIENTS =
+  '<radialGradient id="avVol" cx="0.36" cy="0.3" r="0.8"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.3"/><stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="0.78" stop-color="#000000" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity="0.2"/></radialGradient>' +
+  '<radialGradient id="avBg" cx="0.5" cy="0.34" r="0.72"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.2"/><stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity="0.24"/></radialGradient>' +
+  '<linearGradient id="avCloth" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/><stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity="0.22"/></linearGradient>' +
+  '<pattern id="avGrain" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="1.2" r="0.45" fill="#FFFFFF" fill-opacity="0.09"/><circle cx="3.6" cy="3.4" r="0.4" fill="#000000" fill-opacity="0.08"/></pattern>' +
+  '<radialGradient id="avIris" cx="0.5" cy="0.66" r="0.62"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.38"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="0.82" stop-color="#000000" stop-opacity="0.12"/><stop offset="1" stop-color="#000000" stop-opacity="0.5"/></radialGradient>'
 const bodyShade = (c: string) => `<path d="M68 80.6Q81.5 84.5 84 102L72 102Q71 88 68 80.6Z" fill="${shade(c, 0.16)}"/>`
-const shirt = (c: string) => `<path d="${BODY}" fill="${c}"/>` + bodyShade(c)
+const shirt = (c: string) =>
+  `<path d="${BODY}" fill="${c}"/>` + bodyShade(c) + `<path d="M29 88Q31.5 94 30.5 102M71 88Q68.5 94 69.5 102" ${ln('#000000', 1)} stroke-opacity="0.12"/>`
 
 function furBody(x: Ctx): string {
   let s = shirt(x.fur) + `<ellipse cx="50" cy="97" rx="14" ry="12" fill="${x.c.coat === 'salsicha' ? '#D29A5B' : x.light}"/>`
@@ -1251,11 +1309,15 @@ export function customAvatarSvg(config: Partial<AvatarConfig>, mood: Mood = 'neu
   const hides = cos?.hides ?? {}
 
   return (
-    `<defs><clipPath id="avc"><circle cx="50" cy="50" r="50"/></clipPath><clipPath id="avb"><path d="${BODY}"/></clipPath></defs>` +
+    `<defs><clipPath id="avc"><circle cx="50" cy="50" r="50"/></clipPath><clipPath id="avb"><path d="${BODY}"/></clipPath>${GRADIENTS}</defs>` +
     `<g clip-path="url(#avc)">` +
     `<rect width="100" height="100" fill="${c.bg}"/>` +
     pattern(c.pattern) +
+    `<rect width="100" height="100" fill="url(#avBg)"/><rect width="100" height="100" fill="url(#avGrain)"/>` +
+    `<circle cx="50" cy="50" r="47.6" fill="none" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1.1"/>` +
     (cos ? cos.body(x) : outfit(x)) +
+    `<path d="${BODY}" fill="url(#avCloth)"/>` +
+    `<ellipse cx="50" cy="78.6" rx="19" ry="3.6" fill="#000000" fill-opacity="0.16"/>` +
     (hides.hair ? '' : hairBack(x)) +
     (hides.ears ? '' : sp.back(x)) +
     sp.face(x) +

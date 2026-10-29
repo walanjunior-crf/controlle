@@ -83,7 +83,8 @@ export function computeProgressStats(all: TrackerSnapshot[], restDays: RestDay[]
 // ---------------------------------------------------------------------------------
 // Níveis
 
-export const MAX_LEVEL = 40
+/** teto atual; sobe quando chegarem novas recompensas */
+export const MAX_LEVEL = 25
 
 /** Checks necessários para chegar ao nível `level` (nível 1 = 0). 5, 15, 30, 50, 75… */
 export function checksForLevel(level: number): number {
@@ -97,11 +98,11 @@ const TITLES: Array<[number, string]> = [
   [3, 'Broto'],
   [5, 'Muda'],
   [8, 'Folha'],
-  [12, 'Arbusto'],
-  [16, 'Árvore'],
-  [22, 'Bosque'],
-  [30, 'Floresta'],
-  [40, 'Lenda verde'],
+  [11, 'Arbusto'],
+  [14, 'Árvore'],
+  [18, 'Bosque'],
+  [22, 'Floresta'],
+  [25, 'Lenda verde'],
 ]
 
 export function levelTitle(level: number): string {

@@ -44,14 +44,14 @@ describe('avatar montável', () => {
     expect(effective({ ...DEFAULT_AVATAR, species: 'urso', hair: 'ondulado', beard: 'bigode' })).toMatchObject({ hair: 'ondulado', beard: 'bigode' })
   })
 
-  it('todo nível de 2 a 30 libera algo, e o padrão é todo livre', () => {
-    for (let lv = 2; lv <= 30; lv++) expect(rewardsAtLevel(lv).length, `nível ${lv}`).toBeGreaterThanOrEqual(3)
+  it('todo nível de 2 a 25 libera algo, e o padrão é todo livre', () => {
+    for (let lv = 2; lv <= 25; lv++) expect(rewardsAtLevel(lv).length, `nível ${lv}`).toBeGreaterThanOrEqual(3)
     expect(lockedItems(DEFAULT_AVATAR, 1, new Set())).toEqual([])
   })
 
   it('lista o que ainda está bloqueado', () => {
     const cfg = { ...DEFAULT_AVATAR, hat: 'coroa', costume: 'astronauta' }
     expect(lockedItems(cfg, 1, new Set())).toEqual(['Coroa', 'Astronauta'])
-    expect(lockedItems(cfg, 28, new Set())).toEqual([])
+    expect(lockedItems(cfg, 25, new Set())).toEqual([])
   })
 })

@@ -22,12 +22,12 @@ describe('níveis', () => {
     expect(levelFor(15).title).toBe('Broto')
   })
 
-  it('nível máximo não passa de 40', () => {
+  it('nível máximo não passa de 25', () => {
     const top = levelFor(10_000_000)
     expect(top.level).toBe(MAX_LEVEL)
     expect(top.maxed).toBe(true)
     expect(top.fraction).toBe(1)
-    expect(levelTitle(40)).toBe('Lenda verde')
+    expect(levelTitle(25)).toBe('Lenda verde')
   })
 })
 
