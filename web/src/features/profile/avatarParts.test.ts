@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CATALOG, customAvatarSvg, DEFAULT_AVATAR, lockedItems, normalizeAvatar, type Key, type Part } from './avatarParts'
+import { CATALOG, customAvatarSvg, DEFAULT_AVATAR, effective, lockedItems, normalizeAvatar, rewardsAtLevel, type Key, type Part } from './avatarParts'
 
 describe('avatar montável', () => {
   it('completa configurações antigas (v0.4) sem mudar o que a pessoa via', () => {
@@ -33,9 +33,25 @@ describe('avatar montável', () => {
     }
   })
 
+  it('raça do cachorro define a pelagem; estampa antiga vira raça', () => {
+    expect(effective({ ...DEFAULT_AVATAR, species: 'cachorro', breed: 'dalmata', fur: '#C98B4E' })).toMatchObject({ fur: '#F7F4EE', coat: 'dalmata' })
+    expect(effective({ ...DEFAULT_AVATAR, species: 'gato', breed: 'dalmata' }).coat).toBe('liso')
+    expect(normalizeAvatar({ species: 'cachorro', coat: 'dalmata' } as never)).toMatchObject({ breed: 'dalmata', coat: 'liso' })
+  })
+
+  it('peruca e bigode só nos bichos em que funcionam', () => {
+    expect(effective({ ...DEFAULT_AVATAR, species: 'tubarao', hair: 'ondulado', beard: 'bigode' })).toMatchObject({ hair: 'nenhum', beard: 'nenhum' })
+    expect(effective({ ...DEFAULT_AVATAR, species: 'urso', hair: 'ondulado', beard: 'bigode' })).toMatchObject({ hair: 'ondulado', beard: 'bigode' })
+  })
+
+  it('todo nível de 2 a 30 libera algo, e o padrão é todo livre', () => {
+    for (let lv = 2; lv <= 30; lv++) expect(rewardsAtLevel(lv).length, `nível ${lv}`).toBeGreaterThanOrEqual(3)
+    expect(lockedItems(DEFAULT_AVATAR, 1, new Set())).toEqual([])
+  })
+
   it('lista o que ainda está bloqueado', () => {
     const cfg = { ...DEFAULT_AVATAR, hat: 'coroa', costume: 'astronauta' }
     expect(lockedItems(cfg, 1, new Set())).toEqual(['Coroa', 'Astronauta'])
-    expect(lockedItems(cfg, 12, new Set())).toEqual([])
+    expect(lockedItems(cfg, 28, new Set())).toEqual([])
   })
 })

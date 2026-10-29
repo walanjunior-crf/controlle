@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { ACHIEVEMENTS } from '../../domain'
 import { useToast } from '../../components/Toast'
 import { useRewards } from '../../hooks/useRewards'
+import { rewardsAtLevel } from '../profile/avatarParts'
 
 const KEY = 'controlle.rewards.seen'
 
@@ -49,7 +50,10 @@ export function useRewardToasts() {
     const fresh = ids.filter((id) => !seen.ids.includes(id))
     const leveled = r.level.level > seen.level
     if (!fresh.length && !leveled && r.level.level === seen.level) return
-    if (leveled) toast.show(`Subiu para o nível ${r.level.level}: ${r.level.title}! 🎉`)
+    if (leveled) {
+      const got = rewardsAtLevel(r.level.level).length
+      toast.show(`Subiu para o nível ${r.level.level}: ${r.level.title}! 🎉${got ? ` ${got} peças novas para o avatar.` : ''}`)
+    }
     if (fresh.length === 1) {
       const a = ACHIEVEMENTS.find((x) => x.id === fresh[0])
       if (a) toast.show(`${a.icon} Conquista: ${a.title}`)

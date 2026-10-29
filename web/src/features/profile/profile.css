@@ -690,3 +690,13 @@
   border-radius: 14px;
   overflow: hidden;
 }
+.ae-note.muted-note {
+  color: var(--text-2);
+  font-weight: 600;
+}
+.level-next {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--amber-text);
+}

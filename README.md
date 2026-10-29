@@ -287,3 +287,9 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Chapéus com cor livre (boina, cartola, chapéu de sol, laço…), óculos com cor da armação, brincos e piercings em prata, ouro, rosé, bronze, preto.
 - Roupas com cor livre e fantasias: pirata, terno, policial, dinossauro, tubarão, chef e astronauta.
 - Avatares da v0.4 continuam iguais (o app completa os campos novos).
+
+### v0.4.2 — Avatar mais coerente e recompensas por nível
+
+- Dálmata e salsicha agora são raças do cachorro (aba Bicho), com pelagem própria; não aparecem para os outros bichos.
+- Sai a aba Cabelo: fica só a peruca ondulada (aba Cabeça), para gato, cachorro, urso, raposa e rato. Bigodes só para cachorro, urso e raposa.
+- Desbloqueio mais exclusivo: nível 1 traz o básico e cada nível do 2 ao 30 libera de 4 a 5 peças. O cartão de nível mostra o que vem no próximo.

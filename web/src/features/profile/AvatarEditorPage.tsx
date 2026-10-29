@@ -9,7 +9,7 @@ import { useToast } from '../../components/Toast'
 import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
 import {
-  CATALOG, COAT_FUR, COSTUMES, DEFAULT_AVATAR, SPECIES_FUR,
+  BEARD_SPECIES, CATALOG, COSTUMES, DEFAULT_AVATAR, HAIR_SPECIES, SPECIES_FUR,
   customAvatarSvg, isUnlocked, normalizeAvatar, unlockHint,
   type ColorPart, type Key, type Mood, type Part,
 } from './avatarParts'
@@ -19,7 +19,12 @@ interface Section {
   key: Key
   /** recorte das miniaturas (viewBox) para peças pequenas */
   zoom?: string
+  /** só aparece quando faz sentido para o bicho escolhido */
+  when?: (c: AvatarConfig) => boolean
 }
+
+const isDog = (c: AvatarConfig) => c.species === 'cachorro'
+const hasBreed = (c: AvatarConfig) => isDog(c) && c.breed !== 'srd'
 interface Tab {
   id: string
   label: string
@@ -27,8 +32,8 @@ interface Tab {
 }
 
 const TABS: Tab[] = [
-  { id: 'bicho', label: 'Bicho', sections: [{ key: 'species' }] },
-  { id: 'pelagem', label: 'Pelagem', sections: [{ key: 'fur' }, { key: 'coat' }] },
+  { id: 'bicho', label: 'Bicho', sections: [{ key: 'species' }, { key: 'breed', when: isDog }] },
+  { id: 'pelagem', label: 'Pelagem', sections: [{ key: 'fur', when: (c) => !hasBreed(c) }, { key: 'coat', when: (c) => !hasBreed(c) }] },
   {
     id: 'rosto',
     label: 'Rosto',
@@ -37,11 +42,20 @@ const TABS: Tab[] = [
       { key: 'eyeColor' },
       { key: 'brows', zoom: '29 25 42 42' },
       { key: 'mouth', zoom: '33 47 34 34' },
+      { key: 'beard', zoom: '30 44 40 40', when: (c) => BEARD_SPECIES.has(c.species) },
       { key: 'cheeks', zoom: '22 34 56 56' },
     ],
   },
-  { id: 'cabelo', label: 'Cabelo', sections: [{ key: 'hair' }, { key: 'hairColor' }, { key: 'beard', zoom: '24 44 52 52' }] },
-  { id: 'chapeu', label: 'Chapéu', sections: [{ key: 'hat' }, { key: 'hatColor' }] },
+  {
+    id: 'cabeca',
+    label: 'Cabeça',
+    sections: [
+      { key: 'hat' },
+      { key: 'hatColor' },
+      { key: 'hair', when: (c) => HAIR_SPECIES.has(c.species) },
+      { key: 'hairColor', when: (c) => HAIR_SPECIES.has(c.species) && c.hair !== 'nenhum' },
+    ],
+  },
   { id: 'oculos', label: 'Óculos', sections: [{ key: 'glasses', zoom: '22 24 56 56' }, { key: 'glassesColor' }] },
   {
     id: 'joias',
@@ -107,7 +121,6 @@ export function AvatarEditorPage() {
     const next: AvatarConfig = { ...cfg, [key]: valueOf(p) }
     // trocar de bicho troca também a pelagem, se a pessoa ainda não tinha mexido nela
     if (key === 'species' && cfg.fur.toLowerCase() === (SPECIES_FUR[cfg.species] ?? '').toLowerCase()) next.fur = SPECIES_FUR[p.id] ?? cfg.fur
-    if (key === 'coat' && COAT_FUR[p.id]) next.fur = COAT_FUR[p.id]
     setDraft(next)
   }
 
@@ -121,7 +134,7 @@ export function AvatarEditorPage() {
       const p = pickNone || !pool.length ? none! : pool[Math.floor(Math.random() * pool.length)]
       next[key] = valueOf(p)
     }
-    next.fur = Math.random() < 0.6 ? (COAT_FUR[next.coat] ?? SPECIES_FUR[next.species] ?? next.fur) : next.fur
+    if (Math.random() < 0.6) next.fur = SPECIES_FUR[next.species] ?? next.fur
     setDraft(next)
     setHint('')
   }
@@ -193,12 +206,18 @@ export function AvatarEditorPage() {
       </div>
 
       <div className="card profile-card ae-panel" role="tabpanel" aria-label={current.label}>
-        {current.sections.map(({ key, zoom }) => {
+        {current.id === 'pelagem' && hasBreed(cfg) && (
+          <p className="ae-note">
+            A raça {CATALOG.breed.parts.find((b) => b.id === cfg.breed)?.label} já vem com pelagem própria. Para escolher cor e estampa, use Vira-lata na aba Bicho.
+          </p>
+        )}
+        {current.id === 'cabeca' && !HAIR_SPECIES.has(cfg.species) && <p className="ae-note muted-note">Peruca não combina com este bicho.</p>}
+        {current.sections.filter((sec) => !sec.when || sec.when(cfg)).map(({ key, zoom }) => {
           const cat = CATALOG[key]
           const cover = coveredBy(key)
           return (
             <div key={key} className="ae-section">
-              {current.sections.length > 1 && <h3 className="ae-section-title">{cat.label}</h3>}
+              {current.sections.filter((sec) => !sec.when || sec.when(cfg)).length > 1 && <h3 className="ae-section-title">{cat.label}</h3>}
               {cover && <p className="ae-note">A fantasia {cover} cobre esta parte. Tire a fantasia para ver.</p>}
               <div className={`ae-options${cat.color && key !== 'fur' ? ' is-colors' : ''}`} role="group" aria-label={cat.label}>
                 {(cat.parts as (Part | ColorPart)[]).map((p) => {

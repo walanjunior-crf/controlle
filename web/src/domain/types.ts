@@ -164,6 +164,8 @@ export interface CalendarEvent {
  */
 export interface AvatarConfig {
   species: string
+  /** raça (só vale para o cachorro) */
+  breed: string
   fur: string
   coat: string
   eyes: string

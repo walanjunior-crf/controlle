@@ -96,33 +96,41 @@ export const FURS: ColorPart[] = [
   { id: 'azul', label: 'Azul', hex: '#7C9CB5' },
   { id: 'lilas', label: 'Lilás', hex: '#B49AD6' },
   { id: 'rosa', label: 'Rosa', hex: '#F2A7B8' },
-  { id: 'dourado', label: 'Dourado', hex: '#E0B43A', unlock: { level: 8 } },
-  { id: 'esmeralda', label: 'Esmeralda', hex: '#3FA06A', unlock: { level: 12 } },
+  { id: 'dourado', label: 'Dourado', hex: '#E0B43A' },
+  { id: 'esmeralda', label: 'Esmeralda', hex: '#3FA06A' },
 ]
 
 export const COATS: Part[] = [
   { id: 'liso', label: 'Lisa' },
-  { id: 'dalmata', label: 'Dálmata' },
-  { id: 'salsicha', label: 'Salsicha' },
   { id: 'listrado', label: 'Listrada' },
   { id: 'mancha', label: 'Mancha no olho' },
   { id: 'bicolor', label: 'Bicolor' },
   { id: 'pintas', label: 'Pintinhas' },
 ]
-/** cor que a estampa aplica sozinha (dá para trocar depois) */
-export const COAT_FUR: Record<string, string> = { dalmata: '#F7F4EE', salsicha: '#4A2E1A' }
+/** Raças do cachorro. Cada raça tem pelagem própria (cor e marcas fixas). */
+export const BREEDS: Part[] = [
+  { id: 'srd', label: 'Vira-lata' },
+  { id: 'dalmata', label: 'Dálmata' },
+  { id: 'salsicha', label: 'Salsicha' },
+]
+export const BREED_FUR: Record<string, string> = { dalmata: '#F7F4EE', salsicha: '#4A2E1A' }
+
+/** bichos em que a peruca assenta bem (sem orelhas altas, chifres ou barbatana) */
+export const HAIR_SPECIES = new Set(['gato', 'cachorro', 'urso', 'raposa', 'rato'])
+/** bichos com focinho onde o bigode fica natural */
+export const BEARD_SPECIES = new Set(['cachorro', 'urso', 'raposa'])
 
 export const EYES: Part[] = [
   { id: 'brilho', label: 'Grandes' },
-  { id: 'anime', label: 'Brilhantes', unlock: { level: 2 } },
+  { id: 'anime', label: 'Brilhantes' },
   { id: 'pontos', label: 'Simples' },
   { id: 'cilios', label: 'Cílios' },
   { id: 'sonolento', label: 'Sonolentos' },
   { id: 'bravo', label: 'Bravos' },
   { id: 'alegre', label: 'Alegres' },
   { id: 'piscada', label: 'Piscada' },
-  { id: 'estrela', label: 'Estrelas', unlock: { level: 4 } },
-  { id: 'coracao', label: 'Corações', unlock: { level: 9 } },
+  { id: 'estrela', label: 'Estrelas' },
+  { id: 'coracao', label: 'Corações' },
 ]
 
 export const EYE_COLORS: ColorPart[] = [
@@ -132,7 +140,7 @@ export const EYE_COLORS: ColorPart[] = [
   { id: 'verde', label: 'Verde', hex: '#3FA06A' },
   { id: 'mel', label: 'Mel', hex: '#C98B2E' },
   { id: 'cinza', label: 'Cinza', hex: '#8A9AA8' },
-  { id: 'violeta', label: 'Violeta', hex: '#8E62C9', unlock: { level: 3 } },
+  { id: 'violeta', label: 'Violeta', hex: '#8E62C9' },
 ]
 
 export const BROWS: Part[] = [
@@ -167,22 +175,13 @@ export const CHEEKS: Part[] = [
 
 export const BEARDS: Part[] = [
   { id: 'nenhum', label: 'Sem' },
-  { id: 'bigode', label: 'Bigode' },
+  { id: 'bigode', label: 'Bigodão' },
   { id: 'bigodefino', label: 'Bigode fino' },
-  { id: 'cavanhaque', label: 'Cavanhaque' },
-  { id: 'barba', label: 'Barba', unlock: { level: 3 } },
 ]
 
 export const HAIRS: Part[] = [
-  { id: 'nenhum', label: 'Sem' },
-  { id: 'ondulado', label: 'Ondulado' },
-  { id: 'cacheado', label: 'Black power' },
-  { id: 'franja', label: 'Chanel' },
-  { id: 'longo', label: 'Longo' },
-  { id: 'coque', label: 'Coque' },
-  { id: 'chiquinhas', label: 'Chiquinhas' },
-  { id: 'topete', label: 'Topete' },
-  { id: 'moicano', label: 'Moicano', unlock: { level: 4 } },
+  { id: 'nenhum', label: 'Sem peruca' },
+  { id: 'ondulado', label: 'Peruca ondulada' },
 ]
 
 export const HAIR_COLORS: ColorPart[] = [
@@ -207,9 +206,9 @@ export const HATS: Part[] = [
   { id: 'laco', label: 'Laço' },
   { id: 'flor', label: 'Flor' },
   { id: 'faixa', label: 'Faixa' },
-  { id: 'fone', label: 'Fones', unlock: { level: 3 } },
-  { id: 'cartola', label: 'Cartola', unlock: { level: 5 } },
-  { id: 'coroa', label: 'Coroa', unlock: { level: 10 } },
+  { id: 'fone', label: 'Fones' },
+  { id: 'cartola', label: 'Cartola' },
+  { id: 'coroa', label: 'Coroa' },
   { id: 'unicornio', label: 'Chifre de unicórnio', unlock: { achievement: 'perfectDays10' } },
 ]
 
@@ -229,7 +228,7 @@ export const ACCENTS: ColorPart[] = [
   { id: 'cinza', label: 'Cinza', hex: '#8A9099' },
   { id: 'preto', label: 'Preto', hex: '#2B2B2B' },
   { id: 'branco', label: 'Branco', hex: '#F4F1EA' },
-  { id: 'ouro', label: 'Ouro', hex: '#D4A84A', unlock: { level: 6 } },
+  { id: 'ouro', label: 'Ouro', hex: '#D4A84A' },
 ]
 
 export const GLASSES: Part[] = [
@@ -237,10 +236,10 @@ export const GLASSES: Part[] = [
   { id: 'redondo', label: 'Redondo' },
   { id: 'quadrado', label: 'Quadrado' },
   { id: 'gatinho', label: 'Gatinho' },
-  { id: 'visor', label: 'Esportivo', unlock: { level: 3 } },
-  { id: 'monoculo', label: 'Monóculo', unlock: { level: 5 } },
-  { id: 'sol', label: 'Escuros', unlock: { level: 6 } },
-  { id: 'coracao', label: 'Coração', unlock: { level: 8 } },
+  { id: 'visor', label: 'Esportivo' },
+  { id: 'monoculo', label: 'Monóculo' },
+  { id: 'sol', label: 'Escuros' },
+  { id: 'coracao', label: 'Coração' },
 ]
 
 export const EARRINGS: Part[] = [
@@ -266,7 +265,7 @@ export const METALS: ColorPart[] = [
   { id: 'rose', label: 'Ouro rosé', hex: '#E9A38E' },
   { id: 'bronze', label: 'Bronze', hex: '#B9773E' },
   { id: 'preto', label: 'Preto', hex: '#2E2E2E' },
-  { id: 'arcoiris', label: 'Turquesa', hex: '#3CC8C0', unlock: { level: 4 } },
+  { id: 'arcoiris', label: 'Turquesa', hex: '#3CC8C0' },
 ]
 
 export const OUTFITS: Part[] = [
@@ -275,22 +274,22 @@ export const OUTFITS: Part[] = [
   { id: 'regata', label: 'Regata' },
   { id: 'listrada', label: 'Listrada' },
   { id: 'moletom', label: 'Moletom' },
-  { id: 'sueter', label: 'Suéter', unlock: { level: 2 } },
-  { id: 'jaqueta', label: 'Jaqueta', unlock: { level: 4 } },
-  { id: 'cachecol', label: 'Cachecol', unlock: { level: 7 } },
+  { id: 'sueter', label: 'Suéter' },
+  { id: 'jaqueta', label: 'Jaqueta' },
+  { id: 'cachecol', label: 'Cachecol' },
   { id: 'medalha', label: 'Medalha C', unlock: { achievement: 'streak7' } },
-  { id: 'capa', label: 'Capa', unlock: { level: 15 } },
+  { id: 'capa', label: 'Capa' },
 ]
 
 export const COSTUMES: Part[] = [
   { id: 'nenhum', label: 'Sem fantasia' },
-  { id: 'pirata', label: 'Pirata', unlock: { level: 2 } },
-  { id: 'terno', label: 'Terno', unlock: { level: 3 } },
-  { id: 'policial', label: 'Policial', unlock: { level: 4 } },
-  { id: 'dinossauro', label: 'Dinossauro', unlock: { level: 5 } },
-  { id: 'tubarao', label: 'Tubarão', unlock: { level: 6 } },
-  { id: 'chef', label: 'Chef', unlock: { level: 8 } },
-  { id: 'astronauta', label: 'Astronauta', unlock: { level: 12 } },
+  { id: 'pirata', label: 'Pirata' },
+  { id: 'terno', label: 'Terno' },
+  { id: 'policial', label: 'Policial' },
+  { id: 'dinossauro', label: 'Dinossauro' },
+  { id: 'tubarao', label: 'Tubarão' },
+  { id: 'chef', label: 'Chef' },
+  { id: 'astronauta', label: 'Astronauta' },
 ]
 
 export const BGS: ColorPart[] = [
@@ -303,20 +302,20 @@ export const BGS: ColorPart[] = [
   { id: 'ameixa', label: 'Ameixa', hex: '#7A4E7E' },
   { id: 'grafite', label: 'Grafite', hex: '#4A4F4A' },
   { id: 'creme', label: 'Creme', hex: '#F1E6D0' },
-  { id: 'ceu', label: 'Céu', hex: '#5E9AD0', unlock: { level: 3 } },
-  { id: 'noite', label: 'Noite', hex: '#243B6B', unlock: { level: 6 } },
-  { id: 'rosa', label: 'Rosa', hex: '#D9778F', unlock: { level: 9 } },
+  { id: 'ceu', label: 'Céu', hex: '#5E9AD0' },
+  { id: 'noite', label: 'Noite', hex: '#243B6B' },
+  { id: 'rosa', label: 'Rosa', hex: '#D9778F' },
 ]
 
 export const PATTERNS: Part[] = [
   { id: 'nenhum', label: 'Liso' },
   { id: 'bolinhas', label: 'Bolinhas' },
-  { id: 'listras', label: 'Listras', unlock: { level: 2 } },
-  { id: 'xadrez', label: 'Xadrez', unlock: { level: 3 } },
-  { id: 'ondas', label: 'Ondas', unlock: { level: 4 } },
-  { id: 'raios', label: 'Raios', unlock: { level: 5 } },
-  { id: 'estrelas', label: 'Estrelas', unlock: { level: 7 } },
-  { id: 'confete', label: 'Confete', unlock: { level: 9 } },
+  { id: 'listras', label: 'Listras' },
+  { id: 'xadrez', label: 'Xadrez' },
+  { id: 'ondas', label: 'Ondas' },
+  { id: 'raios', label: 'Raios' },
+  { id: 'estrelas', label: 'Estrelas' },
+  { id: 'confete', label: 'Confete' },
 ]
 
 export type Key = keyof AvatarConfig
@@ -324,6 +323,7 @@ export type Key = keyof AvatarConfig
 /** Cada campo da configuração e o catálogo de onde ele sai. */
 export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; color?: boolean }> = {
   species: { label: 'Bicho', parts: SPECIES },
+  breed: { label: 'Raça', parts: BREEDS },
   fur: { label: 'Cor da pelagem', parts: FURS, color: true },
   coat: { label: 'Estampa', parts: COATS },
   eyes: { label: 'Olhos', parts: EYES },
@@ -331,9 +331,9 @@ export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; 
   brows: { label: 'Sobrancelhas', parts: BROWS },
   mouth: { label: 'Boca', parts: MOUTHS },
   cheeks: { label: 'Marcas', parts: CHEEKS },
-  beard: { label: 'Barba e bigode', parts: BEARDS },
-  hair: { label: 'Cabelo', parts: HAIRS },
-  hairColor: { label: 'Cor do cabelo', parts: HAIR_COLORS, color: true },
+  beard: { label: 'Bigode', parts: BEARDS },
+  hair: { label: 'Peruca', parts: HAIRS },
+  hairColor: { label: 'Cor da peruca', parts: HAIR_COLORS, color: true },
   hat: { label: 'Chapéu', parts: HATS },
   hatColor: { label: 'Cor do chapéu', parts: ACCENTS, color: true },
   glasses: { label: 'Óculos', parts: GLASSES },
@@ -348,8 +348,64 @@ export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; 
   pattern: { label: 'Padrão', parts: PATTERNS },
 }
 
+// ---------- desbloqueio por nível ----------
+
+/**
+ * O que cada nível libera. Nível 1 traz o básico; daí em diante cada nível dá
+ * de 3 a 4 peças, deixando bichos, raças e fantasias mais raros.
+ * (Medalha C e chifre de unicórnio continuam presos a conquistas.)
+ */
+export const LEVEL_PLAN: Record<number, [Key, string][]> = {
+  2: [['species', 'raposa'], ['eyes', 'cilios'], ['hatColor', 'vermelho'], ['bg', 'folha']],
+  3: [['hat', 'gorro'], ['mouth', 'sorrisao'], ['fur', 'laranja'], ['eyeColor', 'verde'], ['hatColor', 'folha']],
+  4: [['species', 'rato'], ['glasses', 'quadrado'], ['earrings', 'argola'], ['coat', 'listrado']],
+  5: [['costume', 'pirata'], ['brows', 'grossas'], ['metal', 'ouro'], ['pattern', 'bolinhas'], ['fur', 'preto']],
+  6: [['hair', 'ondulado'], ['hairColor', 'ruivo'], ['hat', 'boina'], ['cheeks', 'sardas']],
+  7: [['breed', 'dalmata'], ['outfit', 'moletom'], ['bg', 'ceu'], ['hatColor', 'laranja']],
+  8: [['eyes', 'anime'], ['mouth', 'lingua'], ['fur', 'chocolate'], ['eyes', 'piscada']],
+  9: [['costume', 'terno'], ['piercing', 'nariz'], ['metal', 'rose'], ['hatColor', 'rosa'], ['fur', 'creme']],
+  10: [['species', 'dinossauro'], ['hat', 'coroa'], ['outfit', 'listrada'], ['coat', 'mancha']],
+  11: [['glasses', 'gatinho'], ['earrings', 'gota'], ['hairColor', 'rosa'], ['bg', 'menta'], ['piercing', 'sobrancelha']],
+  12: [['breed', 'salsicha'], ['mouth', 'dentes'], ['bg', 'noite'], ['eyeColor', 'mel']],
+  13: [['costume', 'policial'], ['eyes', 'sonolento'], ['pattern', 'listras'], ['hatColor', 'turquesa']],
+  14: [['hat', 'chapeu'], ['outfit', 'sueter'], ['fur', 'lilas'], ['cheeks', 'pinta']],
+  15: [['species', 'tubarao'], ['outfit', 'capa'], ['eyeColor', 'cinza'], ['coat', 'bicolor']],
+  16: [['glasses', 'sol'], ['piercing', 'septo'], ['brows', 'arqueadas'], ['hairColor', 'platinado'], ['hatColor', 'marrom']],
+  17: [['costume', 'dinossauro'], ['beard', 'bigode'], ['metal', 'bronze'], ['bg', 'terracota']],
+  18: [['hat', 'laco'], ['earrings', 'duplo'], ['pattern', 'xadrez'], ['hatColor', 'roxo']],
+  19: [['eyes', 'bravo'], ['mouth', 'debochado'], ['fur', 'rosa'], ['brows', 'preocupadas']],
+  20: [['costume', 'tubarao'], ['glasses', 'monoculo'], ['bg', 'rosa'], ['mouth', 'surpreso']],
+  21: [['hat', 'flor'], ['outfit', 'jaqueta'], ['hairColor', 'azul'], ['coat', 'pintas']],
+  22: [['eyes', 'estrela'], ['piercing', 'labio'], ['pattern', 'ondas'], ['hatColor', 'marinho']],
+  23: [['hat', 'faixa'], ['outfit', 'cachecol'], ['fur', 'verde'], ['cheeks', 'curativo']],
+  24: [['costume', 'chef'], ['mouth', 'presas'], ['brows', 'bravas'], ['bg', 'ameixa']],
+  25: [['hat', 'fone'], ['earrings', 'perola'], ['fur', 'dourado'], ['hairColor', 'verde']],
+  26: [['eyes', 'coracao'], ['glasses', 'visor'], ['pattern', 'raios'], ['outfit', 'regata']],
+  27: [['hat', 'cartola'], ['beard', 'bigodefino'], ['metal', 'arcoiris'], ['eyeColor', 'violeta']],
+  28: [['costume', 'astronauta'], ['pattern', 'estrelas'], ['fur', 'esmeralda'], ['brows', 'unidas']],
+  29: [['hatColor', 'ouro'], ['hairColor', 'roxo'], ['bg', 'petroleo'], ['fur', 'azul']],
+  30: [['glasses', 'coracao'], ['pattern', 'confete'], ['hairColor', 'grisalho'], ['bg', 'grafite']],
+}
+
+for (const [lv, items] of Object.entries(LEVEL_PLAN)) {
+  for (const [key, id] of items) {
+    const p = (CATALOG[key].parts as Part[]).find((x) => x.id === id)
+    if (p && !p.unlock) p.unlock = { level: Number(lv) }
+  }
+}
+
+/** Peças que o nível libera, já com o grupo para dar contexto ("Ouro · Metal"). */
+export function rewardsAtLevel(level: number): string[] {
+  return (LEVEL_PLAN[level] ?? []).map(([key, id]) => {
+    const p = (CATALOG[key].parts as Part[]).find((x) => x.id === id)
+    const group = CATALOG[key].parts === ACCENTS ? 'cor de acessório' : CATALOG[key].label.toLowerCase()
+    return p ? (CATALOG[key].color || key === 'breed' || key === 'coat' ? `${p.label} (${group})` : p.label) : id
+  })
+}
+
 export const DEFAULT_AVATAR: AvatarConfig = {
   species: 'gato',
+  breed: 'srd',
   fur: '#C98B4E',
   coat: 'liso',
   eyes: 'brilho',
@@ -390,8 +446,10 @@ const V04_HAT: Record<string, string> = { gorro: '#E0A43A', fone: '#4A4F4A', flo
 
 /** Configuração segura para desenhar: valor desconhecido ou ausente vira o padrão. */
 export function normalizeAvatar(c: Partial<AvatarConfig> | null | undefined): AvatarConfig {
-  const src = (c ?? {}) as Record<string, unknown>
+  const src = { ...(c ?? {}) } as Record<string, unknown>
   const out = { ...DEFAULT_AVATAR }
+  // 0.4.1 guardava dálmata e salsicha como estampa
+  if ((src.coat === 'dalmata' || src.coat === 'salsicha') && !('breed' in src)) src.breed = src.coat
   for (const key of Object.keys(CATALOG) as Key[]) {
     const v = src[key]
     if (typeof v !== 'string') continue
@@ -1161,9 +1219,25 @@ const COSTUME_ART: Record<string, CostumeArt> = {
   },
 }
 
+/**
+ * O que de fato vai para o desenho: raça define pelagem e marcas do cachorro;
+ * peruca e bigode só nos bichos em que funcionam.
+ */
+export function effective(c: AvatarConfig): AvatarConfig {
+  const out = { ...c }
+  const breed = c.species === 'cachorro' ? c.breed : 'srd'
+  if (breed !== 'srd') {
+    out.fur = BREED_FUR[breed] ?? c.fur
+    out.coat = breed
+  }
+  if (!HAIR_SPECIES.has(c.species)) out.hair = 'nenhum'
+  if (!BEARD_SPECIES.has(c.species)) out.beard = 'nenhum'
+  return out
+}
+
 /** Conteúdo interno (viewBox 0 0 100 100) do avatar montado. */
 export function customAvatarSvg(config: Partial<AvatarConfig>, mood: Mood = 'neutral'): string {
-  const c = normalizeAvatar(config)
+  const c = effective(normalizeAvatar(config))
   const sp = SPECIES_ART[c.species] ?? SPECIES_ART.gato
   const fur = c.fur
   const x: Ctx = {
