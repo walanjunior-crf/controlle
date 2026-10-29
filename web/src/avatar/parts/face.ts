@@ -4,7 +4,7 @@
  * Os estilos 'arc', 'closed' e 'heart' (olhos) e 'open', 'smile', 'small' (boca)
  * são usados pelos humores e precisam existir sempre.
  */
-import { cut, cutEllipse, cutPoly, f, layer, look, mirror, stroke as plainStroke } from '../paper'
+import { cut, cutEllipse, cutPoly, detail, f, layer, look, mirror, stroke as plainStroke } from '../paper'
 import { adjust } from '../color'
 import type { Ctx, EyeDraw, PointDraw, Pt } from '../types'
 
@@ -23,7 +23,7 @@ export const faceInk = (x: Ctx) => (x.fur.ink === '#F6F1E8' ? '#F6F1E8' : INK)
 const stroke = (d: string, color: string, w: number, extra = '', dash = true) => {
   if (look.style === 'chapado') return plainStroke(d, color, f(w * 1.3), extra)
   if (look.style === 'pelucia') {
-    if (!dash) return plainStroke(d, color, f(w * 1.1), extra)
+    if (!dash || !detail.full) return plainStroke(d, color, f(w * 1.1), extra)
     const sw = f(w * 0.92)
     return plainStroke(d, color, sw, `stroke-dasharray="${f(sw * 0.95)} ${f(sw * 1.45)}" ${extra}`.trim())
   }
@@ -84,12 +84,37 @@ export const EYES: Record<string, EyeDraw> = {
       `<circle cx="${f(cx + 1.3 * s)}" cy="${f(cy - 1 * s)}" r="${f(1.15 * k * s)}" fill="#FFFFFF"/>`
     )
   },
-  anime: (x, cx, cy, s, side) =>
-    layer(cutEllipse(cx, cy, 6.3 * s, 7.4 * s, `an${side}`, { jitter: 0.025 }), adjust(x.c.eyeColor, -0.3), { lift: 0.7 }) +
-    layer(cutEllipse(cx, cy + 1.7 * s, 4.7 * s, 5.0 * s, `anin${side}`, { jitter: 0.03 }), x.c.eyeColor, { shadow: false, edge: false }) +
-    layer(cutEllipse(cx, cy + 0.2 * s, 2.4 * s, 2.9 * s, `anp${side}`, { jitter: 0.03 }), INK, { shadow: false, edge: false }) +
-    `<circle cx="${f(cx - 2.1 * s)}" cy="${f(cy - 2.6 * s)}" r="${f(1.9 * s)}" fill="#FFFFFF"/>` +
-    `<circle cx="${f(cx + 2.3 * s)}" cy="${f(cy + 3.2 * s)}" r="${f(1.0 * s)}" fill="#FFFFFF" fill-opacity="0.85"/>`,
+  anime: (x, cx, cy, s, side) => {
+    if (look.style === 'pelucia') {
+      // botão grande: disco escuro, anel colorido, miolo escuro e dois reflexos
+      const rx = 6.3 * s
+      const ry = 7.4 * s
+      return (
+        layer(cutEllipse(cx, cy, rx, ry, `an${side}`, { jitter: 0.01 }), '#2B2019', { lift: 0.7 }) +
+        `<ellipse cx="${f(cx)}" cy="${f(cy + 0.5 * s)}" rx="${f(rx - 1.1 * s)}" ry="${f(ry - 1.2 * s)}" fill="none" stroke="${x.c.eyeColor}" stroke-width="${f(1.5 * s)}" stroke-opacity="0.95"/>` +
+        `<ellipse cx="${f(cx)}" cy="${f(cy + 0.7 * s)}" rx="${f(rx - 2.4 * s)}" ry="${f(ry - 2.6 * s)}" fill="#171009" fill-opacity="0.7"/>` +
+        `<ellipse cx="${f(cx - 2 * s)}" cy="${f(cy - 2.6 * s)}" rx="${f(1.9 * s)}" ry="${f(1.6 * s)}" fill="#FFFFFF" fill-opacity="0.92"/>` +
+        `<circle cx="${f(cx + 2.2 * s)}" cy="${f(cy + 3.1 * s)}" r="${f(1 * s)}" fill="#FFFFFF" fill-opacity="0.85"/>`
+      )
+    }
+    if (look.style === 'chapado') {
+      // Duolingo: forma grande, íris cheia, pupila e brilho branco nítido (sem sombra extra)
+      return (
+        layer(cutEllipse(cx, cy, 6.5 * s, 7.6 * s, `an${side}`, { jitter: 0.025 }), adjust(x.c.eyeColor, -0.3), { lift: 0.5 }) +
+        layer(cutEllipse(cx, cy + 1.6 * s, 5.0 * s, 5.4 * s, `anin${side}`, { jitter: 0.03 }), x.c.eyeColor, { shadow: false, edge: false }) +
+        layer(cutEllipse(cx, cy + 0.4 * s, 2.5 * s, 3 * s, `anp${side}`, { jitter: 0.03 }), INK, { shadow: false, edge: false }) +
+        `<circle cx="${f(cx - 2.2 * s)}" cy="${f(cy - 2.7 * s)}" r="${f(2.2 * s)}" fill="#FFFFFF"/>` +
+        `<circle cx="${f(cx + 2.4 * s)}" cy="${f(cy + 3.3 * s)}" r="${f(1.1 * s)}" fill="#FFFFFF"/>`
+      )
+    }
+    return (
+      layer(cutEllipse(cx, cy, 6.3 * s, 7.4 * s, `an${side}`, { jitter: 0.025 }), adjust(x.c.eyeColor, -0.3), { lift: 0.7 }) +
+      layer(cutEllipse(cx, cy + 1.7 * s, 4.7 * s, 5.0 * s, `anin${side}`, { jitter: 0.03 }), x.c.eyeColor, { shadow: false, edge: false }) +
+      layer(cutEllipse(cx, cy + 0.2 * s, 2.4 * s, 2.9 * s, `anp${side}`, { jitter: 0.03 }), INK, { shadow: false, edge: false }) +
+      `<circle cx="${f(cx - 2.1 * s)}" cy="${f(cy - 2.6 * s)}" r="${f(1.9 * s)}" fill="#FFFFFF"/>` +
+      `<circle cx="${f(cx + 2.3 * s)}" cy="${f(cy + 3.2 * s)}" r="${f(1.0 * s)}" fill="#FFFFFF" fill-opacity="0.85"/>`
+    )
+  },
   cilios: (x, cx, cy, s, side) => {
     const o = side
     const lash = (a: number, b: number, c: number, d: number) => stroke(`M${f(cx + o * a * s)} ${f(cy + b * s)}L${f(cx + o * c * s)} ${f(cy + d * s)}`, INK, 1.7 * s, '', false)
@@ -127,10 +152,32 @@ export const EYES: Record<string, EyeDraw> = {
       pts.push([cx + r * Math.cos(a), cy + 0.5 * s + r * Math.sin(a)])
     }
     const big = pts.map(([px, py]) => [cx + (px - cx) * 1.18, cy + 0.5 * s + (py - cy - 0.5 * s) * 1.18] as Pt)
+    if (look.style === 'pelucia') {
+      // estrela de feltro amarelo sobre um contorno mais escuro, com costura em volta
+      const inner = pts.map(([px, py]) => [cx + (px - cx) * 0.8, cy + 0.5 * s + (py - cy - 0.5 * s) * 0.8] as Pt)
+      return (
+        layer(cutPoly(big, `star-o${side}`, 0), '#D58F1E', { lift: 0.7 }) +
+        layer(cutPoly(pts, `star${side}`, 0), '#F8D45E', { shadow: false }) +
+        (detail.full ? `<path d="M${inner.map(([px, py]) => `${f(px)} ${f(py)}`).join('L')}Z" fill="none" stroke="#B5701A" stroke-width="${f(0.5 * s)}" stroke-linejoin="round" stroke-dasharray="${f(0.9 * s)} ${f(0.9 * s)}"/>` : '') +
+        `<ellipse cx="${f(cx - 1.4 * s)}" cy="${f(cy - 1.4 * s)}" rx="${f(1.3 * s)}" ry="${f(0.9 * s)}" fill="#FFFFFF" fill-opacity="0.8" transform="rotate(-35 ${f(cx - 1.4 * s)} ${f(cy - 1.4 * s)})"/>`
+      )
+    }
+    if (look.style === 'chapado') {
+      return layer(cutPoly(big, `star-o${side}`, 0), '#F5B82E', { shadow: false, edge: false }) + `<circle cx="${f(cx - 1.4 * s)}" cy="${f(cy - 1.2 * s)}" r="${f(1.6 * s)}" fill="#FFFFFF"/>`
+    }
     return layer(cutPoly(big, `star-o${side}`, 0.12), '#D58F1E', { lift: 0.7 }) + layer(cutPoly(pts, `star${side}`, 0.12), '#F8D45E', { shadow: false }) + `<circle cx="${f(cx - 0.8 * s)}" cy="${f(cy - 0.6 * s)}" r="${f(1.3 * s)}" fill="#FFFFFF" fill-opacity="0.85"/>`
   },
-  coracao: (_x, cx, cy, s, side) =>
-    layer(heartPath(cx, cy + 0.4 * s, 4.7 * s), '#E2506E', { lift: 0.7 }) + `<ellipse cx="${f(cx - 2.2 * s)}" cy="${f(cy - 2 * s)}" rx="${f(1.5 * s)}" ry="${f(1.0 * s)}" fill="#FFFFFF" fill-opacity="0.8" transform="rotate(-30 ${f(cx - 2.2 * s)} ${f(cy - 2 * s)})" data-side="${side}"/>`,
+  coracao: (_x, cx, cy, s, side) => {
+    const shine = (w: number, op: number) => `<ellipse cx="${f(cx - 2.2 * s)}" cy="${f(cy - 2 * s)}" rx="${f(w * s)}" ry="${f(0.67 * w * s)}" fill="#FFFFFF" fill-opacity="${op}" transform="rotate(-30 ${f(cx - 2.2 * s)} ${f(cy - 2 * s)})" data-side="${side}"/>`
+    if (look.style === 'pelucia')
+      return (
+        layer(heartPath(cx, cy + 0.4 * s, 4.7 * s), '#E2506E', { lift: 0.7 }) +
+        (detail.full ? `<path d="${heartPath(cx, cy + 0.5 * s, 3.7 * s)}" fill="none" stroke="#FFC9D2" stroke-opacity="0.85" stroke-width="${f(0.45 * s)}" stroke-linejoin="round" stroke-dasharray="${f(0.9 * s)} ${f(0.9 * s)}"/>` : '') +
+        shine(1.2, 0.85)
+      )
+    if (look.style === 'chapado') return layer(heartPath(cx, cy + 0.4 * s, 5 * s), '#E2506E', { shadow: false, edge: false }) + shine(1.7, 1)
+    return layer(heartPath(cx, cy + 0.4 * s, 4.7 * s), '#E2506E', { lift: 0.7 }) + shine(1.5, 0.8)
+  },
   // --- usados pelos humores ---
   arc: (x, cx, cy, s) => stroke(`M${f(cx - 4.6 * s)} ${f(cy + 1.4 * s)}Q${f(cx)} ${f(cy - 4.8 * s)} ${f(cx + 4.6 * s)} ${f(cy + 1.4 * s)}`, faceInk(x), 2.7 * s),
   closed: (x, cx, cy, s) => stroke(`M${f(cx - 4.6 * s)} ${f(cy)}Q${f(cx)} ${f(cy + 3.8 * s)} ${f(cx + 4.6 * s)} ${f(cy)}`, faceInk(x), 2.5 * s),

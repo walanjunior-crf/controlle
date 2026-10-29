@@ -5,7 +5,7 @@
  * Cor do chapéu: x.c.hatColor (use ramp() para sombra/luz).
  */
 import { mix, ramp } from '../color'
-import { cut, cutEllipse, cutPoly, f, layer, look } from '../paper'
+import { cut, cutEllipse, cutPoly, detail, f, layer, look } from '../paper'
 import type { Ctx } from '../types'
 
 /** pelúcia: linha de costura (tracejado curto) */
@@ -17,6 +17,12 @@ const clipTo = (id: string, d: string, inner: string) => `<clipPath id="${id}"><
 
 const plush = () => look.style === 'pelucia'
 const flat = () => look.style === 'chapado'
+
+/** cabinho de linha da boina de pelúcia: tufo de fios enrolados no topo */
+const plainStem = (c: string) =>
+  `<path d="M3.2 -11.2Q3.4 -14.6 4.8 -17.2" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>` +
+  `<path d="M3.2 -11.2Q3.4 -14.6 4.8 -17.2" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="0.7" stroke-linecap="round" stroke-dasharray="0.9 1.1"/>` +
+  `<path d="M3.5 -12.4L6 -13.4M3.7 -14.6L6.1 -15.6" fill="none" stroke="${c}" stroke-width="0.7" stroke-linecap="round"/>`
 
 const GOLD = '#F2C14E'
 const CREAM = '#F7EBD3'
@@ -68,12 +74,23 @@ export const HATS: Record<string, (x: Ctx) => string> = {
 
   boina: (x) => {
     const r = ramp(x.c.hatColor)
+    const top = cutEllipse(-1, -3, 27, 11, 'boina-top', { rotate: -9, jitter: 0.03 })
+    const stemD = cut([[1.5, -12], [3.6, -17.5], [6.2, -17], [5, -11.5]], 'boina-stem', 0.15)
+    // pelúcia: lã/feltro com costura na faixa, pespontos na dobra e cabinho de linha
+    const wool = plush()
+      ? clipTo('avc-boina', top, seam('M-22 1.5Q-12 -8 -3 -6.5M3 -9Q13 -9 21 -2', r.deep, 0.5, 0.55) + seam('M-14 4Q-4 0 6 1.2Q14 2 20 4', r.light, 0.5, 0.5)) +
+        seam('M-19.5 7.4Q0 5.6 19.5 7.4', r.light, 0.55, 0.8)
+      : ''
+    const stem = plush()
+      ? plainStem(r.deep)
+      : layer(stemD, r.shade, { lift: 0.5 })
     return (
       layer(cut([[-21, 11], [-21, 5], [0, 3.5], [21, 5], [21, 11], [0, 13.5]], 'boina-band', 0.25), r.deep) +
-      layer(cutEllipse(-1, -3, 27, 11, 'boina-top', { rotate: -9, jitter: 0.03 }), r.base) +
-      layer(cut([[-20, 7], [-27, 0], [-18, -7], [-6, 3]], 'boina-fold', 0.3), r.shade, { shadow: false, edge: false }) +
+      layer(top, r.base) +
+      layer(cut([[-20, 7], [-27, 0], [-18, -7], [-6, 3]], 'boina-fold', 0.3), r.shade, { shadow: false, edge: false, opacity: plush() ? 0.7 : 1 }) +
+      wool +
       layer(cutEllipse(-8, -8, 8, 2.1, 'boina-hl', { rotate: -14 }), r.light, { shadow: false, edge: false }) +
-      layer(cut([[1.5, -12], [3.6, -17.5], [6.2, -17], [5, -11.5]], 'boina-stem', 0.15), r.shade, { lift: 0.5 })
+      stem
     )
   },
 
@@ -152,24 +169,50 @@ export const HATS: Record<string, (x: Ctx) => string> = {
   cartola: (x) => {
     const ink = ramp('#2D2A33')
     const band = ramp(x.c.hatColor)
+    const bandD = cut([[-15.4, -2], [0, 1.2], [15.4, -2], [15.6, 5.5], [0, 8.5], [-15.6, 5.5]], 'cart-band', 0.2)
+    // pelúcia: feltro; faixa de tecido com pesponto em cima e embaixo e aba costurada
+    const stitched = plush()
+      ? seam('M-14.6 -0.6Q0 2.4 14.6 -0.6', band.pale, 0.5, 0.85) +
+        seam('M-14.8 4.6Q0 7.6 14.8 4.6', band.pale, 0.5, 0.85) +
+        seam('M-23.5 6.4Q0 11.4 23.5 6.4', ink.light, 0.5, 0.8) +
+        seam('M-11 -22.2Q0 -20.4 11 -22.2', ink.light, 0.45, 0.7)
+      : ''
     return (
       layer(cutEllipse(0, 5.5, 26, 6.2, 'cart-brim', { jitter: 0.02 }), ink.deep) +
       layer(cut([[-15.5, 5.5], [-14.8, -10], [-15.2, -23], [-7, -24.5], [0, -24.8], [7, -24.5], [15.2, -23], [14.8, -10], [15.5, 5.5], [0, 8.5]], 'cart-crown', 0.25), ink.base) +
       layer(cutEllipse(0, -23.5, 15, 3.4, 'cart-top', { jitter: 0.02 }), ink.light) +
-      layer(cut([[-15.4, -2], [0, 1.2], [15.4, -2], [15.6, 5.5], [0, 8.5], [-15.6, 5.5]], 'cart-band', 0.2), band.base) +
-      layer(cut([[-11, -4], [-11.5, -19], [-9, -19], [-8.8, -4]], 'cart-hl', 0.1), mix(ink.light, '#FFFFFF', 0.12), { shadow: false, edge: false })
+      layer(bandD, band.base, { lift: flat() ? 0.6 : 1 }) +
+      stitched +
+      layer(cut([[-11, -4], [-11.5, -19], [-9, -19], [-8.8, -4]], 'cart-hl', 0.1), mix(ink.light, '#FFFFFF', flat() ? 0.18 : 0.12), { shadow: false, edge: false })
     )
   },
 
   coroa: () => {
     const g = ramp(GOLD)
+    const bead = (cx: number, cy: number, rx: number, col: string, k: string) => {
+      const c = ramp(col)
+      if (plush()) {
+        // joia de miçanga/botão: disco, anel de costura e um pontinho de luz
+        return (
+          layer(cutEllipse(cx, cy, rx, rx * 0.96, `coroa-${k}`), c.base, { lift: 0.5 }) +
+          (detail.full ? `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(rx * 0.68)}" fill="none" stroke="${c.pale}" stroke-opacity="0.8" stroke-width="0.35" stroke-dasharray="0.7 0.7"/>` : '') +
+          `<circle cx="${f(cx - rx * 0.32)}" cy="${f(cy - rx * 0.34)}" r="${f(rx * 0.26)}" fill="#FFFFFF" fill-opacity="0.8"/>`
+        )
+      }
+      return layer(cutEllipse(cx, cy, rx * (flat() ? 1.08 : 1), rx * (flat() ? 1.04 : 0.96), `coroa-${k}`), col, { lift: 0.4 }) + (flat() ? `<circle cx="${f(cx - rx * 0.3)}" cy="${f(cy - rx * 0.34)}" r="${f(rx * 0.3)}" fill="#FFFFFF"/>` : '')
+    }
+    const body = cutPoly([[-18, 8], [-19, -11], [-9.5, -3], [0, -15], [9.5, -3], [19, -11], [18, 8]], 'coroa-body', 0.3)
     return (
-      layer(cutPoly([[-18, 8], [-19, -11], [-9.5, -3], [0, -15], [9.5, -3], [19, -11], [18, 8]], 'coroa-body', 0.3), g.base) +
-      layer(cutPoly([[-9.5, -3], [0, -15], [0, 8], [-14, 8]], 'coroa-sh', 0.2), g.light, { shadow: false, edge: false }) +
+      layer(body, g.base) +
+      (flat()
+        ? // brilho sólido: faixa clara simples na ponta esquerda
+          layer(cutPoly([[-15.5, 5], [-16.2, -7], [-12.6, -1.8], [-12.2, 5]], 'coroa-shine', 0.1), g.pale, { shadow: false, edge: false })
+        : layer(cutPoly([[-9.5, -3], [0, -15], [0, 8], [-14, 8]], 'coroa-sh', 0.2), g.light, { shadow: false, edge: false, opacity: plush() ? 0.8 : 1 })) +
       layer(cut([[-18.4, 2], [0, 4.5], [18.4, 2], [18.2, 9], [0, 11.5], [-18.2, 9]], 'coroa-band', 0.2), g.shade) +
-      layer(cutEllipse(0, 6.5, 2.6, 2.4, 'coroa-j1'), '#E24C6A', { lift: 0.4 }) +
-      layer(cutEllipse(-10, 5.6, 1.8, 1.7, 'coroa-j2'), '#3E86D6', { lift: 0.4 }) +
-      layer(cutEllipse(10, 5.6, 1.8, 1.7, 'coroa-j3'), '#3FA06A', { lift: 0.4 }) +
+      (plush() ? seam('M-17.2 9.4Q0 11.6 17.2 9.4', g.pale, 0.5, 0.9) + seam('M-17.4 3.2Q0 5.6 17.4 3.2', g.deep, 0.45, 0.7) : '') +
+      bead(0, 6.8, 2.6, '#E24C6A', 'j1') +
+      bead(-10, 6, 1.9, '#3E86D6', 'j2') +
+      bead(10, 6, 1.9, '#3FA06A', 'j3') +
       layer(cutEllipse(-19, -12, 1.8, 1.8, 'coroa-t1'), g.light, { lift: 0.4 }) +
       layer(cutEllipse(19, -12, 1.8, 1.8, 'coroa-t2'), g.light, { lift: 0.4 }) +
       layer(cutEllipse(0, -16, 1.9, 1.9, 'coroa-t3'), g.light, { lift: 0.4 })

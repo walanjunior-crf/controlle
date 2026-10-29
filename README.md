@@ -332,3 +332,9 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Aba Estilo no editor: **chapado** (padrão, formas gordas com sombra recortada), **pelúcia** (olhos de botão, bordados, costuras e tecido) ou **papel recortado**. Todos os bichos e peças existem nos três.
 - O dinossauro virou um Tricerátops, e a fantasia de dinossauro virou um pijama kigurumi com placas e focinho.
 - Recompensas retroativas: créditos dos níveis já alcançados e peças de conquistas já cumpridas vêm do histórico; na primeira abertura, um aviso mostra o que a pessoa recebeu.
+
+### v0.4.9 — Acabamento dos estilos
+
+- Boina, cartola e coroa com versão própria em chapado e pelúcia (costuras, miçangas, feltro).
+- Olhos brilhantes, de estrela e de coração com versão própria em chapado e pelúcia.
+- Bocas bordadas da pelúcia viram linha contínua nas miniaturas.
