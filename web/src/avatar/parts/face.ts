@@ -98,6 +98,7 @@ export const MOUTHS: Record<string, PointDraw> = {
   open: (_x, [mx, my]) =>
     layer(cut([[mx - 6.4, my - 0.8], [mx, my + 0.6], [mx + 6.4, my - 0.8], [mx + 3.4, my + 6.6], [mx, my + 7.8], [mx - 3.4, my + 6.6]], 'mouth-open', 0.2), MOUTH, { lift: 0.5 }) +
     layer(cutEllipse(mx, my + 5.4, 3.4, 2.1, 'tongue'), TONGUE, { shadow: false, edge: false }),
+  meh: (x, [mx, my]) => stroke(`M${f(mx - 4.2)} ${f(my + 1.6)}Q${f(mx)} ${f(my + 0.4)} ${f(mx + 4.2)} ${f(my + 2.2)}`, faceInk(x), 2.2),
   small: (_x, [mx, my]) => layer(cutEllipse(mx, my + 1.8, 2.2, 2.6, 'mouth-small'), MOUTH, { lift: 0.4 }),
   // --- escolhas do catálogo ---
   sorrisao: (_x, [mx, my]) =>
@@ -215,3 +216,19 @@ export const BEARDS: Record<string, Draw2> = {
 
 // utilitários para quem estende este arquivo
 export { cut, cutEllipse, cutPoly, f, layer, mirror, stroke, heartPath, sclera, MOUTH, TONGUE, SCLERA }
+
+/** pálpebras por cima do olho (jeito sonolento ou enjoado): calota do olho acima de uma corda */
+export function lids(x: Ctx, cx: number, cy: number, s: number, kind: 'half' | 'flat', side: -1 | 1): string {
+  const rx = 6.8 * s
+  const ry = 7.8 * s
+  const base = kind === 'half' ? cy + 0.2 * s : cy - 1.1 * s
+  const tilt = kind === 'flat' ? side * 0.9 * s : 0
+  const yl = base - tilt
+  const yr = base + tilt
+  const xAt = (y: number) => rx * Math.sqrt(Math.max(0, 1 - ((y - cy) / ry) ** 2))
+  const xl = cx - xAt(yl)
+  const xr = cx + xAt(yr)
+  const large = (yl + yr) / 2 > cy ? 1 : 0
+  const d = `M${f(xl)} ${f(yl)}A${f(rx)} ${f(ry)} 0 ${large} 1 ${f(xr)} ${f(yr)}Z`
+  return `<path d="${d}" fill="${x.fur.base}"/>` + stroke(`M${f(xl + 0.4)} ${f(yl)}L${f(xr - 0.4)} ${f(yr)}`, faceInk(x), 1.7 * s)
+}

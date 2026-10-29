@@ -1,3 +1,4 @@
+import { normalizeAvatar } from './avatarParts'
 import { describe, expect, it } from 'vitest'
 import { AVATARS, findAvatar } from './avatars'
 import { centerCropRect, cropRect, dataUrlBytes } from './photo'
@@ -63,15 +64,14 @@ describe('iniciais', () => {
 })
 
 describe('avatares prontos', () => {
-  it('são 16, com ids únicos e fundo', () => {
+  it('são 16, com ids únicos, e só usam peças do catálogo', () => {
     expect(AVATARS).toHaveLength(16)
     expect(new Set(AVATARS.map((a) => a.id)).size).toBe(16)
     for (const a of AVATARS) {
-      expect(a.bg).toMatch(/^#[0-9A-F]{6}$/i)
-      expect(a.svg.startsWith('<circle')).toBe(true)
-      expect(a.svg).not.toMatch(/<script|on\w+=/i)
+      const n = normalizeAvatar(a.config)
+      for (const [k, v] of Object.entries(a.config)) expect(n[k as keyof typeof n], `${a.id}.${k}`).toBe(v)
     }
-    expect(findAvatar('raposa')?.label).toBe('Raposa')
+    expect(findAvatar('raposa')?.label).toBe('Raposa exploradora')
     expect(findAvatar('nada')).toBeUndefined()
   })
 })

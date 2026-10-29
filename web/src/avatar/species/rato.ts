@@ -16,7 +16,7 @@ const rato: SpeciesDef = {
     mouth: [50, 62.4],
     brows: 42.5,
     crown: { x: 50, y: 33, width: 36 },
-    lobes: { l: [27.5, 40.5], r: [72.5, 40.5] },
+    lobes: { l: [25.6, 30.2], r: [74.4, 30.2] },
     cheeks: { l: [30, 63], r: [70, 63] },
     sides: { l: 23, r: 77, y: 56 },
     neck: 77.5,

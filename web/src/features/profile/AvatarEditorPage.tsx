@@ -10,10 +10,11 @@ import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
 import {
   BEARD_SPECIES, CATALOG, COATS, COSTUMES, FURS, SHARK_COATS, SHARK_FURS, DEFAULT_AVATAR, HAIR_SPECIES, SPECIES_FUR,
-  isUnlocked, normalizeAvatar, unlockHint, unlockRank,
+  isOwned, lockHint, normalizeAvatar, ownKey, unlockRank,
   type ColorPart, type Key, type Part,
 } from './avatarParts'
-import { renderAvatar, type Mood } from '../../avatar'
+import { renderAvatar } from '../../avatar'
+import { Sheet } from '../../components/Sheet'
 import './profile.css'
 
 interface Section {
@@ -38,6 +39,7 @@ interface Tab {
 
 const TABS: Tab[] = [
   { id: 'bicho', label: 'Bicho', sections: [{ key: 'species' }, { key: 'breed', when: isDog }] },
+  { id: 'jeito', label: 'Jeito', sections: [{ key: 'persona', zoom: '22 30 56 56' }] },
   { id: 'pelagem', label: 'Pelagem', sections: [{ key: 'fur', when: (c) => !hasBreed(c), parts: (c) => (isShark(c) ? SHARK_FURS : FURS) },
       { key: 'coat', when: (c) => !hasBreed(c), parts: (c) => (isShark(c) ? COATS.filter((p) => SHARK_COATS.has(p.id)) : COATS) },
     ] },
@@ -67,23 +69,19 @@ const TABS: Tab[] = [
   {
     id: 'joias',
     label: 'Brincos e piercing',
-    sections: [{ key: 'earrings', zoom: '12 36 76 76' }, { key: 'piercing', zoom: '30 32 40 40' }, { key: 'metal' }],
+    sections: [
+      { key: 'earrings', zoom: '8 10 84 84' },
+      { key: 'earringSide', zoom: '8 10 84 84', when: (c) => c.earrings !== 'nenhum' },
+      { key: 'piercing', zoom: '26 30 48 48' },
+      { key: 'piercingSide', zoom: '26 30 48 48', when: (c) => ['nariz', 'sobrancelha', 'labio'].includes(c.piercing) },
+      { key: 'metal' },
+    ],
   },
   { id: 'roupa', label: 'Roupa', sections: [{ key: 'outfit', zoom: '10 30 80 80' }, { key: 'outfitColor' }] },
   { id: 'fantasia', label: 'Fantasia', sections: [{ key: 'costume' }] },
   { id: 'fundo', label: 'Fundo', sections: [{ key: 'bg' }, { key: 'pattern' }] },
 ]
 
-const MOODS: { id: Mood; label: string }[] = [
-  { id: 'neutral', label: 'Normal' },
-  { id: 'happy', label: 'Feliz' },
-  { id: 'celebrate', label: 'Comemorando' },
-  { id: 'love', label: 'Carinho' },
-  { id: 'wave', label: 'Acenando' },
-  { id: 'proud', label: 'Orgulho' },
-  { id: 'rest', label: 'Folga' },
-  { id: 'sleepy', label: 'Sono' },
-]
 
 /** chance de "nenhum" no Surpreenda-me, para não virar um carnaval toda vez */
 const NONE_WEIGHT: Partial<Record<Key, number>> = {
@@ -110,7 +108,7 @@ export function AvatarEditorPage() {
   const toast = useToast()
   const [draft, setDraft] = useState<AvatarConfig | null>(null)
   const [tab, setTab] = useState('bicho')
-  const [mood, setMood] = useState<Mood>('neutral')
+  const [buying, setBuying] = useState<{ key: Key; part: Part | ColorPart } | null>(null)
   const [hint, setHint] = useState('')
 
   const start = useMemo(() => (profile?.avatar.kind === 'custom' ? normalizeAvatar(profile.avatar.config) : DEFAULT_AVATAR), [profile])
@@ -119,14 +117,15 @@ export function AvatarEditorPage() {
 
   if (!profile || !rewards.ready) return <div className="page" aria-busy="true" />
 
-  const { level, unlocked } = rewards
+  const { level, wallet, credits } = rewards
   const current = TABS.find((t) => t.id === tab) ?? TABS[0]
-  const open = (p: Part) => isUnlocked(p.unlock, level.level, unlocked)
+  const open = (key: Key, p: Part) => isOwned(key, p, wallet)
   const costume = COSTUMES.find((c) => c.id === cfg.costume)
 
   const choose = (key: Key, p: Part | ColorPart) => {
-    if (!open(p)) {
-      setHint(`${p.label}: desbloqueia com ${unlockHint(p.unlock, achTitle).toLowerCase()}.`)
+    if (!open(key, p)) {
+      if (p.unlock) setHint(`${p.label} vem com a conquista ${achTitle(p.unlock.achievement)}.`)
+      else setBuying({ key, part: p })
       return
     }
     setHint('')
@@ -140,7 +139,7 @@ export function AvatarEditorPage() {
   const randomize = () => {
     const next = { ...cfg }
     for (const key of Object.keys(CATALOG) as Key[]) {
-      const ok = (CATALOG[key].parts as Part[]).filter(open)
+      const ok = (CATALOG[key].parts as Part[]).filter((p) => open(key, p))
       const none = ok.find((p) => p.id === 'nenhum')
       const pickNone = none && Math.random() < (NONE_WEIGHT[key] ?? 0)
       const pool = none ? ok.filter((p) => p !== none) : ok
@@ -160,6 +159,23 @@ export function AvatarEditorPage() {
       back()
     } catch {
       toast.show('Não foi possível salvar o avatar.')
+    }
+  }
+
+  const buy = async () => {
+    if (!buying) return
+    const { key, part } = buying
+    const price = part.price ?? 0
+    if (price > credits.balance) return
+    const next = new Set(wallet.owned)
+    next.add(ownKey(key, part))
+    try {
+      await saveProfile({ owned: [...next] })
+      setBuying(null)
+      setDraft({ ...cfg, [key]: valueOf(part) })
+      toast.show(`${part.label} é seu!`)
+    } catch {
+      toast.show('Não foi possível comprar agora.')
     }
   }
 
@@ -187,17 +203,11 @@ export function AvatarEditorPage() {
       </header>
 
       <section className="ae-stage" aria-label="Pré-visualização">
-        <Avatar profile={preview} size={150} ring mood={mood} alive pettable />
-        <div className="ae-moods" role="group" aria-label="Humor do avatar">
-          {MOODS.map((m) => (
-            <button key={m.id} type="button" className="btn btn-small btn-ghost" aria-pressed={mood === m.id} onClick={() => setMood(m.id)}>
-              {m.label}
-            </button>
-          ))}
-        </div>
-        <p className="muted">
-          Nível {level.level} ({level.title}). Quanto mais checks, mais itens.
+        <Avatar profile={preview} size={150} ring alive pettable />
+        <p className="ae-wallet">
+          <span className="ae-coins num">🪙 {credits.balance}</span> {credits.balance === 1 ? 'crédito' : 'créditos'} · Nível {level.level} ({level.title})
         </p>
+        <p className="muted ae-tip">Toque no avatar para fazer carinho. Cada nível novo dá créditos para trocar por peças.</p>
       </section>
 
       <div className="ae-tabs" role="tablist" aria-label="Partes do avatar">
@@ -234,9 +244,9 @@ export function AvatarEditorPage() {
               {cover && <p className="ae-note">A fantasia {cover} cobre esta parte. Tire a fantasia para ver.</p>}
               <div className={`ae-options${cat.color && key !== 'fur' ? ' is-colors' : ''}`} role="group" aria-label={cat.label}>
                 {[...(parts ? parts(cfg) : (cat.parts as (Part | ColorPart)[]))].sort((a, b) => unlockRank(a) - unlockRank(b)).map((p) => {
-                  const locked = !open(p)
+                  const locked = !open(key, p)
                   const on = isOn(key, p)
-                  const lockText = unlockHint(p.unlock, achTitle)
+                  const lockText = lockHint(p, achTitle)
                   const thumbCfg = { ...cfg, ...(key === 'costume' ? {} : { costume: 'nenhum' }), [key]: valueOf(p) }
                   return (
                     <button
@@ -250,7 +260,7 @@ export function AvatarEditorPage() {
                     >
                       {'hex' in p && key !== 'fur' ? (
                         <span className="ae-swatch" style={{ background: p.hex }} aria-hidden="true">
-                          {locked && <span className="ae-swatch-lock">🔒</span>}
+                          {locked && <span className="ae-swatch-lock">{p.unlock ? '🏆' : p.price}</span>}
                         </span>
                       ) : (
                         <span className={`ae-opt-art${zoom ? ' is-zoom' : ''}`}>
@@ -258,7 +268,9 @@ export function AvatarEditorPage() {
                         </span>
                       )}
                       {!(cat.color && key !== 'fur') && <span>{p.label}</span>}
-                      {locked && !(cat.color && key !== 'fur') && <span className="ae-lock">🔒 {lockText}</span>}
+                      {locked && !(cat.color && key !== 'fur') && (
+                        <span className="ae-lock">{p.unlock ? `🏆 ${lockText}` : `🪙 ${p.price}`}</span>
+                      )}
                     </button>
                   )
                 })}
@@ -270,6 +282,38 @@ export function AvatarEditorPage() {
           {hint}
         </p>
       </div>
+
+      <Sheet
+        open={buying !== null}
+        onClose={() => setBuying(null)}
+        title={buying ? `Comprar ${buying.part.label}?` : ''}
+        footer={
+          buying && (
+            <div className="feedback-actions">
+              <button type="button" className="btn btn-primary btn-block" disabled={(buying.part.price ?? 0) > credits.balance} onClick={() => void buy()}>
+                Comprar por {buying.part.price} {buying.part.price === 1 ? 'crédito' : 'créditos'}
+              </button>
+              <button type="button" className="btn btn-ghost btn-block" onClick={() => setBuying(null)}>
+                Agora não
+              </button>
+            </div>
+          )
+        }
+      >
+        {buying && (
+          <div className="ae-buy">
+            <span className="ae-buy-art">
+              <svg viewBox="0 0 100 100" aria-hidden="true" dangerouslySetInnerHTML={{ __html: renderAvatar({ ...cfg, [buying.key]: valueOf(buying.part) }) }} />
+            </span>
+            <p>
+              Você tem <strong className="num">{credits.balance}</strong> {credits.balance === 1 ? 'crédito' : 'créditos'}.
+              {(buying.part.price ?? 0) > credits.balance
+                ? ` Faltam ${(buying.part.price ?? 0) - credits.balance}. Cada nível novo dá mais créditos.`
+                : ' A peça fica sua para sempre.'}
+            </p>
+          </div>
+        )}
+      </Sheet>
 
       <div className="ae-actions">
         <button type="button" className="btn btn-primary" onClick={() => void save()}>

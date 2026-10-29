@@ -108,8 +108,6 @@ export function TodayPage() {
     if (last && daysBetween(last, today).length - 1 >= 7) window.setTimeout(() => emitReaction('back'), 900)
   }, [snapshots, today])
   const buddy = profile.avatar.kind === 'custom'
-  const restToday = restDays.some((r) => r.day === today && r.trackerId === null)
-  const baseMood = restToday ? 'rest' : overall.complete ? 'happy' : hour >= 22 && overall.met === 0 && overall.active > 0 ? 'sleepy' : 'neutral'
 
   const flash = (id: string) => {
     setPulseId(id)
@@ -151,7 +149,7 @@ export function TodayPage() {
       <header className="today-head">
         <div className="today-who">
           <Link to="/perfil" className="today-avatar" aria-label="Seu perfil">
-            <Avatar profile={profile} size={44} decorative mood={baseMood} />
+            <Avatar profile={profile} size={44} decorative />
           </Link>
           <div>
             <p className="today-date">
@@ -225,7 +223,7 @@ export function TodayPage() {
               className="hero-ring"
               label={
                 buddy ? (
-                  <Avatar profile={profile} size={104} alive pettable mood={baseMood} className="hero-buddy" />
+                  <Avatar profile={profile} size={104} alive pettable className="hero-buddy" />
                 ) : (
                   <span className="hero-ring-label">
                     <span className="hero-pct num">{Math.round(overall.fraction * 100)}</span>

@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { defaultProfile, getProfile } from '../../db/db'
-import type { Profile } from '../../domain/types'
+import type { AvatarConfig, Profile } from '../../domain/types'
 import { CLogo } from '../../components/CLogo'
 import { colorFor } from '../../components/colors'
 import { findAvatar, type PresetAvatar } from './avatars'
@@ -70,11 +70,7 @@ export function Avatar({ profile, size = 44, ring = false, decorative = false, m
 
   const preset = choice.kind === 'preset' ? findAvatar(choice.id) : undefined
   if (preset) {
-    return (
-      <span className={cls} style={style} {...a11y}>
-        <PresetSvg avatar={preset} />
-      </span>
-    )
+    return <LiveAvatar config={preset.config as AvatarConfig} size={size} mood={mood} alive={alive} pettable={pettable} cls={cls} style={style} a11y={a11y} />
   }
 
   const initials = initialsOf(name)
@@ -93,7 +89,7 @@ export function Avatar({ profile, size = 44, ring = false, decorative = false, m
 }
 
 interface LiveProps {
-  config: import('../../domain/types').AvatarConfig
+  config: AvatarConfig
   size: number
   mood: Mood
   alive: boolean
@@ -117,7 +113,7 @@ function LiveAvatar({ config, size, mood, alive, pettable, cls, style, a11y }: L
   )
 }
 
-/** Só o desenho de um avatar pronto (SVG constante, escrito em avatars.ts). */
+/** Só o desenho de um avatar pronto (miniatura leve, no motor v2). */
 export function PresetSvg({ avatar }: { avatar: PresetAvatar }) {
-  return <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: avatar.svg }} />
+  return <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: renderAvatar(avatar.config, { detail: 'lite' }) }} />
 }

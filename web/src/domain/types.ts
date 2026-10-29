@@ -188,6 +188,11 @@ export interface AvatarConfig {
   costume: string
   bg: string
   pattern: string
+  /** jeito padrão do rosto: normal, sonolento ou enjoado */
+  persona: string
+  /** lado dos brincos e do piercing (como aparece na tela) */
+  earringSide: string
+  piercingSide: string
 }
 
 export type AvatarChoice =
@@ -209,6 +214,8 @@ export interface Profile {
   /** token da paleta usado no fundo do avatar e em destaques */
   color: string
   avatar: AvatarChoice
+  /** peças do avatar compradas com créditos ("chave:id"); ausente = ainda não usou a loja */
+  owned?: string[]
   createdAt: number
   updatedAt: number
 }

@@ -89,7 +89,7 @@ export function ProfilePage() {
 
       {rewards.ready && (
         <section className="profile-section" aria-label="Seu nível">
-          <LevelCard level={rewards.level} />
+          <LevelCard level={rewards.level} credits={rewards.credits.balance} />
         </section>
       )}
 

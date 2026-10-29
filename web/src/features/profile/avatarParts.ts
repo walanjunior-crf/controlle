@@ -13,7 +13,8 @@
 import type { AchievementId } from '../../domain/achievements'
 import type { AvatarConfig } from '../../domain/types'
 
-export type Unlock = { level: number } | { achievement: AchievementId }
+/** peça que só vem de uma conquista (não se compra) */
+export type Unlock = { achievement: AchievementId }
 export type { Mood } from '../../avatar/types'
 import type { Mood } from '../../avatar/types'
 import { renderAvatar } from '../../avatar/render'
@@ -22,6 +23,10 @@ export interface Part {
   id: string
   label: string
   unlock?: Unlock
+  /** preço em créditos; ausente = livre */
+  price?: number
+  /** ordem na vitrine entre peças de mesmo preço */
+  order?: number
 }
 export interface ColorPart extends Part {
   /** #RRGGBB */
@@ -306,6 +311,19 @@ export const PATTERNS: Part[] = [
   { id: 'confete', label: 'Confete' },
 ]
 
+export const PERSONAS: Part[] = [
+  { id: 'normal', label: 'Normal' },
+  { id: 'sonolento', label: 'Sonolento' },
+  { id: 'enjoado', label: 'Enjoado' },
+]
+
+/** lado como aparece na tela */
+export const SIDES: Part[] = [
+  { id: 'ambos', label: 'Os dois lados' },
+  { id: 'esquerdo', label: 'Lado esquerdo' },
+  { id: 'direito', label: 'Lado direito' },
+]
+
 export type Key = keyof AvatarConfig
 
 /** Cada campo da configuração e o catálogo de onde ele sai. */
@@ -334,16 +352,45 @@ export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; 
   costume: { label: 'Fantasia', parts: COSTUMES },
   bg: { label: 'Cor do fundo', parts: BGS, color: true },
   pattern: { label: 'Padrão', parts: PATTERNS },
+  persona: { label: 'Jeito', parts: PERSONAS },
+  earringSide: { label: 'Lado dos brincos', parts: SIDES },
+  piercingSide: { label: 'Lado do piercing', parts: SIDES },
 }
 
-// ---------- desbloqueio por nível ----------
+// ---------- loja: créditos e conquistas ----------
 
 /**
- * O que cada nível libera. Nível 1 traz o básico; daí em diante cada nível dá
- * de 4 a 9 peças (teto atual: nível 25), deixando bichos, raças e fantasias mais raros.
- * (Medalha C e chifre de unicórnio continuam presos a conquistas.)
+ * Peças não vêm mais por nível. Cada nível novo dá créditos, e a pessoa escolhe
+ * o que comprar. Algumas peças especiais só vêm de conquistas específicas.
+ * Fundos (cores) são todos livres.
  */
-export const LEVEL_PLAN: Record<number, [Key, string][]> = {
+export const CREDITS_PER_LEVEL = 3
+export const CREDITS_PER_ACHIEVEMENT = 1
+
+const PRICE_BY_KEY: Record<Key, number> = {
+  species: 4, breed: 4, costume: 4,
+  hat: 2, glasses: 2, outfit: 2, hair: 2, eyes: 2, coat: 2,
+  fur: 1, eyeColor: 1, brows: 1, mouth: 1, cheeks: 1, beard: 1, hairColor: 1,
+  hatColor: 1, glassesColor: 1, outfitColor: 1, earrings: 1, piercing: 1, metal: 1, pattern: 1,
+  bg: 0, persona: 0, earringSide: 0, piercingSide: 0,
+}
+
+/** recompensas de conquista (não se compram) */
+export const ACHIEVEMENT_REWARDS: [Key, string, AchievementId][] = [
+  ['outfit', 'medalha', 'streak7'],
+  ['hat', 'unicornio', 'perfectDays10'],
+  ['hat', 'coroa', 'streak30'],
+  ['outfit', 'capa', 'checks100'],
+  ['costume', 'astronauta', 'checks250'],
+  ['fur', 'dourado', 'checks500'],
+  ['fur', 'esmeralda', 'perfectDays30'],
+  ['pattern', 'confete', 'comeback'],
+  ['eyes', 'estrela', 'firstPerfectDay'],
+  ['hat', 'fone', 'trackers3'],
+]
+
+/** vitrine: o que custa créditos (a ordem antiga por nível vira a ordem na loja) */
+const SHOP_ORDER: Record<number, [Key, string][]> = {
   2: [['species', 'raposa'], ['eyes', 'cilios'], ['hatColor', 'vermelho'], ['bg', 'folha'], ['hat', 'gorro'], ['mouth', 'sorrisao']],
   3: [['fur', 'laranja'], ['eyeColor', 'verde'], ['hatColor', 'folha'], ['species', 'rato'], ['glasses', 'quadrado']],
   4: [['earrings', 'argola'], ['coat', 'listrado'], ['costume', 'pirata'], ['brows', 'grossas'], ['metal', 'ouro']],
@@ -370,20 +417,77 @@ export const LEVEL_PLAN: Record<number, [Key, string][]> = {
   25: [['fur', 'azul'], ['glasses', 'coracao'], ['pattern', 'confete'], ['hairColor', 'grisalho'], ['bg', 'grafite']],
 }
 
-for (const [lv, items] of Object.entries(LEVEL_PLAN)) {
+for (const [lv, items] of Object.entries(SHOP_ORDER)) {
   for (const [key, id] of items) {
     const p = (CATALOG[key].parts as Part[]).find((x) => x.id === id)
-    if (p && !p.unlock) p.unlock = { level: Number(lv) }
+    if (p && PRICE_BY_KEY[key] > 0) {
+      p.price = PRICE_BY_KEY[key]
+      p.order = Number(lv)
+    }
   }
 }
+for (const [key, id, ach] of ACHIEVEMENT_REWARDS) {
+  const p = (CATALOG[key].parts as Part[]).find((x) => x.id === id)
+  if (p) {
+    p.unlock = { achievement: ach }
+    delete p.price
+  }
+}
+for (const p of BGS) {
+  delete p.unlock
+  delete p.price
+}
 
-/** Peças que o nível libera, já com o grupo para dar contexto ("Ouro · Metal"). */
-export function rewardsAtLevel(level: number): string[] {
-  return (LEVEL_PLAN[level] ?? []).map(([key, id]) => {
-    const p = (CATALOG[key].parts as Part[]).find((x) => x.id === id)
-    const group = CATALOG[key].parts === ACCENTS ? 'cor de acessório' : CATALOG[key].label.toLowerCase()
-    return p ? (CATALOG[key].color || key === 'breed' || key === 'coat' ? `${p.label} (${group})` : p.label) : id
-  })
+/** chave de posse: cores de acessório valem para chapéu, óculos e roupa */
+export const ownKey = (key: Key, p: Part) => `${CATALOG[key].parts === ACCENTS ? 'accent' : key}:${p.id}`
+
+export interface Wallet {
+  owned: ReadonlySet<string>
+  achievements: ReadonlySet<AchievementId>
+}
+
+/** a pessoa pode usar esta peça? */
+export function isOwned(key: Key, p: Part, w: Wallet): boolean {
+  if (p.unlock) return w.achievements.has(p.unlock.achievement)
+  if (!p.price) return true
+  return w.owned.has(ownKey(key, p))
+}
+
+export const creditsEarned = (level: number, achievements: number) =>
+  Math.max(0, level - 1) * CREDITS_PER_LEVEL + achievements * CREDITS_PER_ACHIEVEMENT
+
+/** créditos já gastos (cada chave conta uma vez) */
+export function creditsSpent(owned: Iterable<string>): number {
+  let total = 0
+  for (const k of new Set(owned)) {
+    const [key, id] = k.split(':')
+    const list = key === 'accent' ? ACCENTS : CATALOG[key as Key]?.parts
+    total += (list as Part[] | undefined)?.find((p) => p.id === id)?.price ?? 0
+  }
+  return total
+}
+
+/**
+ * Peças possuídas. Quem nunca usou a loja (perfil sem `owned`) mantém de graça o
+ * que já está vestindo, para ninguém perder o visual na troca de sistema.
+ */
+export function ownedFrom(owned: string[] | undefined, worn?: Partial<AvatarConfig>): Set<string> {
+  if (owned) return new Set(owned)
+  const out = new Set<string>()
+  if (!worn) return out
+  const c = normalizeAvatar(worn)
+  for (const key of Object.keys(CATALOG) as Key[]) {
+    const p = partFor(key, c[key])
+    if (p?.price) out.add(ownKey(key, p))
+  }
+  return out
+}
+
+/** texto do cadeado: preço ou conquista */
+export function lockHint(p: Part, achievementTitle: (id: AchievementId) => string): string {
+  if (p.unlock) return `Conquista: ${achievementTitle(p.unlock.achievement)}`
+  if (p.price) return `${p.price} ${p.price === 1 ? 'crédito' : 'créditos'}`
+  return ''
 }
 
 export const DEFAULT_AVATAR: AvatarConfig = {
@@ -411,24 +515,17 @@ export const DEFAULT_AVATAR: AvatarConfig = {
   costume: 'nenhum',
   bg: '#336633',
   pattern: 'nenhum',
-}
-
-export function isUnlocked(u: Unlock | undefined, level: number, achievements: ReadonlySet<AchievementId>): boolean {
-  if (!u) return true
-  return 'level' in u ? level >= u.level : achievements.has(u.achievement)
-}
-
-export function unlockHint(u: Unlock | undefined, achievementTitle: (id: AchievementId) => string): string {
-  if (!u) return ''
-  return 'level' in u ? `Nível ${u.level}` : `Conquista: ${achievementTitle(u.achievement)}`
+  persona: 'normal',
+  earringSide: 'ambos',
+  piercingSide: 'direito',
 }
 
 /** cores fixas que as peças tinham na v0.4 */
 const V04_OUTFIT: Record<string, string> = { moletom: '#C0643F', cachecol: '#C0392B', capa: '#7A4E7E' }
 const V04_HAT: Record<string, string> = { gorro: '#E0A43A', fone: '#4A4F4A', flor: '#F4A7A0' }
 
-/** posição de uma peça na fila: livres primeiro, depois por nível, conquistas no fim */
-export const unlockRank = (p: Part): number => (!p.unlock ? 0 : 'level' in p.unlock ? p.unlock.level : 100)
+/** posição na vitrine: livres primeiro, depois por preço, conquistas no fim */
+export const unlockRank = (p: Part): number => (p.unlock ? 10000 : p.price ? p.price * 100 + (p.order ?? 0) : 0)
 
 /** Configuração segura para desenhar: valor desconhecido ou ausente vira o padrão. */
 export function normalizeAvatar(c: Partial<AvatarConfig> | null | undefined): AvatarConfig {
@@ -459,11 +556,11 @@ export function partFor(key: Key, value: string): Part | ColorPart | undefined {
 }
 
 /** Itens da configuração que ainda estão bloqueados. */
-export function lockedItems(c: AvatarConfig, level: number, ach: ReadonlySet<AchievementId>): string[] {
+export function lockedItems(c: AvatarConfig, w: Wallet): string[] {
   const out: string[] = []
   for (const key of Object.keys(CATALOG) as Key[]) {
     const p = partFor(key, c[key])
-    if (p && !isUnlocked(p.unlock, level, ach)) out.push(p.label)
+    if (p && !isOwned(key, p, w)) out.push(p.label)
   }
   return out
 }

@@ -1,3 +1,4 @@
+import { ramp } from '../color'
 /**
  * Brincos (em cada `rig.lobes`) e piercings (pontos do rosto). Metal: x.c.metal.
  */
@@ -6,6 +7,7 @@ import type { Ctx, PointDraw } from '../types'
 
 export const shiny = (cx: number, cy: number, r: number, m: string, seed: string) =>
   layer(cutEllipse(cx, cy, r, r, seed, { jitter: 0.01 }), m, { lift: 0.4 }) +
+  `<path d="${cutEllipse(cx, cy, r, r, seed, { jitter: 0.01 })}" fill="none" stroke="${ramp(m).deep}" stroke-width="0.45"/>` +
   `<circle cx="${f(cx - r * 0.35)}" cy="${f(cy - r * 0.35)}" r="${f(r * 0.32)}" fill="#FFFFFF" fill-opacity="0.75"/>`
 
 /** argola de papel: duas elipses, a de dentro vaza o furo */

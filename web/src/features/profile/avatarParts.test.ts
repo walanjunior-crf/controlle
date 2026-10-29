@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CATALOG, customAvatarSvg, DEFAULT_AVATAR, effective, lockedItems, normalizeAvatar, rewardsAtLevel, type Key, type Part } from './avatarParts'
+import { CATALOG, customAvatarSvg, DEFAULT_AVATAR, effective, lockedItems, normalizeAvatar, BGS, HATS, creditsEarned, creditsSpent, ownedFrom, type Key, type Part } from './avatarParts'
 
 describe('avatar montável', () => {
   it('completa configurações antigas (v0.4) sem mudar o que a pessoa via', () => {
@@ -49,14 +49,40 @@ describe('avatar montável', () => {
     expect(effective({ ...DEFAULT_AVATAR, species: 'urso', hair: 'ondulado', beard: 'bigode' })).toMatchObject({ hair: 'ondulado', beard: 'bigode' })
   })
 
-  it('todo nível de 2 a 25 libera algo, e o padrão é todo livre', () => {
-    for (let lv = 2; lv <= 25; lv++) expect(rewardsAtLevel(lv).length, `nível ${lv}`).toBeGreaterThanOrEqual(3)
-    expect(lockedItems(DEFAULT_AVATAR, 1, new Set())).toEqual([])
+  it('o padrão é todo livre e todos os fundos são livres', () => {
+    const w = { owned: new Set<string>(), achievements: new Set<never>() }
+    expect(lockedItems(DEFAULT_AVATAR, w)).toEqual([])
+    for (const p of BGS) expect(p.price ?? 0, p.label).toBe(0)
   })
 
-  it('lista o que ainda está bloqueado', () => {
-    const cfg = { ...DEFAULT_AVATAR, hat: 'coroa', costume: 'astronauta' }
-    expect(lockedItems(cfg, 1, new Set())).toEqual(['Coroa', 'Astronauta'])
-    expect(lockedItems(cfg, 25, new Set())).toEqual([])
+  it('peças de conquista não se compram; as demais têm preço', () => {
+    const coroa = HATS.find((p) => p.id === 'coroa')!
+    expect(coroa.unlock).toEqual({ achievement: 'streak30' })
+    expect(coroa.price).toBeUndefined()
+    const boina = HATS.find((p) => p.id === 'boina')!
+    expect(boina.price).toBeGreaterThan(0)
+  })
+
+  it('compra libera a peça; conquista libera a recompensa', () => {
+    const cfg = { ...DEFAULT_AVATAR, hat: 'boina', costume: 'astronauta' }
+    const none = { owned: new Set<string>(), achievements: new Set<never>() }
+    expect(lockedItems(cfg, none)).toEqual(['Boina', 'Astronauta'])
+    const bought = { owned: new Set(['hat:boina']), achievements: new Set(['checks250' as const]) }
+    expect(lockedItems(cfg, bought)).toEqual([])
+  })
+
+  it('créditos: 3 por nível e 1 por conquista; gastos pelo preço', () => {
+    expect(creditsEarned(1, 0)).toBe(0)
+    expect(creditsEarned(5, 2)).toBe(14)
+    const price = HATS.find((p) => p.id === 'boina')!.price!
+    expect(creditsSpent(['hat:boina', 'hat:boina'])).toBe(price)
+  })
+
+  it('quem nunca usou a loja mantém de graça o que já veste', () => {
+    const worn = { ...DEFAULT_AVATAR, hat: 'boina', species: 'raposa' }
+    const owned = ownedFrom(undefined, worn)
+    expect(owned.has('hat:boina')).toBe(true)
+    expect(owned.has('species:raposa')).toBe(true)
+    expect(ownedFrom([], worn).size).toBe(0)
   })
 })

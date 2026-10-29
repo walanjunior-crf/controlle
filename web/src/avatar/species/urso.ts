@@ -11,7 +11,7 @@ const urso: SpeciesDef = {
     mouth: [50, 65.4],
     brows: 42,
     crown: { x: 50, y: 31.5, width: 42 },
-    lobes: { l: [22, 38.5], r: [78, 38.5] },
+    lobes: { l: [20.8, 28.6], r: [79.2, 28.6] },
     cheeks: { l: [30.5, 61], r: [69.5, 61] },
     sides: { l: 23, r: 77, y: 52 },
     neck: 76.5,

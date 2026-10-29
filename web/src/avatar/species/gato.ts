@@ -11,7 +11,7 @@ const gato: SpeciesDef = {
     mouth: [50, 62.4],
     brows: 42.5,
     crown: { x: 50, y: 32, width: 44 },
-    lobes: { l: [29, 37.5], r: [71, 37.5] },
+    lobes: { l: [27.4, 23], r: [72.6, 23] },
     cheeks: { l: [32, 61], r: [68, 61] },
     sides: { l: 24, r: 76, y: 51 },
     neck: 76.5,

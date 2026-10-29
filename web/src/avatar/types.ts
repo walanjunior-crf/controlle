@@ -35,14 +35,16 @@ export interface Rig {
   tallEars?: boolean
 }
 
-export type Mood = 'neutral' | 'happy' | 'celebrate' | 'sleepy' | 'love' | 'wave' | 'rest' | 'proud'
+export type Mood = 'neutral' | 'drowsy' | 'meh' | 'happy' | 'celebrate' | 'sleepy' | 'love' | 'wave' | 'rest' | 'proud'
 export type Pose = 'idle' | 'up' | 'wave' | 'hug' | 'rest'
 
 /** O que um humor muda: olhos, boca, pose, efeitos e um item temporário. */
 export interface Expression {
   mood: Mood
   eyes: 'arc' | 'closed' | 'heart' | null
-  mouth: 'open' | 'smile' | 'small' | null
+  mouth: 'open' | 'smile' | 'small' | 'meh' | null
+  /** pálpebras por cima de qualquer olho: meio fechadas (sono) ou retas (enjoado) */
+  lids: 'half' | 'flat' | null
   pose: Pose
   fx: 'zzz' | 'hearts' | 'sparkles' | 'confetti' | null
   extra: 'medal' | 'nightcap' | null

@@ -28,7 +28,7 @@ export function ConquistasPage() {
         <div aria-busy="true" />
       ) : (
         <>
-          <LevelCard level={r.level} />
+          <LevelCard level={r.level} credits={r.credits.balance} />
           <p className="muted" style={{ marginTop: 8 }}>
             {r.unlocked.size} de {ACHIEVEMENTS.length} conquistas. Um check é um hábito cumprido em um dia.
           </p>

@@ -172,7 +172,7 @@ export function StatsPage() {
 
           <section className="achievements" aria-label="Conquistas">
             <h2 className="section-title">Nível e conquistas</h2>
-            <LevelCard level={rewards.level} />
+            <LevelCard level={rewards.level} credits={rewards.credits.balance} />
             <Link to="/conquistas" className="card ach-link" style={{ marginTop: 10 }}>
               <span>
                 🏆 Conquistas <span className="ach-count num">{rewards.unlocked.size}/{ACHIEVEMENTS.length}</span>

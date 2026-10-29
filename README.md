@@ -318,3 +318,11 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Avatar vivo: pisca, respira, mexe a orelha e reage ao check, ao dia completo, ao carinho (toque) e à volta depois de uma pausa. Na tela Hoje ele fica dentro do anel de progresso.
 - Folha de contato para revisão: `npx tsx scripts/avatar-sheet.ts --out /tmp/x --cols hat=bone,cartola`.
 - Avatares salvos continuam com as mesmas peças, agora no traço novo.
+
+### v0.4.7 — Loja de créditos e jeito do avatar
+
+- Peças do avatar não abrem mais por nível: cada nível novo dá 3 créditos (e cada conquista, 1), e a pessoa escolhe o que comprar no editor. Peças especiais vêm só de conquistas (coroa, capa, medalha C, chifre de unicórnio, astronauta, pelagens dourada e esmeralda, olhos de estrela, fones, confete). Todas as cores de fundo são livres. Quem já usava peças continua com elas.
+- Aba Jeito: normal, sonolento ou enjoado. As animações viraram só reações (check, dia completo, carinho, volta depois de pausa).
+- Brincos no topo das orelhas em quem tem orelha em pé; brincos e piercing do lado esquerdo, direito ou nos dois.
+- Os 16 avatares prontos foram refeitos no traço papel recortado (e também ficam vivos).
+- Prata com contorno (lê em pelagem clara), bigode não cobre mais a boca, chapéus maiores no coelho.

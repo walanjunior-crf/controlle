@@ -13,7 +13,7 @@ const raposa: SpeciesDef = {
     mouth: [50, 65.6],
     brows: 42,
     crown: { x: 50, y: 32.5, width: 38 },
-    lobes: { l: [28.5, 36], r: [71.5, 36] },
+    lobes: { l: [25.2, 28.5], r: [74.8, 28.5] },
     cheeks: { l: [31, 62], r: [69, 62] },
     sides: { l: 23.5, r: 76.5, y: 51 },
     neck: 76.5,

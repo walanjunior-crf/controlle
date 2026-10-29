@@ -12,14 +12,14 @@ import type { AvatarConfig } from '../domain/types'
 import { effective, normalizeAvatar } from '../features/profile/avatarParts'
 import { body } from './body'
 import { adjust, mix, ramp } from './color'
-import { EXPRESSIONS } from './expressions'
+import { EXPRESSIONS, PERSONA_MOOD } from './expressions'
 import { BACKGROUND_DECOR } from './decor'
-import { GRAIN_PATTERN, cut, cutEllipse, cutPoly, detail, f, layer } from './paper'
+import { GRAIN_PATTERN, cut, cutEllipse, cutPoly, detail, f, layer, mirror } from './paper'
 import { atCrown, atEyes, onHead } from './place'
 import { PATTERNS } from './parts/backgrounds'
 import { COATS } from './parts/coats'
 import { COSTUMES } from './parts/costumes'
-import { BEARDS, BROWS, CHEEKS, EYES, MOUTHS } from './parts/face'
+import { BEARDS, BROWS, CHEEKS, EYES, MOUTHS, lids } from './parts/face'
 import { GLASSES } from './parts/glasses'
 import { HAIR } from './parts/hair'
 import { HATS } from './parts/hats'
@@ -89,7 +89,9 @@ function nightcap(x: Ctx): string {
 export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {}): string {
   const c = effective(normalizeAvatar(config))
   const def = SPECIES_DEFS[c.species] ?? SPECIES_DEFS.gato
-  const expr = EXPRESSIONS[opts.mood ?? 'neutral'] ?? EXPRESSIONS.neutral
+  // humor pedido (reação) ou o jeito escolhido pela pessoa
+  const moodKey = opts.mood && opts.mood !== 'neutral' ? opts.mood : (PERSONA_MOOD[c.persona] ?? 'neutral')
+  const expr = EXPRESSIONS[moodKey] ?? EXPRESSIONS.neutral
   const full = opts.detail !== 'lite'
   detail.full = full
   const fur = ramp(c.fur)
@@ -105,7 +107,18 @@ export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {
   const eyeStyle = expr.eyes ?? c.eyes
   const eyeFn = EYES[eyeStyle] ?? EYES.brilho
   const s = rig.eyes.size
-  const eyes = eyeFn(x, rig.eyes.l[0], rig.eyes.l[1], s, -1) + eyeFn(x, rig.eyes.r[0], rig.eyes.r[1], s, 1)
+  let eyes = eyeFn(x, rig.eyes.l[0], rig.eyes.l[1], s, -1) + eyeFn(x, rig.eyes.r[0], rig.eyes.r[1], s, 1)
+  if (expr.lids && !expr.eyes) eyes += lids(x, rig.eyes.l[0], rig.eyes.l[1], s, expr.lids, -1) + lids(x, rig.eyes.r[0], rig.eyes.r[1], s, expr.lids, 1)
+  // bigode ocupa o espaço entre nariz e boca: a boca desce um pouco
+  const mouthAt: [number, number] = c.beard !== 'nenhum' ? [rig.mouth[0], rig.mouth[1] + 2.2] : [rig.mouth[0], rig.mouth[1]]
+  const sideL = c.earringSide !== 'direito'
+  const sideR = c.earringSide !== 'esquerdo'
+  const pierceFn = PIERCINGS[c.piercing] ?? PIERCINGS.nenhum
+  const pierced = pierceFn(x)
+  const piercing =
+    c.piercing === 'septo' || !pierced
+      ? pierced
+      : (c.piercingSide !== 'esquerdo' ? pierced : '') + (c.piercingSide !== 'direito' ? mirror(pierced) : '')
   const mouthFn = MOUTHS[expr.mouth ?? c.mouth] ?? MOUTHS.sorriso
   const browFn = BROWS[c.brows] ?? BROWS.nenhum
   const earFn = EARRINGS[c.earrings] ?? EARRINGS.nenhum
@@ -128,14 +141,14 @@ export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {
     (COATS[c.coat] ?? COATS.liso)(x) +
     (hides.ears || !def.front ? '' : def.front(x)) +
     (CHEEKS[c.cheeks] ?? CHEEKS.nenhum)(x) +
-    `<g class="av-mouth">${mouthFn(x, rig.mouth, 1)}</g>` +
+    `<g class="av-mouth">${mouthFn(x, mouthAt, 1)}</g>` +
     (BEARDS[c.beard] ?? BEARDS.nenhum)(x) +
     def.nose(x) +
     `<g class="av-eyes">${eyes}</g>` +
     browFn(x, rig.eyes.l[0], rig.brows, -1) +
     browFn(x, rig.eyes.r[0], rig.brows, 1) +
-    (PIERCINGS[c.piercing] ?? PIERCINGS.nenhum)(x) +
-    (hides.earrings ? '' : earFn(x, rig.lobes.l, -1) + earFn(x, rig.lobes.r, 1)) +
+    piercing +
+    (hides.earrings ? '' : (sideL ? earFn(x, rig.lobes.l, -1) : '') + (sideR ? earFn(x, rig.lobes.r, 1) : '')) +
     (hair?.front ? onHead(x, hair.front(x)) : '') +
     atEyes(x, (GLASSES[c.glasses] ?? GLASSES.nenhum)(x)) +
     (costume?.over ? costume.over(x) : '') +
