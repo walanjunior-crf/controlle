@@ -18,7 +18,9 @@ import { isStandalone, platformHint, useInstallPrompt } from '../../platform/ins
 import { IosInstallSteps } from '../today/InstallBanner'
 import { Avatar, useProfile } from '../profile/Avatar'
 
-export const APP_VERSION = '0.4.4'
+import { APP_VERSION } from '../../version'
+import { FeedbackSheet } from '../feedback/FeedbackSheet'
+export { APP_VERSION }
 
 function Group({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) {
   return (
@@ -31,6 +33,7 @@ function Group({ title, children, footer }: { title: string; children: ReactNode
 }
 
 export function SettingsPage() {
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
   const settings = useSettings()
   const trackers = useAllTrackers() ?? []
   const navigate = useNavigate()
@@ -210,6 +213,13 @@ export function SettingsPage() {
           }}
         />
       </Group>
+
+      <Group title="Sugestões" footer="Você está no grupo que testa o Controlle. Ideias, bugs e o que faltou: tudo ajuda.">
+        <button type="button" className="settings-row settings-link" onClick={() => setFeedbackOpen(true)}>
+          Enviar uma sugestão
+        </button>
+      </Group>
+      <FeedbackSheet open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
 
       {!isStandalone() && (
         <Group title="Instalar">

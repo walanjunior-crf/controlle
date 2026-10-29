@@ -305,3 +305,7 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 
 - Tubarão redesenhado: focinho em torpedo, barbatana alta, barriga branca, guelras, nadadeiras e sorriso largo com dentinhos. Cores só de tubarões reais (cinza-azulado, cinza, tubarão-azul, ardósia, grafite, lixa, tubarão-baleia) e estampas tigre e pintas.
 - O dinossauro virou um T-rex: cabeçona, mandíbula com dentes, arcos sobre os olhos, narinas e bracinhos curtos.
+
+### v0.4.5 — Sugestões
+
+- Convite na próxima abertura do app para mandar sugestões, e atalho fixo em Ajustes → Sugestões. Abre o e-mail já preenchido para sugestoescontrolle@gmail.com, com opção de copiar o endereço.

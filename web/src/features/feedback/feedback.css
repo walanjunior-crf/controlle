@@ -1,0 +1,27 @@
+.feedback {
+  display: grid;
+  gap: 10px;
+}
+.feedback-text {
+  resize: vertical;
+  min-height: 120px;
+}
+.feedback-mail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.feedback-address {
+  color: var(--text);
+  user-select: all;
+  -webkit-user-select: all;
+  word-break: break-all;
+}
+.feedback-actions {
+  display: grid;
+  gap: 8px;
+}

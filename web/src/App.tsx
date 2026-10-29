@@ -10,6 +10,7 @@ import { ProfilePage } from './features/profile/ProfilePage'
 import { AvatarEditorPage } from './features/profile/AvatarEditorPage'
 import { ConquistasPage } from './features/rewards/ConquistasPage'
 import { useRewardToasts } from './features/rewards/useRewardToasts'
+import { FeedbackInvite } from './features/feedback/FeedbackInvite'
 import { OnboardingPage } from './features/onboarding/OnboardingPage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { StatsPage } from './features/stats/StatsPage'
@@ -112,6 +113,7 @@ function Shell() {
     <>
       <BadgeSync />
       <RewardSync />
+      <FeedbackInvite />
       <UpdateBand />
       <ScrollToTop />
       <Routes>
