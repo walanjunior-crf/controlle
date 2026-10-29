@@ -300,3 +300,8 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - O rato virou o Bartolomeu, um hamster de bochechas cheias.
 - Brincos agora ficam nas orelhas (gato, raposa, coelho, urso, Bartolomeu).
 - No editor, as peças aparecem na ordem em que desbloqueiam. Teto atual: nível 25, com 5 peças por nível.
+
+### v0.4.4 — Tubarão novo e T-rex
+
+- Tubarão redesenhado: focinho em torpedo, barbatana alta, barriga branca, guelras, nadadeiras e sorriso largo com dentinhos. Cores só de tubarões reais (cinza-azulado, cinza, tubarão-azul, ardósia, grafite, lixa, tubarão-baleia) e estampas tigre e pintas.
+- O dinossauro virou um T-rex: cabeçona, mandíbula com dentes, arcos sobre os olhos, narinas e bracinhos curtos.

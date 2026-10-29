@@ -39,6 +39,11 @@ describe('avatar montável', () => {
     expect(normalizeAvatar({ species: 'cachorro', coat: 'dalmata' } as never)).toMatchObject({ breed: 'dalmata', coat: 'liso' })
   })
 
+  it('tubarão só em cores e estampas de tubarão', () => {
+    expect(effective({ ...DEFAULT_AVATAR, species: 'tubarao', fur: '#F2A7B8', coat: 'bicolor' })).toMatchObject({ fur: '#7C9CB5', coat: 'liso' })
+    expect(effective({ ...DEFAULT_AVATAR, species: 'tubarao', fur: '#3F5466', coat: 'pintas' })).toMatchObject({ fur: '#3F5466', coat: 'pintas' })
+  })
+
   it('peruca e bigode só nos bichos em que funcionam', () => {
     expect(effective({ ...DEFAULT_AVATAR, species: 'tubarao', hair: 'ondulado', beard: 'bigode' })).toMatchObject({ hair: 'nenhum', beard: 'nenhum' })
     expect(effective({ ...DEFAULT_AVATAR, species: 'urso', hair: 'ondulado', beard: 'bigode' })).toMatchObject({ hair: 'ondulado', beard: 'bigode' })

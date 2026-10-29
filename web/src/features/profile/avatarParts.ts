@@ -66,7 +66,7 @@ export const SPECIES: Part[] = [
   { id: 'urso', label: 'Urso' },
   { id: 'coelho', label: 'Coelho' },
   { id: 'rato', label: 'Bartolomeu' },
-  { id: 'dinossauro', label: 'Dinossauro' },
+  { id: 'dinossauro', label: 'T-rex' },
   { id: 'tubarao', label: 'Tubarão' },
 ]
 
@@ -78,7 +78,7 @@ export const SPECIES_FUR: Record<string, string> = {
   urso: '#7A5230',
   coelho: '#F2EDE4',
   rato: '#E3A857',
-  dinossauro: '#6DBE45',
+  dinossauro: '#5FA040',
   tubarao: '#7C9CB5',
 }
 
@@ -99,6 +99,20 @@ export const FURS: ColorPart[] = [
   { id: 'dourado', label: 'Dourado', hex: '#E0B43A' },
   { id: 'esmeralda', label: 'Esmeralda', hex: '#3FA06A' },
 ]
+
+/** Tubarão só em cores de tubarão de verdade. */
+export const SHARK_FURS: ColorPart[] = [
+  { id: 'cinzaazulado', label: 'Cinza-azulado', hex: '#7C9CB5' },
+  { id: 'cinza', label: 'Cinza', hex: '#8C979E' },
+  { id: 'azul', label: 'Tubarão-azul', hex: '#4F7FA8' },
+  { id: 'ardosia', label: 'Ardósia', hex: '#5D7486' },
+  { id: 'grafite', label: 'Grafite', hex: '#4E585F' },
+  { id: 'areia', label: 'Lixa', hex: '#A8927A' },
+  { id: 'baleia', label: 'Tubarão-baleia', hex: '#3F5466' },
+]
+const SHARK_BELLY = '#F2F5F7'
+/** estampas que existem em tubarões (tigre e baleia) */
+export const SHARK_COATS = new Set(['liso', 'listrado', 'pintas'])
 
 export const COATS: Part[] = [
   { id: 'liso', label: 'Lisa' },
@@ -707,39 +721,61 @@ const SPECIES_ART: Record<string, SpeciesArt> = {
     earring: [26.2, 39.6],
   },
   dinossauro: {
-    back: (x) => {
-      const sp = shade(x.fur, 0.38)
-      return `<path d="M29 38L32.5 21L41 32Z" ${fs(sp, 4)}/><path d="M43 31L50 13.5L57 31Z" ${fs(sp, 4)}/><path d="M59 32L67.5 21L71 38Z" ${fs(sp, 4)}/>`
+    // T-rex: cabeçona, mandíbula larga com dentes, arcos sobre os olhos e bracinhos curtos
+    back: () => '',
+    face: (x) => {
+      const jawY = (px: number) => f(62.4 + 7.5 * (1 - ((px - 50) / 27) ** 2))
+      let teeth = ''
+      for (const tx of [28.5, 33.5, 38.5, 61.5, 66.5, 71.5]) {
+        const y = jawY(tx)
+        teeth += `<path d="M${tx - 1.6} ${y}L${tx} ${f(+y + 2.8)}L${tx + 1.6} ${y}Z" fill="#FFFBF0"/>`
+      }
+      return (
+        blob('M50 26Q71 26 76 42Q79.5 54 78 64Q76 78.5 50 79.5Q24 78.5 22 64Q20.5 54 24 42Q29 26 50 26Z', x) +
+        `<path d="M22.3 62Q36 69 50 69.5Q64 69 77.7 62Q76 78.5 50 79.5Q24 78.5 22.3 62Z" fill="${x.light}"/>` +
+        `<path d="M22.3 62Q36 69 50 69.5Q64 69 77.7 62Q76 78.5 50 79.5Q24 78.5 22.3 62Z" fill="url(#avVol)"/>` +
+        `<path d="M22.6 62.4Q36 69.4 50 69.9Q64 69.4 77.4 62.4" ${ln(shade(x.fur, 0.55), 1.4)}/>` +
+        teeth +
+        [[40, 31.5, 1.5], [50, 29.6, 1.7], [60, 31.5, 1.5], [45, 34.6, 1.1], [55, 34.6, 1.1], [33, 37, 1.1], [67, 37, 1.1]]
+          .map(([cx, cy, r]) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${shade(x.fur, 0.28)}" fill-opacity="0.55"/>`)
+          .join('') +
+        `<ellipse cx="34" cy="35" rx="5.4" ry="2.2" fill="#FFFFFF" fill-opacity="0.26" transform="rotate(-30 34 35)"/>` +
+        `<path d="M31 44.2Q38.5 37.6 46.6 42.4" ${ln(shade(x.fur, 0.32), 3.4)}/><path d="M53.4 42.4Q61.5 37.6 69 44.2" ${ln(shade(x.fur, 0.32), 3.4)}/>`
+      )
     },
-    face: (x) =>
-      head(50, 53, 28, 24, x) +
-      `<path d="M23.5 58Q50 70 76.5 58Q74.5 75 50 77Q25.5 75 23.5 58Z" fill="${x.light}"/>` +
-      `<circle cx="38" cy="36.5" r="2.3" fill="${x.light}" fill-opacity="0.6"/><circle cx="44" cy="33" r="1.5" fill="${x.light}" fill-opacity="0.6"/><circle cx="64" cy="37" r="1.9" fill="${x.light}" fill-opacity="0.6"/>`,
-    front: () => '',
-    nose: (x) => `<circle cx="46" cy="58.4" r="1.5" fill="${shade(x.fur, 0.65)}"/><circle cx="54" cy="58.4" r="1.5" fill="${shade(x.fur, 0.65)}"/>`,
-    noseY: 58.4,
-    mouthY: 64.5,
+    front: (x) => {
+      const arm =
+        `<path d="M36 84.5Q30.6 85.6 31.2 90.6" ${ln(shade(x.fur, 0.4), 5.6)}/><path d="M36 84.5Q30.6 85.6 31.2 90.6" ${ln(x.fur, 4)}/>` +
+        `<path d="M31.2 90.6L29.6 92.4M31.2 90.6L32.4 92.8" ${ln('#FFFBF0', 1.1)}/>`
+      return arm + mirror(arm)
+    },
+    nose: (x) => `<path d="M44 55.8Q45.6 54.2 47.2 55.8M52.8 55.8Q54.4 54.2 56 55.8" ${ln(shade(x.fur, 0.65), 1.6)}/>`,
+    noseY: 56,
+    mouthY: 66.6,
     mouthOnLight: false,
-    earring: [23, 60],
+    earring: [22.4, 57],
   },
   tubarao: {
-    back: (x) => `<path d="M41 33Q47 16 61 7Q57.5 21 61 33Z" fill="${x.furShade}"/><path d="M42 33Q47.5 17.5 59.5 9.5Q56.5 22 59 33Z" fill="${x.fur}"/>`,
+    // tubarão de frente: torpedo, barbatana alta, barriga branca (contrassombreamento)
+    back: (x) => blob('M41.5 30Q45.5 9.5 65 0.5Q57.5 16 60.5 30Z', x) + `<path d="M46 24Q50 13 59 6.5" ${ln('#FFFFFF', 1.4)} stroke-opacity="0.25"/>`,
     face: (x) =>
-      `<path d="M22.5 60Q21.5 28 50 27Q78.5 28 77.5 60Q77.5 77.5 50 77.5Q22.5 77.5 22.5 60Z" fill="${x.furShade}"/>` +
-      `<path d="M21.6 58.6Q20.6 27 49 26Q76.5 27 75.6 58Q75.6 75.6 49 75.8Q21.6 75.8 21.6 58.6Z" fill="${x.fur}"/>` +
-      `<path d="M21.6 58.6Q20.6 27 49 26Q76.5 27 75.6 58Q75.6 75.6 49 75.8Q21.6 75.8 21.6 58.6Z" fill="url(#avVol)"/>` +
-      `<path d="M23 61Q50 53 77 61Q76 77.5 50 77.5Q24 77.5 23 61Z" fill="#F4F7FA"/>` +
-      `<path d="M22.5 60Q21.5 28 50 27Q78.5 28 77.5 60Q77.5 77.5 50 77.5Q22.5 77.5 22.5 60Z" ${contour(x.fur)}/>` +
-      `<ellipse cx="37" cy="35" rx="5" ry="2.2" fill="#FFFFFF" fill-opacity="0.22" transform="rotate(-28 37 35)"/>`,
+      blob('M50 21Q67 21.5 74.5 42Q79.5 59 72.5 72Q63 80 50 80Q37 80 27.5 72Q20.5 59 25.5 42Q33 21.5 50 21Z', x) +
+      `<path d="M22.6 55Q36 61.5 50 61.5Q64 61.5 77.4 55Q79 66 72.5 72Q63 80 50 80Q37 80 27.5 72Q21 66 22.6 55Z" fill="${SHARK_BELLY}"/>` +
+      `<path d="M22.6 55Q36 61.5 50 61.5Q64 61.5 77.4 55Q79 66 72.5 72Q63 80 50 80Q37 80 27.5 72Q21 66 22.6 55Z" fill="url(#avVol)"/>` +
+      `<path d="M22.8 55.2Q36 61.7 50 61.7Q64 61.7 77.2 55.2" ${ln(shade(x.fur, 0.2), 1)} stroke-opacity="0.5"/>` +
+      `<ellipse cx="38" cy="32" rx="6" ry="2.3" fill="#FFFFFF" fill-opacity="0.28" transform="rotate(-30 38 32)"/>`,
     front: (x) => {
-      const g = `<path d="M27.5 47Q25.5 51 27.5 55M30.5 46Q28.5 50.5 30.5 55" ${ln(shade(x.fur, 0.35), 1.7)}/>`
-      return g + mirror(g)
+      const gills = `<path d="M24.8 45.6Q23.8 48.4 24.6 51.2M27 45Q26 48 26.8 51M29.2 44.6Q28.2 47.6 29 50.6" ${ln(shade(x.fur, 0.42), 1.1)} stroke-opacity="0.8"/>`
+      const fin =
+        `<path d="M28 83Q16 87.5 11 99Q20.5 96.5 30 92.5Z" fill="${x.fur}"/><path d="M28 83Q16 87.5 11 99Q20.5 96.5 30 92.5Z" fill="url(#avVol)"/>` +
+        `<path d="M28 83Q16 87.5 11 99Q20.5 96.5 30 92.5" ${contour(x.fur)}/>`
+      return gills + mirror(gills) + fin + mirror(fin)
     },
-    nose: () => '',
-    noseY: 57,
-    mouthY: 64.5,
+    nose: (x) => `<path d="M42.6 55Q44 54 45.4 55M54.6 55Q56 54 57.4 55" ${ln(shade(x.fur, 0.6), 1.3)}/>`,
+    noseY: 55,
+    mouthY: 66.4,
     mouthOnLight: true,
-    earring: [23, 60],
+    earring: [24, 58],
   },
 }
 
@@ -765,7 +801,7 @@ function coat(x: Ctx, sp: SpeciesArt): string {
     case 'bicolor':
       return `<path d="M25 60Q37 55.5 50 60Q63 55.5 75 60Q73 75.5 50 77Q27 75.5 25 60Z" fill="#F7F4EE"/>`
     case 'pintas': {
-      const t = lum(x.fur) < 0.3 ? tint(x.fur, 0.4) : shade(x.fur, 0.25)
+      const t = x.c.species === 'tubarao' ? '#F2F5F7' : lum(x.fur) < 0.3 ? tint(x.fur, 0.4) : shade(x.fur, 0.25)
       return [[39, 36, 2.3], [46, 33, 1.5], [59, 35, 2.1], [29.5, 55, 1.8], [70.5, 56, 2], [66, 41, 1.3]]
         .map(([cx, cy, r]) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${t}"/>`)
         .join('')
@@ -881,6 +917,14 @@ function mouth(x: Ctx, sp: SpeciesArt): string {
   const ink = onLight || lum(x.fur) >= 0.3 ? INK : '#FFFFFF'
   const smile = `<path d="M45 ${y}Q50 ${y + 4.4} 55 ${y}" ${ln(ink, 2.6)}/>`
   const style = x.mood === 'happy' ? 'sorrisao' : x.mood === 'sleepy' ? 'neutro' : x.c.mouth
+  if (x.c.species === 'tubarao' && (style === 'sorriso' || style === 'presas' || style === 'dentes')) {
+    let teeth = ''
+    for (let tx = 39.6; tx <= 60.5; tx += 3.5) {
+      const ty = y - 0.4 + 5.6 * (1 - ((tx + 1.75 - 50) / 13) ** 2) * 0.35
+      teeth += `<path d="M${f(tx)} ${f(ty)}L${f(tx + 1.75)} ${f(ty + 2.6)}L${f(tx + 3.5)} ${f(ty)}Z" fill="#FFFFFF"/>`
+    }
+    return `<path d="M37 ${y - 1}Q50 ${y + 9.5} 63 ${y - 1}Q50 ${y + 3} 37 ${y - 1}Z" fill="${MOUTH}" stroke="${MOUTH}" stroke-width="1.2" ${R}/>` + teeth
+  }
   switch (style) {
     case 'sorrisao':
       return (
@@ -1288,6 +1332,10 @@ export function effective(c: AvatarConfig): AvatarConfig {
     out.fur = BREED_FUR[breed] ?? c.fur
     out.coat = breed
   }
+  if (c.species === 'tubarao') {
+    if (!SHARK_FURS.some((p) => p.hex.toLowerCase() === c.fur.toLowerCase())) out.fur = SHARK_FURS[0].hex
+    if (!SHARK_COATS.has(c.coat)) out.coat = 'liso'
+  }
   if (!HAIR_SPECIES.has(c.species)) out.hair = 'nenhum'
   if (!BEARD_SPECIES.has(c.species)) out.beard = 'nenhum'
   return out
@@ -1302,7 +1350,7 @@ export function customAvatarSvg(config: Partial<AvatarConfig>, mood: Mood = 'neu
     c,
     fur,
     furShade: shade(fur, lum(fur) < 0.25 ? 0.35 : 0.2),
-    light: lum(fur) > 0.8 ? '#FFFFFF' : c.species === 'tubarao' ? '#F4F7FA' : tint(fur, 0.62),
+    light: lum(fur) > 0.8 ? '#FFFFFF' : c.species === 'tubarao' ? SHARK_BELLY : c.species === 'dinossauro' ? mix(tint(fur, 0.55), '#F3D36B', 0.35) : tint(fur, 0.62),
     mood,
   }
   const cos = c.costume !== 'nenhum' ? COSTUME_ART[c.costume] : undefined

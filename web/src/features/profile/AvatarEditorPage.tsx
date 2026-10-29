@@ -9,7 +9,7 @@ import { useToast } from '../../components/Toast'
 import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
 import {
-  BEARD_SPECIES, CATALOG, COSTUMES, DEFAULT_AVATAR, HAIR_SPECIES, SPECIES_FUR,
+  BEARD_SPECIES, CATALOG, COATS, COSTUMES, FURS, SHARK_COATS, SHARK_FURS, DEFAULT_AVATAR, HAIR_SPECIES, SPECIES_FUR,
   customAvatarSvg, isUnlocked, normalizeAvatar, unlockHint, unlockRank,
   type ColorPart, type Key, type Mood, type Part,
 } from './avatarParts'
@@ -21,7 +21,11 @@ interface Section {
   zoom?: string
   /** só aparece quando faz sentido para o bicho escolhido */
   when?: (c: AvatarConfig) => boolean
+  /** catálogo que depende do bicho (ex.: tubarão só em cores de tubarão) */
+  parts?: (c: AvatarConfig) => (Part | ColorPart)[]
 }
+
+const isShark = (c: AvatarConfig) => c.species === 'tubarao'
 
 const isDog = (c: AvatarConfig) => c.species === 'cachorro'
 const hasBreed = (c: AvatarConfig) => isDog(c) && c.breed !== 'srd'
@@ -33,7 +37,9 @@ interface Tab {
 
 const TABS: Tab[] = [
   { id: 'bicho', label: 'Bicho', sections: [{ key: 'species' }, { key: 'breed', when: isDog }] },
-  { id: 'pelagem', label: 'Pelagem', sections: [{ key: 'fur', when: (c) => !hasBreed(c) }, { key: 'coat', when: (c) => !hasBreed(c) }] },
+  { id: 'pelagem', label: 'Pelagem', sections: [{ key: 'fur', when: (c) => !hasBreed(c), parts: (c) => (isShark(c) ? SHARK_FURS : FURS) },
+      { key: 'coat', when: (c) => !hasBreed(c), parts: (c) => (isShark(c) ? COATS.filter((p) => SHARK_COATS.has(p.id)) : COATS) },
+    ] },
   {
     id: 'rosto',
     label: 'Rosto',
@@ -121,6 +127,7 @@ export function AvatarEditorPage() {
     const next: AvatarConfig = { ...cfg, [key]: valueOf(p) }
     // trocar de bicho troca também a pelagem, se a pessoa ainda não tinha mexido nela
     if (key === 'species' && cfg.fur.toLowerCase() === (SPECIES_FUR[cfg.species] ?? '').toLowerCase()) next.fur = SPECIES_FUR[p.id] ?? cfg.fur
+    if (key === 'species' && p.id === 'tubarao' && !SHARK_FURS.some((x) => x.hex.toLowerCase() === next.fur.toLowerCase())) next.fur = SHARK_FURS[0].hex
     setDraft(next)
   }
 
@@ -212,7 +219,7 @@ export function AvatarEditorPage() {
           </p>
         )}
         {current.id === 'cabeca' && !HAIR_SPECIES.has(cfg.species) && <p className="ae-note muted-note">Peruca não combina com este bicho.</p>}
-        {current.sections.filter((sec) => !sec.when || sec.when(cfg)).map(({ key, zoom }) => {
+        {current.sections.filter((sec) => !sec.when || sec.when(cfg)).map(({ key, zoom, parts }) => {
           const cat = CATALOG[key]
           const cover = coveredBy(key)
           return (
@@ -220,7 +227,7 @@ export function AvatarEditorPage() {
               {current.sections.filter((sec) => !sec.when || sec.when(cfg)).length > 1 && <h3 className="ae-section-title">{cat.label}</h3>}
               {cover && <p className="ae-note">A fantasia {cover} cobre esta parte. Tire a fantasia para ver.</p>}
               <div className={`ae-options${cat.color && key !== 'fur' ? ' is-colors' : ''}`} role="group" aria-label={cat.label}>
-                {[...(cat.parts as (Part | ColorPart)[])].sort((a, b) => unlockRank(a) - unlockRank(b)).map((p) => {
+                {[...(parts ? parts(cfg) : (cat.parts as (Part | ColorPart)[]))].sort((a, b) => unlockRank(a) - unlockRank(b)).map((p) => {
                   const locked = !open(p)
                   const on = isOn(key, p)
                   const lockText = unlockHint(p.unlock, achTitle)
