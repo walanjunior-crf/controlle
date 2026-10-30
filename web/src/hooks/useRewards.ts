@@ -45,14 +45,15 @@ export function useRewards(): Rewards {
     const owned = ownedFrom(profile?.owned, profile?.avatar.kind === 'custom' ? profile.avatar.config : profile?.customAvatar)
     const earned = creditsEarned(level.level, unlocked.size)
     const spent = creditsSpent(profile?.owned ?? [])
+    const collection = collectionFor(all, restDays, today, o)
     return {
       ready: snapshots !== undefined && events !== undefined && profile !== undefined,
       level,
       counters,
       unlocked,
-      wallet: { owned, achievements: unlocked, all: profile?.unlockAll === true },
+      wallet: { owned, achievements: unlocked, habits: collection.unlocked, all: profile?.unlockAll === true },
       credits: { earned, spent, balance: Math.max(0, earned - spent) },
-      collection: collectionFor(all, restDays, today, o),
+      collection,
     }
   }, [snapshots, restDays, events, profile, today, o])
 }
