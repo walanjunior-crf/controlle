@@ -5,6 +5,7 @@ import type { AvatarConfig, Profile } from '../../domain/types'
 import { CLogo } from '../../components/CLogo'
 import { colorFor } from '../../components/colors'
 import { findAvatar, type PresetAvatar } from './avatars'
+import { findIcon, iconSvg, type StaticIcon } from './icons'
 import { renderAvatar, type Mood } from '../../avatar'
 import { useAvatarReaction } from '../../avatar/reactions'
 import '../../avatar/anim.css'
@@ -73,6 +74,15 @@ export function Avatar({ profile, size = 44, ring = false, decorative = false, m
     return <LiveAvatar config={preset.config as AvatarConfig} size={size} mood={mood} alive={alive} pettable={pettable} cls={cls} style={style} a11y={a11y} />
   }
 
+  const icon = choice.kind === 'icon' ? findIcon(choice.id) : undefined
+  if (icon && choice.kind === 'icon') {
+    return (
+      <span className={cls} style={style} {...a11y}>
+        <IconSvg icon={icon} bg={choice.bg} />
+      </span>
+    )
+  }
+
   const initials = initialsOf(name)
   const ink = inkOn(profile.color)
   return (
@@ -116,4 +126,9 @@ function LiveAvatar({ config, size, mood, alive, pettable, cls, style, a11y }: L
 /** Só o desenho de um avatar pronto (miniatura leve, no motor v2). */
 export function PresetSvg({ avatar }: { avatar: PresetAvatar }) {
   return <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: renderAvatar(avatar.config, { detail: 'lite' }) }} />
+}
+
+/** Ícone estático (desenho da v0.2) com a cor de fundo escolhida. */
+export function IconSvg({ icon, bg }: { icon: StaticIcon; bg?: string }) {
+  return <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: iconSvg(icon, bg) }} />
 }

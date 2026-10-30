@@ -40,7 +40,7 @@ export function useRewards(): Rewards {
     })
     const level = levelFor(stats.checks)
     const unlocked = snapshots ? unlockedFromCounters(counters) : EMPTY
-    const owned = ownedFrom(profile?.owned, profile?.avatar.kind === 'custom' ? profile.avatar.config : undefined)
+    const owned = ownedFrom(profile?.owned, profile?.avatar.kind === 'custom' ? profile.avatar.config : profile?.customAvatar)
     const earned = creditsEarned(level.level, unlocked.size)
     const spent = creditsSpent(profile?.owned ?? [])
     return {

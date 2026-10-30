@@ -6,9 +6,9 @@ import { BrandText } from '../../components/BrandText'
 import { ColorPicker } from '../../components/pickers'
 import { IconCamera, IconChevronLeft, IconTrash, IconUpload } from '../../components/icons'
 import { useToast } from '../../components/Toast'
-import { AVATARS } from './avatars'
-import { DEFAULT_AVATAR } from './avatarParts'
-import { Avatar, PresetSvg, useProfileLoaded } from './Avatar'
+import { ICONS, safeBg } from './icons'
+import { BGS, DEFAULT_AVATAR } from './avatarParts'
+import { Avatar, IconSvg, useProfileLoaded } from './Avatar'
 import { LevelCard } from '../rewards/LevelCard'
 import { useRewards } from '../../hooks/useRewards'
 import { usePhotoFlow } from './PhotoCropSheet'
@@ -45,8 +45,10 @@ export function ProfilePage() {
     if (!profile) return
     const prev = profile.avatar
     if (JSON.stringify(prev) === JSON.stringify(avatar)) return
+    // sair do avatar montado guarda a montagem para voltar depois
+    const keep: Patch = prev.kind === 'custom' && avatar.kind !== 'custom' ? { customAvatar: prev.config } : {}
     // trocar uma foto por outra coisa apaga a foto: oferece desfazer
-    void save({ avatar }, prev.kind === 'photo' ? { avatar: prev } : undefined)
+    void save({ avatar, ...keep }, prev.kind === 'photo' ? { avatar: prev } : undefined)
   }
 
   const photo = usePhotoFlow((dataUrl) => setAvatar({ kind: 'photo', dataUrl }))
@@ -110,13 +112,16 @@ export function ProfilePage() {
           </div>
 
           <Link to="/perfil/avatar" className="profile-action ae-build">
-            <Avatar profile={{ ...draft, avatar: choice.kind === 'custom' ? choice : { kind: 'custom', config: DEFAULT_AVATAR } }} size={28} decorative />
-            <span>{choice.kind === 'custom' ? 'Editar meu avatar' : 'Montar meu avatar'}</span>
+            <Avatar profile={{ ...draft, avatar: choice.kind === 'custom' ? choice : { kind: 'custom', config: profile.customAvatar ?? DEFAULT_AVATAR } }} size={28} decorative />
+            <span>{choice.kind === 'custom' ? 'Editar meu avatar' : profile.customAvatar ? 'Voltar ao meu avatar' : 'Montar meu avatar'}</span>
           </Link>
 
-          <div className="avatar-grid" role="group" aria-label="Avatares prontos">
-            {AVATARS.map((a) => {
-              const on = choice.kind === 'preset' && choice.id === a.id
+          <h3 className="ae-section-title profile-icons-title">Ícones</h3>
+          <div className="avatar-grid" role="group" aria-label="Ícones">
+            {ICONS.map((a) => {
+              const on = choice.kind === 'icon' && choice.id === a.id
+              // trocar de desenho mantém o fundo que a pessoa já tinha escolhido
+              const bg = choice.kind === 'icon' ? choice.bg : undefined
               return (
                 <button
                   key={a.id}
@@ -124,15 +129,41 @@ export function ProfilePage() {
                   className={`avatar-option${on ? ' is-on' : ''}`}
                   aria-pressed={on}
                   aria-label={a.label}
-                  onClick={() => setAvatar({ kind: 'preset', id: a.id })}
+                  onClick={() => setAvatar({ kind: 'icon', id: a.id, ...(bg ? { bg } : {}) })}
                 >
                   <span className="avatar-option-art">
-                    <PresetSvg avatar={a} />
+                    <IconSvg icon={a} bg={bg} />
                   </span>
                 </button>
               )
             })}
           </div>
+          {choice.kind === 'icon' && (() => {
+            const icon = ICONS.find((i) => i.id === choice.id)
+            if (!icon) return null
+            const cur = safeBg(icon, choice.bg).toLowerCase()
+            const colors = [{ id: 'original', label: 'Original', hex: icon.bg }, ...BGS.filter((b) => b.hex.toLowerCase() !== icon.bg.toLowerCase())]
+            return (
+              <div className="ae-section icon-bg">
+                <h3 className="ae-section-title">Cor do fundo</h3>
+                <div className="ae-options is-colors" role="group" aria-label="Cor do fundo do ícone">
+                  {colors.map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      className="ae-opt"
+                      aria-pressed={cur === b.hex.toLowerCase()}
+                      aria-label={b.label}
+                      title={b.label}
+                      onClick={() => setAvatar(b.id === 'original' ? { kind: 'icon', id: icon.id } : { kind: 'icon', id: icon.id, bg: b.hex })}
+                    >
+                      <span className="ae-swatch" style={{ background: b.hex }} aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
 
           <div className="profile-photo-actions">
             <button

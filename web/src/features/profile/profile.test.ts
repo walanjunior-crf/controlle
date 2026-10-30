@@ -75,3 +75,25 @@ describe('avatares prontos', () => {
     expect(findAvatar('nada')).toBeUndefined()
   })
 })
+
+describe('ícones estáticos', () => {
+  it('são os 16 desenhos originais, com ids únicos', async () => {
+    const { ICONS } = await import('./icons')
+    expect(ICONS).toHaveLength(16)
+    expect(new Set(ICONS.map((i) => i.id)).size).toBe(16)
+  })
+  it('trocam a cor do fundo, inclusive no recorte da lua', async () => {
+    const { findIcon, iconSvg } = await import('./icons')
+    const lua = findIcon('lua')!
+    const svg = iconSvg(lua, '#D9778F')
+    expect(svg.match(/#D9778F/g)).toHaveLength(2)
+    expect(svg).not.toContain('{{bg}}')
+    expect(svg).not.toContain(lua.bg)
+  })
+  it('ignoram cor inválida e voltam ao fundo original', async () => {
+    const { findIcon, iconSvg } = await import('./icons')
+    const gato = findIcon('gato')!
+    expect(iconSvg(gato, 'red"/><script>')).not.toContain('<script')
+    expect(iconSvg(gato, 'red')).toContain(`fill="${gato.bg}"`)
+  })
+})

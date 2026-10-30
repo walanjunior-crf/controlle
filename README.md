@@ -338,3 +338,11 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Boina, cartola e coroa com versão própria em chapado e pelúcia (costuras, miçangas, feltro).
 - Olhos brilhantes, de estrela e de coração com versão própria em chapado e pelúcia.
 - Bocas bordadas da pelúcia viram linha contínua nas miniaturas.
+- Sai a mancha redonda do canto superior direito de todos os fundos.
+
+### v0.4.10 — Ícones de volta
+
+- Os 16 ícones estáticos da v0.2 (raposa, coruja, gato, urso, sapo, pinguim, coelho, panda, tartaruga, peixe, abelha, cacto, cogumelo, planta, sol e lua) voltam ao perfil, em "Foto ou avatar".
+- Ao escolher um ícone, dá para trocar a cor do fundo (todas livres) e trocar de desenho mantendo o fundo.
+- Trocar o avatar montado por um ícone, foto ou iniciais guarda a montagem: o botão "Voltar ao meu avatar" traz ela de volta.
+- As combinações prontas do avatar montado agora ficam na aba "Prontos" do editor, como ponto de partida. Peças que ainda não são suas pedem compra antes de salvar.

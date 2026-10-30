@@ -10,11 +10,12 @@ import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
 import {
   BEARD_SPECIES, CATALOG, COATS, COSTUMES, FURS, SHARK_COATS, SHARK_FURS, DEFAULT_AVATAR, HAIR_SPECIES, SPECIES_FUR,
-  isOwned, lockHint, normalizeAvatar, ownKey, unlockRank,
+  isOwned, lockHint, lockedItems, normalizeAvatar, ownKey, unlockRank,
   type ColorPart, type Key, type Part,
 } from './avatarParts'
 import { renderAvatar } from '../../avatar'
 import { Sheet } from '../../components/Sheet'
+import { AVATARS } from './avatars'
 import './profile.css'
 
 interface Section {
@@ -38,6 +39,7 @@ interface Tab {
 }
 
 const TABS: Tab[] = [
+  { id: 'prontos', label: 'Prontos', sections: [] },
   { id: 'bicho', label: 'Bicho', sections: [{ key: 'species' }, { key: 'breed', when: isDog }] },
   { id: 'estilo', label: 'Estilo', sections: [{ key: 'style' }] },
   { id: 'jeito', label: 'Jeito', sections: [{ key: 'persona', zoom: '22 30 56 56' }] },
@@ -112,7 +114,7 @@ export function AvatarEditorPage() {
   const [buying, setBuying] = useState<{ key: Key; part: Part | ColorPart } | null>(null)
   const [hint, setHint] = useState('')
 
-  const start = useMemo(() => (profile?.avatar.kind === 'custom' ? normalizeAvatar(profile.avatar.config) : DEFAULT_AVATAR), [profile])
+  const start = useMemo(() => (profile?.avatar.kind === 'custom' ? normalizeAvatar(profile.avatar.config) : profile?.customAvatar ? normalizeAvatar(profile.customAvatar) : DEFAULT_AVATAR), [profile])
   const cfg = draft ?? start
   const back = () => (location.key === 'default' ? navigate('/perfil', { replace: true }) : navigate(-1))
 
@@ -153,6 +155,11 @@ export function AvatarEditorPage() {
   }
 
   const save = async () => {
+    const missing = lockedItems(cfg, wallet)
+    if (missing.length) {
+      setHint(`Ainda falta liberar: ${missing.join(', ')}. Compre na aba da peça ou troque por outra.`)
+      return
+    }
     const prev = profile.avatar
     try {
       await saveProfile({ avatar: { kind: 'custom', config: cfg } })
@@ -236,6 +243,36 @@ export function AvatarEditorPage() {
           </p>
         )}
         {current.id === 'cabeca' && !HAIR_SPECIES.has(cfg.species) && <p className="ae-note muted-note">Peruca não combina com este bicho.</p>}
+        {current.id === 'prontos' && (
+          <>
+            <p className="ae-note muted-note">Comece de uma combinação pronta e mude o que quiser. Peças que você ainda não tem ficam com cadeado na aba delas.</p>
+            <div className="ae-options" role="group" aria-label="Combinações prontas">
+              {AVATARS.map((a) => {
+                const next = normalizeAvatar({ ...DEFAULT_AVATAR, style: cfg.style, ...a.config })
+                const missing = lockedItems(next, wallet)
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    className="ae-opt"
+                    aria-label={missing.length ? `${a.label} (falta liberar: ${missing.join(', ')})` : a.label}
+                    title={a.label}
+                    onClick={() => {
+                      setDraft(next)
+                      setHint(missing.length ? `Para usar ${a.label}, falta liberar: ${missing.join(', ')}.` : '')
+                    }}
+                  >
+                    <span className="ae-opt-art">
+                      <svg viewBox="0 0 100 100" aria-hidden="true" dangerouslySetInnerHTML={{ __html: renderAvatar(next, { detail: 'lite' }) }} />
+                    </span>
+                    <span>{a.label}</span>
+                    {missing.length > 0 && <span className="ae-lock">🔒 falta {missing.length}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )}
         {current.sections.filter((sec) => !sec.when || sec.when(cfg)).map(({ key, zoom, parts }) => {
           const cat = CATALOG[key]
           const cover = coveredBy(key)

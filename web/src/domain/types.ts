@@ -198,7 +198,10 @@ export interface AvatarConfig {
 }
 
 export type AvatarChoice =
+  /** combinação pronta do avatar montado (motor v2) */
   | { kind: 'preset'; id: string }
+  /** ícone estático (desenhos da v0.2), com cor de fundo opcional */
+  | { kind: 'icon'; id: string; bg?: string }
   /** personagem montado pela pessoa, com itens liberados por nível e conquistas */
   | { kind: 'custom'; config: AvatarConfig }
   /** foto recortada em quadrado, JPEG pequeno (~256 px) como data URL */
@@ -218,6 +221,8 @@ export interface Profile {
   avatar: AvatarChoice
   /** peças do avatar compradas com créditos ("chave:id"); ausente = ainda não usou a loja */
   owned?: string[]
+  /** último avatar montado, guardado quando a pessoa troca por ícone, foto ou iniciais */
+  customAvatar?: AvatarConfig
   createdAt: number
   updatedAt: number
 }
