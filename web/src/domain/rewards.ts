@@ -26,9 +26,17 @@ export interface ProgressStats {
  * registro conta (é o dia de treino); em meta de "no máximo" sem registro não conta.
  */
 export function countChecks(all: TrackerSnapshot[], restDays: RestDay[], today: DayKey, o: EngineOptions): number {
-  const limit = addDays(today, -STREAK_LOOKBACK_DAYS)
   let checks = 0
+  for (const n of checksByTracker(all, restDays, today, o).values()) checks += n
+  return checks
+}
+
+/** Checks de cada hábito (mesma regra de `countChecks`), por id do tracker. */
+export function checksByTracker(all: TrackerSnapshot[], restDays: RestDay[], today: DayKey, o: EngineOptions): Map<string, number> {
+  const limit = addDays(today, -STREAK_LOOKBACK_DAYS)
+  const out = new Map<string, number>()
   for (const s of all) {
+    let checks = 0
     const days = new Set<DayKey>()
     for (const e of s.entries) {
       const d = e.day
@@ -39,8 +47,9 @@ export function countChecks(all: TrackerSnapshot[], restDays: RestDay[], today: 
       if (!p.isActive || p.entryCount === 0) continue
       if (p.period === 'week' || p.target === null || p.isMet) checks++
     }
+    out.set(s.tracker.id, checks)
   }
-  return checks
+  return out
 }
 
 export function computeProgressStats(all: TrackerSnapshot[], restDays: RestDay[], today: DayKey, o: EngineOptions): ProgressStats {

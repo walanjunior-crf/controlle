@@ -35,6 +35,8 @@ import { LevelChip } from '../rewards/LevelCard'
 import { emitReaction } from '../../avatar/reactions'
 import { useRewards } from '../../hooks/useRewards'
 import { UpcomingEvents } from '../agenda/UpcomingEvents'
+import { closestMilestone } from '../../domain/collection'
+import { itemFor } from '../collection/items'
 
 function greeting(hour: number): string {
   if (hour >= 5 && hour < 12) return 'Bom dia'
@@ -108,6 +110,7 @@ export function TodayPage() {
     if (last && daysBetween(last, today).length - 1 >= 7) window.setTimeout(() => emitReaction('back'), 900)
   }, [snapshots, today])
   const buddy = profile.avatar.kind === 'custom'
+  const milestone = rewards.ready ? closestMilestone(rewards.collection) : null
 
   const flash = (id: string) => {
     setPulseId(id)
@@ -246,8 +249,14 @@ export function TodayPage() {
                 )}
               </p>
               <StreakChip count={streak.current} />
-              {streak.atRisk && streak.current > 0 && (
+              {streak.atRisk && streak.current > 0 ? (
                 <p className="risk-note">Registre hoje para manter a sequência de {streak.current} {streak.current === 1 ? 'dia' : 'dias'}.</p>
+              ) : (
+                milestone?.next && (
+                  <Link to="/colecao" className="milestone-note">
+                    🎁 {milestone.next.left === 1 ? 'Falta' : 'Faltam'} <span className="num">{milestone.next.left}</span> {milestone.next.left === 1 ? 'check' : 'checks'} para {itemFor(milestone.category, milestone.next.tier).name}
+                  </Link>
+                )
               )}
             </div>
             {celebrating && <Confetti />}

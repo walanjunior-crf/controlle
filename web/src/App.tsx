@@ -9,6 +9,7 @@ import { EventEditorPage } from './features/agenda/EventEditorPage'
 import { ProfilePage } from './features/profile/ProfilePage'
 import { AvatarEditorPage } from './features/profile/AvatarEditorPage'
 import { ConquistasPage } from './features/rewards/ConquistasPage'
+import { CollectionPage } from './features/collection/CollectionPage'
 import { useRewardToasts } from './features/rewards/useRewardToasts'
 import { FeedbackInvite } from './features/feedback/FeedbackInvite'
 import { OnboardingPage } from './features/onboarding/OnboardingPage'
@@ -123,6 +124,7 @@ function Shell() {
         <Route path="/agenda/:id" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
         <Route path="/perfil" element={<main className="app-main no-tabs"><ProfilePage /></main>} />
         <Route path="/perfil/avatar" element={<main className="app-main no-tabs"><AvatarEditorPage /></main>} />
+        <Route path="/colecao" element={<main className="app-main no-tabs"><CollectionPage /></main>} />
         <Route path="/conquistas" element={<main className="app-main no-tabs"><ConquistasPage /></main>} />
         <Route path="/historico" element={<WithTabs><HistoryPage /></WithTabs>} />
         <Route path="/estatisticas" element={<WithTabs><StatsPage /></WithTabs>} />

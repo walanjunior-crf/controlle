@@ -3,8 +3,8 @@ import { useEffect, useId, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../../db/db'
 import { deleteTracker, saveTracker, setArchived, type TrackerDraft } from '../../db/actions'
-import { TEMPLATES, formatMinuteOfDay, type DayProgress } from '../../domain'
-import type { Goal, GoalComparison, GoalPeriod, NumericAggregation, Tracker, TrackerKind, Weekday } from '../../domain/types'
+import { CATEGORIES, TEMPLATES, formatMinuteOfDay, guessCategory, type DayProgress } from '../../domain'
+import type { Goal, GoalComparison, GoalPeriod, HabitCategory, NumericAggregation, Tracker, TrackerKind, Weekday } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { SegmentedControl, Stepper, WeekdayPicker } from '../../components/controls'
@@ -24,6 +24,8 @@ interface FormState {
   unit: string
   increment: number
   numericAggregation: NumericAggregation
+  /** tema escolhido; null = automático (deduzido do nome e do ícone) */
+  category: HabitCategory | null
   target: number
   comparison: GoalComparison
   period: GoalPeriod
@@ -47,6 +49,7 @@ const DEFAULT_FORM: FormState = {
   unit: '',
   increment: 1,
   numericAggregation: 'sum',
+  category: null,
   target: 1,
   comparison: 'atLeast',
   period: 'day',
@@ -69,6 +72,7 @@ function fromDraft(d: TrackerDraft): FormState {
     unit: d.tracker.unit,
     increment: d.tracker.increment,
     numericAggregation: d.tracker.numericAggregation,
+    category: d.tracker.category ?? null,
     target: d.goal.target,
     comparison: d.goal.comparison,
     period: d.goal.period,
@@ -145,6 +149,7 @@ export function TrackerBuilderPage() {
       unit: t.unit,
       increment: t.increment,
       numericAggregation: t.numericAggregation,
+      category: t.category ?? null,
       target: g?.target ?? 1,
       comparison: g?.comparison ?? 'atLeast',
       period: g?.period ?? 'day',
@@ -236,6 +241,7 @@ export function TrackerBuilderPage() {
           unit: form.kind === 'duration' ? 'min' : form.unit.trim(),
           increment: form.increment > 0 ? form.increment : 1,
           numericAggregation: form.numericAggregation,
+          category: form.category ?? undefined,
           archived: existing?.tracker.archived ?? false,
         },
         goal: { target: form.target, comparison: form.comparison, period: form.period, weekdays: form.weekdays },
@@ -262,6 +268,7 @@ export function TrackerBuilderPage() {
     navigate('/', { replace: true })
   }
 
+  const guess = guessCategory({ name: form.name, icon: form.icon })
   const hasUnit = form.kind === 'counter' || form.kind === 'numeric'
   const hasIncrement = form.kind === 'counter' || form.kind === 'duration' || form.kind === 'numeric'
   const unitLabel = form.kind === 'duration' ? 'min' : form.unit || ''
@@ -319,6 +326,41 @@ export function TrackerBuilderPage() {
       <section className="form-section">
         <h2 className="section-title">Ícone</h2>
         <EmojiPicker value={form.icon} onChange={(v) => set('icon', v)} />
+      </section>
+
+      <section className="form-section">
+        <h2 className="section-title">Tema</h2>
+        <div className="chip-row" role="radiogroup" aria-label="Tema do hábito">
+          {CATEGORIES.map((c) => {
+            const on = (form.category ?? guess) === c.id
+            return (
+              <button
+                key={c.id}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                className={`chip${on ? ' is-on' : ''}`}
+                title={c.hint}
+                onClick={() => set('category', c.id)}
+              >
+                <span aria-hidden="true">{c.icon}</span> {c.label}
+              </button>
+            )
+          })}
+        </div>
+        <p className="field-hint">
+          {form.category === null
+            ? `Sugerido pelo nome. Cada tema tem itens próprios na sua coleção do avatar.`
+            : 'Cada tema tem itens próprios na sua coleção do avatar.'}
+          {form.category !== null && form.category !== guess && (
+            <>
+              {' '}
+              <button type="button" className="link-btn" onClick={() => set('category', null)}>
+                Voltar para o sugerido
+              </button>
+            </>
+          )}
+        </p>
       </section>
 
       <section className="form-section">

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { countersFor, levelFor, unlockedFromCounters, computeProgressStats } from '../domain'
-import type { AchievementId, Counters, LevelInfo } from '../domain'
+import { collectionFor, countersFor, levelFor, unlockedFromCounters, computeProgressStats } from '../domain'
+import type { AchievementId, Collection, Counters, LevelInfo } from '../domain'
 import { useEvents } from '../features/agenda/hooks'
 import { useProfileLoaded } from '../features/profile/Avatar'
 import { creditsEarned, creditsSpent, ownedFrom, type Wallet } from '../features/profile/avatarParts'
@@ -18,6 +18,8 @@ export interface Rewards {
   wallet: Wallet
   /** créditos: ganhos ao subir de nível e por conquista; gastos na loja */
   credits: { earned: number; spent: number; balance: number }
+  /** escada de itens por tema de hábito */
+  collection: Collection
 }
 
 const EMPTY: ReadonlySet<AchievementId> = new Set()
@@ -50,6 +52,7 @@ export function useRewards(): Rewards {
       unlocked,
       wallet: { owned, achievements: unlocked, all: profile?.unlockAll === true },
       credits: { earned, spent, balance: Math.max(0, earned - spent) },
+      collection: collectionFor(all, restDays, today, o),
     }
   }, [snapshots, restDays, events, profile, today, o])
 }

@@ -7,6 +7,7 @@ import { ColorPicker } from '../../components/pickers'
 import { IconCamera, IconChevronLeft, IconTrash, IconUpload } from '../../components/icons'
 import { useToast } from '../../components/Toast'
 import { ICONS, safeBg } from './icons'
+import { ITEMS } from '../collection/items'
 import { BGS, DEFAULT_AVATAR } from './avatarParts'
 import { Avatar, IconSvg, useProfileLoaded } from './Avatar'
 import { LevelCard } from '../rewards/LevelCard'
@@ -14,6 +15,7 @@ import { useRewards } from '../../hooks/useRewards'
 import { usePhotoFlow } from './PhotoCropSheet'
 import { BIO_MAX, NAME_MAX, HANDLE_MAX, handleError, normalizeHandle } from './profileText'
 import './profile.css'
+import '../collection/collection.css'
 
 type Patch = Partial<Omit<Profile, 'id' | 'uid' | 'createdAt'>>
 
@@ -92,6 +94,16 @@ export function ProfilePage() {
       {rewards.ready && (
         <section className="profile-section" aria-label="Seu nível">
           <LevelCard level={rewards.level} credits={rewards.credits.balance} />
+          <Link to="/colecao" className="card col-entry">
+            <span className="col-entry-icon" aria-hidden="true">🎁</span>
+            <span className="col-entry-text">
+              <strong>Coleção</strong>
+              <span className="muted">
+                <span className="num">{rewards.collection.unlocked.size}</span> de <span className="num">{ITEMS.length}</span> itens ganhos com seus hábitos
+              </span>
+            </span>
+            <span className="col-entry-go" aria-hidden="true">›</span>
+          </Link>
         </section>
       )}
 

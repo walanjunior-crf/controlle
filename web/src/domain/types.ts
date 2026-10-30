@@ -24,6 +24,19 @@ export type DayKey = string
 
 export type EntrySource = 'app' | 'quick' | 'import'
 
+/** Tema do hábito: decide quais itens da coleção ele libera. */
+export type HabitCategory =
+  | 'agua'
+  | 'movimento'
+  | 'sono'
+  | 'leitura'
+  | 'mente'
+  | 'saude'
+  | 'largar'
+  | 'humor'
+  | 'estudo'
+  | 'outro'
+
 export interface Tracker {
   id: string
   name: string
@@ -37,6 +50,8 @@ export interface Tracker {
   /** quanto um toque soma (counter); ignorado para binário */
   increment: number
   numericAggregation: NumericAggregation
+  /** tema escolhido pela pessoa; ausente = deduzido do nome/ícone (`categoryOf`) */
+  category?: HabitCategory
   sortOrder: number
   archived: boolean
   /** epoch ms */
