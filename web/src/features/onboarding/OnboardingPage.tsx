@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { markSeen as markWhatsNewSeen } from '../whatsnew/WhatsNew'
 import { useNavigate } from 'react-router-dom'
 import { saveTracker } from '../../db/actions'
 import { requestPersistentStorage, saveProfile, saveSettings } from '../../db/db'
@@ -68,6 +69,7 @@ export function OnboardingPage() {
       void requestPersistentStorage()
       await saveProfile({ displayName: name.trim(), avatar })
       await saveSettings({ onboarded: true, name: name.trim() })
+      markWhatsNewSeen()
       navigate(ownOnly && picked.length === 0 ? '/tracker/new' : '/', { replace: true })
     } finally {
       setBusy(false)

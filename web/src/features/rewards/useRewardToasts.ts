@@ -73,9 +73,8 @@ export function useRewardToasts() {
         return
       }
     }
-    // coleção nova (v0.5): avisa uma vez o que o histórico já liberou
+    // coleção nova (v0.5): o que o histórico já liberou entra calado (as Novidades contam)
     if (!seen.items) {
-      if (items.length) toast.show(`🎁 Chegou a Coleção! Seus hábitos já liberaram ${items.length} ${items.length === 1 ? 'item' : 'itens'}. Veja em Perfil → Coleção.`)
       seen.items = items
       write(seen)
     }

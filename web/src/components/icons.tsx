@@ -160,3 +160,11 @@ export const IconPin = ({ size = 18, className }: IconProps) => (
     <circle cx="12" cy="10" r="2.3" />
   </svg>
 )
+
+/** Ajustes: engrenagem de 8 dentes com miolo vazado. */
+export const IconGear = ({ size = 24, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M18.78 10.26L21.1 10.62V13.38L18.78 13.74L18.03 15.56L19.41 17.45L17.45 19.41L15.56 18.03L13.74 18.78L13.38 21.1H10.62L10.26 18.78L8.44 18.03L6.55 19.41L4.59 17.45L5.97 15.56L5.22 13.74L2.9 13.38V10.62L5.22 10.26L5.97 8.44L4.59 6.55L6.55 4.59L8.44 5.97L10.26 5.22L10.62 2.9H13.38L13.74 5.22L15.56 5.97L17.45 4.59L19.41 6.55L18.03 8.44Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)

@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type ReactNode } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { saveSettings } from '../../db/db'
 import { reorderTrackers, setArchived } from '../../db/actions'
 import type { Settings, Tracker } from '../../domain/types'
@@ -8,7 +8,7 @@ import { CalendarSheet } from '../../components/CalendarSheet'
 import { CLogo } from '../../components/CLogo'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { SegmentedControl } from '../../components/controls'
-import { IconChevronRight, IconDown, IconUp } from '../../components/icons'
+import { IconChevronLeft, IconChevronRight, IconDown, IconUp } from '../../components/icons'
 import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { useSettings } from '../../hooks/useSettings'
@@ -16,7 +16,7 @@ import { useAllTrackers } from '../../hooks/useSnapshots'
 import { backupFilename, downloadBlob, exportCSV, exportJSON, importJSON } from '../../platform/backup'
 import { isStandalone, platformHint, useInstallPrompt } from '../../platform/install'
 import { IosInstallSteps } from '../today/InstallBanner'
-import { Avatar, useProfile } from '../profile/Avatar'
+import { useProfile } from '../profile/Avatar'
 
 import { APP_VERSION } from '../../version'
 import { FeedbackSheet } from '../feedback/FeedbackSheet'
@@ -40,6 +40,7 @@ export function SettingsPage() {
   const settings = useSettings()
   const trackers = useAllTrackers() ?? []
   const navigate = useNavigate()
+  const location = useLocation()
   const toast = useToast()
   const ids = { day: useId() }
   const profile = useProfile()
@@ -84,27 +85,18 @@ export function SettingsPage() {
     }
   }
 
-  const profileName = profile.displayName.trim() || settings.name.trim()
   const hint = platformHint()
 
   return (
     <div className="page settings-page">
-      <header className="page-head">
+      <header className="page-head with-back">
+        <button type="button" className="icon-btn" aria-label="Voltar" onClick={() => (location.key === 'default' ? navigate('/perfil', { replace: true }) : navigate(-1))}>
+          <IconChevronLeft />
+        </button>
         <BrandText as="h1" className="page-title">
           Ajustes
         </BrandText>
       </header>
-
-      <section className="settings-group" aria-label="Seu perfil">
-        <Link to="/perfil" className="card profile-row">
-          <Avatar profile={{ ...profile, displayName: profileName }} size={52} decorative />
-          <span className="profile-row-text">
-            <span className="profile-row-name">{profileName || 'Seu perfil'}</span>
-            <span className="profile-row-sub">{profile.handle ? `@${profile.handle}` : profileName ? 'Foto, apelido e cor' : 'Adicione seu nome e uma foto'}</span>
-          </span>
-          <IconChevronRight />
-        </Link>
-      </section>
 
       <Group title="Trackers">
         {active.length === 0 && <p className="settings-row muted">Nenhum tracker ativo.</p>}

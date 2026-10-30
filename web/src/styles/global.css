@@ -2065,3 +2065,68 @@ input[type='time'].input {
   color: var(--primary);
   text-decoration: none;
 }
+
+/* aba do perfil: avatar no lugar do ícone */
+.tab-avatar {
+  width: 28px;
+  height: 28px;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow var(--t-fast) var(--ease), transform var(--t) var(--ease-spring);
+}
+.tab.is-active .tab-avatar {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+  transform: translateY(-1px) scale(1.04);
+}
+.tab:active .tab-avatar {
+  transform: scale(0.9);
+}
+
+/* Perfil: título à esquerda, engrenagem de Ajustes à direita */
+.profile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gear-btn svg {
+  transition: transform 0.5s var(--ease);
+}
+.gear-btn:active svg {
+  transform: rotate(60deg);
+}
+
+/* novidades da versão */
+.wn-title {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+}
+.wn-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.wn-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.wn-icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+.wn-sep {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 16px 0;
+}

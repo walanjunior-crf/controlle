@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { HashRouter, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { IconAgenda, IconHistory, IconSettings, IconStats, IconToday } from './components/icons'
+import { IconAgenda, IconHistory, IconStats, IconToday } from './components/icons'
+import { Avatar, useProfile } from './features/profile/Avatar'
 import { ToastProvider } from './components/Toast'
 import { TrackerBuilderPage } from './features/builder/TrackerBuilderPage'
 import { HistoryPage } from './features/history/HistoryPage'
@@ -12,6 +13,7 @@ import { ConquistasPage } from './features/rewards/ConquistasPage'
 import { CollectionPage } from './features/collection/CollectionPage'
 import { useRewardToasts } from './features/rewards/useRewardToasts'
 import { FeedbackInvite } from './features/feedback/FeedbackInvite'
+import { WhatsNew } from './features/whatsnew/WhatsNew'
 import { OnboardingPage } from './features/onboarding/OnboardingPage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { StatsPage } from './features/stats/StatsPage'
@@ -25,8 +27,13 @@ const TABS = [
   { to: '/agenda', label: 'Agenda', Icon: IconAgenda, end: false },
   { to: '/historico', label: 'Histórico', Icon: IconHistory, end: false },
   { to: '/estatisticas', label: 'Estatísticas', Icon: IconStats, end: false },
-  { to: '/ajustes', label: 'Ajustes', Icon: IconSettings, end: false },
 ]
+
+/** Aba do perfil: o próprio avatar da pessoa, sempre na ponta direita. */
+function ProfileTabIcon() {
+  const profile = useProfile()
+  return <Avatar profile={profile} size={28} decorative className="tab-avatar" />
+}
 
 function TabBar() {
   return (
@@ -37,6 +44,10 @@ function TabBar() {
           <span>{label}</span>
         </NavLink>
       ))}
+      <NavLink to="/perfil" className={({ isActive }) => `tab tab-profile${isActive ? ' is-active' : ''}`}>
+        <ProfileTabIcon />
+        <span>Perfil</span>
+      </NavLink>
     </nav>
   )
 }
@@ -115,6 +126,7 @@ function Shell() {
       <BadgeSync />
       <RewardSync />
       <FeedbackInvite />
+      <WhatsNew />
       <UpdateBand />
       <ScrollToTop />
       <Routes>
@@ -122,13 +134,13 @@ function Shell() {
         <Route path="/agenda" element={<WithTabs><AgendaPage /></WithTabs>} />
         <Route path="/agenda/novo" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
         <Route path="/agenda/:id" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
-        <Route path="/perfil" element={<main className="app-main no-tabs"><ProfilePage /></main>} />
+        <Route path="/perfil" element={<WithTabs><ProfilePage /></WithTabs>} />
         <Route path="/perfil/avatar" element={<main className="app-main no-tabs"><AvatarEditorPage /></main>} />
         <Route path="/colecao" element={<main className="app-main no-tabs"><CollectionPage /></main>} />
         <Route path="/conquistas" element={<main className="app-main no-tabs"><ConquistasPage /></main>} />
         <Route path="/historico" element={<WithTabs><HistoryPage /></WithTabs>} />
         <Route path="/estatisticas" element={<WithTabs><StatsPage /></WithTabs>} />
-        <Route path="/ajustes" element={<WithTabs><SettingsPage /></WithTabs>} />
+        <Route path="/ajustes" element={<main className="app-main no-tabs"><SettingsPage /></main>} />
         <Route path="/tracker/new" element={<main className="app-main no-tabs"><TrackerBuilderPage /></main>} />
         <Route path="/tracker/:id" element={<main className="app-main no-tabs"><TrackerBuilderPage /></main>} />
         <Route path="/onboarding" element={<Navigate to="/" replace />} />

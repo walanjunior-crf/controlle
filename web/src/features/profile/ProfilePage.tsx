@@ -1,13 +1,14 @@
 import { useId, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { saveProfile } from '../../db/db'
 import type { AvatarChoice, Profile } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
 import { ColorPicker } from '../../components/pickers'
-import { IconCamera, IconChevronLeft, IconTrash, IconUpload } from '../../components/icons'
+import { IconCamera, IconGear, IconTrash, IconUpload } from '../../components/icons'
 import { useToast } from '../../components/Toast'
 import { ICONS, safeBg } from './icons'
 import { ITEMS } from '../collection/items'
+import { ACHIEVEMENTS } from '../../domain'
 import { BGS, DEFAULT_AVATAR } from './avatarParts'
 import { Avatar, IconSvg, useProfileLoaded } from './Avatar'
 import { LevelCard } from '../rewards/LevelCard'
@@ -21,8 +22,6 @@ type Patch = Partial<Omit<Profile, 'id' | 'uid' | 'createdAt'>>
 
 export function ProfilePage() {
   const profile = useProfileLoaded()
-  const navigate = useNavigate()
-  const location = useLocation()
   const toast = useToast()
   const rewards = useRewards()
   const ids = { name: useId(), handle: useId(), bio: useId(), handleHint: useId(), bioCount: useId() }
@@ -55,8 +54,6 @@ export function ProfilePage() {
 
   const photo = usePhotoFlow((dataUrl) => setAvatar({ kind: 'photo', dataUrl }))
 
-  const back = () => (location.key === 'default' ? navigate('/', { replace: true }) : navigate(-1))
-
   if (!profile) return <div className="page" aria-busy="true" />
 
   const draft: Profile = { ...profile, displayName: name ?? profile.displayName }
@@ -68,13 +65,13 @@ export function ProfilePage() {
 
   return (
     <div className="page profile-page">
-      <header className="page-head with-back">
-        <button type="button" className="icon-btn" aria-label="Voltar" onClick={back}>
-          <IconChevronLeft />
-        </button>
+      <header className="page-head profile-head">
         <BrandText as="h1" className="page-title">
-          Seu perfil
+          Perfil
         </BrandText>
+        <Link to="/ajustes" className="icon-btn gear-btn" aria-label="Ajustes">
+          <IconGear />
+        </Link>
       </header>
 
       <section className="profile-hero" aria-label="Foto do perfil">
@@ -100,6 +97,16 @@ export function ProfilePage() {
               <strong>Coleção</strong>
               <span className="muted">
                 <span className="num">{rewards.collection.unlocked.size}</span> de <span className="num">{ITEMS.length}</span> itens ganhos com seus hábitos
+              </span>
+            </span>
+            <span className="col-entry-go" aria-hidden="true">›</span>
+          </Link>
+          <Link to="/conquistas" className="card col-entry">
+            <span className="col-entry-icon" aria-hidden="true">🏆</span>
+            <span className="col-entry-text">
+              <strong>Conquistas</strong>
+              <span className="muted">
+                <span className="num">{rewards.unlocked.size}</span> de <span className="num">{ACHIEVEMENTS.length}</span> desbloqueadas
               </span>
             </span>
             <span className="col-entry-go" aria-hidden="true">›</span>
