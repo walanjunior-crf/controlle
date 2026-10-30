@@ -38,10 +38,16 @@ export function CollectionPage() {
 
       <div className="card col-summary">
         <p className="col-summary-count">
-          <strong className="num">{unlocked.size}</strong> de <span className="num">{ITEMS.length}</span> itens
+          <strong className="num">{unlocked.size}</strong>
+          <span>
+            de <span className="num">{ITEMS.length}</span> itens
+          </span>
         </p>
-        <p className="muted">
-          Cada tema de hábito tem três itens. Eles chegam com a prática: {TIERS[0]}, {TIERS[1]} e {TIERS[2]} checks somando os hábitos do tema.
+        <div className="level-bar" aria-hidden="true">
+          <span style={{ width: `${Math.round((unlocked.size / ITEMS.length) * 100)}%` }} />
+        </div>
+        <p className="col-summary-text">
+          Cada tema de hábito guarda três itens para o avatar. Eles chegam com a prática, em <span className="num">{TIERS[0]}</span>, <span className="num">{TIERS[1]}</span> e <span className="num">{TIERS[2]}</span> checks.
         </p>
       </div>
 
@@ -59,57 +65,64 @@ export function CollectionPage() {
 function CategoryCard({ p, has }: { p: CategoryProgress; has: (t: Tier) => boolean }) {
   const info = CATEGORIES.find((c) => c.id === p.category)!
   const next = p.next
-  const prev = next ? (next.tier > 1 ? TIERS[next.tier - 2] : 0) : 0
-  const pct = next ? Math.max(0, Math.min(1, (p.checks - prev) / (next.target - prev))) : 1
-  const nextItem = next ? itemFor(p.category, next.tier) : null
   return (
     <section className={`card col-cat${p.trackers ? '' : ' is-idle'}`} aria-label={info.label}>
-      <div className="col-cat-head">
+      <header className="col-cat-head">
         <span className="col-cat-icon" aria-hidden="true">
           {info.icon}
         </span>
         <div className="col-cat-title">
           <h2>{info.label}</h2>
-          <span className="muted num">
+          <p className="num">
             {p.trackers
               ? `${p.checks.toLocaleString('pt-BR')} ${p.checks === 1 ? 'check' : 'checks'} · ${p.trackers} ${p.trackers === 1 ? 'hábito' : 'hábitos'}`
-              : 'Nenhum hábito com este tema'}
-          </span>
+              : 'Nenhum hábito com este tema ainda'}
+          </p>
         </div>
-        <span className="col-cat-count num">{p.reached}/3</span>
-      </div>
+        <span className={`col-cat-count num${p.reached === 3 ? ' is-full' : ''}`}>{p.reached}/3</span>
+      </header>
 
       <ul className="col-items">
         {([1, 2, 3] as Tier[]).map((t) => {
           const it = itemFor(p.category, t)
           const on = has(t)
+          const isNext = !on && next?.tier === t && p.trackers > 0
+          const from = t > 1 ? TIERS[t - 2] : 0
+          const pct = isNext ? Math.max(0, Math.min(1, (p.checks - from) / (TIERS[t - 1] - from))) : 0
           return (
-            <li key={t} className={`col-item tier-${t}${on ? ' is-on' : ''}`} aria-label={on ? it.name : `${it.name}, bloqueado: ${TIERS[t - 1]} checks`}>
+            <li key={t} className={`col-item tier-${t}${on ? ' is-on' : ''}${isNext ? ' is-next' : ''}`}>
               <span className="col-item-art" aria-hidden="true">
                 <span className="col-item-emoji">{it.emoji}</span>
-                {!on && <span className="col-item-lock">🔒</span>}
               </span>
-              <strong>{it.name}</strong>
-              <span className="col-item-meta">
-                {TIER_LABELS[t]} · {SLOT_LABELS[it.slot]}
+              <div className="col-item-body">
+                <div className="col-item-line">
+                  <strong>{it.name}</strong>
+                  <span className={`col-tier tier-${t}`}>{TIER_LABELS[t]}</span>
+                </div>
+                {isNext && next ? (
+                  <>
+                    <div className="col-item-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct * 100)} aria-label={`Progresso até ${it.name}`}>
+                      <span style={{ width: `${Math.round(pct * 100)}%` }} />
+                    </div>
+                    <p className="col-item-sub num">
+                      {next.left === 1 ? 'Falta 1 check' : `Faltam ${next.left} checks`}
+                    </p>
+                  </>
+                ) : (
+                  <p className="col-item-sub">
+                    {SLOT_LABELS[it.slot]}
+                    {!on && <span className="num"> · {TIERS[t - 1]} checks</span>}
+                  </p>
+                )}
+              </div>
+              <span className="col-item-state" aria-label={on ? 'Liberado' : 'Bloqueado'}>
+                {on ? '✓' : '🔒'}
               </span>
-              {!on && <span className="col-item-meta num">{TIERS[t - 1]} checks</span>}
             </li>
           )
         })}
       </ul>
-
-      {next && nextItem && p.trackers > 0 && (
-        <>
-          <div className="ach-bar" aria-hidden="true">
-            <span style={{ width: `${Math.round(pct * 100)}%` }} />
-          </div>
-          <p className="col-next">
-            {next.left === 1 ? 'Falta' : 'Faltam'} <strong className="num">{next.left}</strong> {next.left === 1 ? 'check' : 'checks'} para {nextItem.name}.
-          </p>
-        </>
-      )}
-      {!next && <p className="col-next is-done">Tema completo! 🎉</p>}
+      {!next && <p className="col-done">Tema completo! 🎉</p>}
     </section>
   )
 }
