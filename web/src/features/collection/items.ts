@@ -1,12 +1,10 @@
-import type { HabitCategory } from '../../domain/types'
-import type { Tier } from '../../domain/collection'
+import type { AvatarConfig, HabitCategory } from '../../domain/types'
+import { TIERS, categoryInfo, unlockKey, type HabitUnlock, type Tier } from '../../domain/collection'
 
 /**
  * Itens da coleção: um por degrau de cada tema. Comum = objeto na mão do bicho,
- * Rara = algo para vestir, Lendária = fundo temático.
- *
- * PROPOSTA (v0.5, em aprovação): nomes e encaixes podem mudar. Enquanto a arte não
- * chega, a coleção mostra o emoji como selo.
+ * Rara = algo para vestir, Lendária = fundo temático. Cada item é uma peça do
+ * avatar (`key` + `id` no catálogo de avatarParts) que só vem com a prática.
  */
 export type ItemSlot = 'mao' | 'vestir' | 'fundo'
 
@@ -14,27 +12,41 @@ export interface CollectionItem {
   category: HabitCategory
   tier: Tier
   name: string
-  /** selo provisório até a arte do avatar */
+  /** selo pequeno (avisos e listas) */
   emoji: string
   slot: ItemSlot
+  /** onde a peça entra no avatar */
+  key: keyof AvatarConfig
+  id: string
 }
 
 export const SLOT_LABELS: Record<ItemSlot, string> = { mao: 'Na mão', vestir: 'Para vestir', fundo: 'Fundo' }
 
-const T = (category: HabitCategory, list: Array<[string, string]>): CollectionItem[] =>
-  list.map(([name, emoji], i) => ({ category, tier: (i + 1) as Tier, name, emoji, slot: (['mao', 'vestir', 'fundo'] as const)[i] }))
+type Row = [name: string, emoji: string, key: keyof AvatarConfig, id: string]
+const SLOTS = ['mao', 'vestir', 'fundo'] as const
+const T = (category: HabitCategory, rows: [Row, Row, Row]): CollectionItem[] =>
+  rows.map(([name, emoji, key, id], i) => ({ category, tier: (i + 1) as Tier, name, emoji, slot: SLOTS[i], key, id }))
 
 export const ITEMS: CollectionItem[] = [
-  ...T('agua', [['Garrafinha', '🧴'], ['Óculos de natação', '🥽'], ['Chuva de gotas', '🌧️']]),
-  ...T('movimento', [['Haltere', '🏋️'], ['Faixa de testa', '🎽'], ['Pista de corrida', '🏟️']]),
-  ...T('sono', [['Ursinho de pelúcia', '🧸'], ['Máscara de dormir', '😴'], ['Céu de lua', '🌙']]),
-  ...T('leitura', [['Livro aberto', '📖'], ['Óculos meia-lua', '👓'], ['Estante', '📚']]),
-  ...T('mente', [['Xícara de chá', '🍵'], ['Coroa de flores', '🌸'], ['Jardim zen', '🪷']]),
-  ...T('saude', [['Maçã', '🍎'], ['Jaleco', '🥼'], ['Folhas de ervas', '🌿']]),
-  ...T('largar', [['Muda de planta', '🌱'], ['Faixa de campeão', '🎗️'], ['Arco-íris', '🌈']]),
-  ...T('humor', [['Balão de coração', '🎈'], ['Óculos de coração', '😍'], ['Sorrisos', '😊']]),
-  ...T('estudo', [['Lápis', '✏️'], ['Capelo', '🎓'], ['Quadro-negro', '🧑‍🏫']]),
-  ...T('outro', [['Bandeirinha', '🚩'], ['Mochila de explorador', '🎒'], ['Constelação', '✨']]),
+  ...T('agua', [['Garrafinha', '🧴', 'held', 'garrafa'], ['Óculos de natação', '🥽', 'glasses', 'natacao'], ['Chuva de gotas', '🌧️', 'pattern', 'gotas']]),
+  ...T('movimento', [['Haltere', '🏋️', 'held', 'haltere'], ['Toalha no pescoço', '🧣', 'outfit', 'toalha'], ['Pista de corrida', '🏟️', 'pattern', 'pista']]),
+  ...T('sono', [['Ursinho de pelúcia', '🧸', 'held', 'ursinho'], ['Máscara de dormir', '😴', 'glasses', 'mascara'], ['Céu de lua', '🌙', 'pattern', 'lua']]),
+  ...T('leitura', [['Livro aberto', '📖', 'held', 'livro'], ['Óculos meia-lua', '👓', 'glasses', 'meialua'], ['Estante', '📚', 'pattern', 'estante']]),
+  ...T('mente', [['Xícara de chá', '🍵', 'held', 'xicara'], ['Coroa de flores', '🌸', 'hat', 'floral'], ['Jardim zen', '🪷', 'pattern', 'zen']]),
+  ...T('saude', [['Maçã', '🍎', 'held', 'maca'], ['Jaleco', '🥼', 'outfit', 'jaleco'], ['Folhas de ervas', '🌿', 'pattern', 'ervas']]),
+  ...T('largar', [['Muda de planta', '🌱', 'held', 'muda'], ['Faixa de campeão', '🎗️', 'outfit', 'campeao'], ['Arco-íris', '🌈', 'pattern', 'arcoiris']]),
+  ...T('humor', [['Balão de coração', '🎈', 'held', 'balao'], ['Tiara de coração', '💖', 'hat', 'tiara'], ['Sorrisos', '😊', 'pattern', 'sorrisos']]),
+  ...T('estudo', [['Lápis', '✏️', 'held', 'lapis'], ['Capelo', '🎓', 'hat', 'capelo'], ['Quadro-negro', '🧑‍🏫', 'pattern', 'quadro']]),
+  ...T('outro', [['Bandeirinha', '🚩', 'held', 'bandeira'], ['Mochila de explorador', '🎒', 'outfit', 'mochila'], ['Constelação', '✨', 'pattern', 'constelacao']]),
 ]
 
 export const itemFor = (c: HabitCategory, t: Tier) => ITEMS.find((i) => i.category === c && i.tier === t)!
+
+/** item → peça do catálogo e o degrau que libera */
+export const HABIT_ITEMS = ITEMS.map((i) => ({ key: i.key, id: i.id, unlock: unlockKey(i.category, i.tier) }))
+
+/** "40 checks de Leitura" */
+export function habitItemLabel(u: HabitUnlock): string {
+  const [c, t] = u.split(':') as [HabitCategory, string]
+  return `${TIERS[Number(t) - 1]} checks de ${categoryInfo(c).label}`
+}

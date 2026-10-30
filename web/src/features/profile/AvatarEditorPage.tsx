@@ -127,7 +127,7 @@ export function AvatarEditorPage() {
 
   const choose = (key: Key, p: Part | ColorPart) => {
     if (!open(key, p)) {
-      if (p.unlock) setHint(`${p.label} vem com a conquista ${achTitle(p.unlock.achievement)}.`)
+      if (p.unlock) setHint('habit' in p.unlock ? `${p.label} é da sua coleção: ${lockHint(p, achTitle)}.` : `${p.label} vem com a conquista ${achTitle(p.unlock.achievement)}.`)
       else setBuying({ key, part: p })
       return
     }
@@ -298,7 +298,7 @@ export function AvatarEditorPage() {
                     >
                       {'hex' in p && key !== 'fur' ? (
                         <span className="ae-swatch" style={{ background: p.hex }} aria-hidden="true">
-                          {locked && <span className="ae-swatch-lock">{p.unlock ? '🏆' : p.price}</span>}
+                          {locked && <span className="ae-swatch-lock">{p.unlock ? ('habit' in p.unlock ? '🎁' : '🏆') : p.price}</span>}
                         </span>
                       ) : (
                         <span className={`ae-opt-art${zoom ? ' is-zoom' : ''}`}>
@@ -307,7 +307,7 @@ export function AvatarEditorPage() {
                       )}
                       {!(cat.color && key !== 'fur') && <span>{p.label}</span>}
                       {locked && !(cat.color && key !== 'fur') && (
-                        <span className="ae-lock">{p.unlock ? `🏆 ${lockText}` : `🪙 ${p.price}`}</span>
+                        <span className="ae-lock">{p.unlock ? `${'habit' in p.unlock ? '🎁' : '🏆'} ${lockText}` : `🪙 ${p.price}`}</span>
                       )}
                     </button>
                   )

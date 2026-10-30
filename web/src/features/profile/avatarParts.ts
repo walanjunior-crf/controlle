@@ -13,8 +13,10 @@
 import type { AchievementId } from '../../domain/achievements'
 import type { AvatarConfig } from '../../domain/types'
 
-/** peça que só vem de uma conquista (não se compra) */
-export type Unlock = { achievement: AchievementId }
+/** peça que só vem de uma conquista ou da coleção de hábitos (não se compra) */
+export type Unlock = { achievement: AchievementId } | { habit: HabitUnlock }
+import type { HabitUnlock } from '../../domain/collection'
+import { HABIT_ITEMS, habitItemLabel } from '../collection/items'
 export type { Mood } from '../../avatar/types'
 import type { Mood } from '../../avatar/types'
 import { renderAvatar } from '../../avatar/render'
@@ -203,6 +205,9 @@ export const HATS: Part[] = [
   { id: 'cartola', label: 'Cartola' },
   { id: 'coroa', label: 'Coroa' },
   { id: 'unicornio', label: 'Chifre de unicórnio', unlock: { achievement: 'perfectDays10' } },
+  { id: 'floral', label: 'Coroa de flores' },
+  { id: 'tiara', label: 'Tiara de coração' },
+  { id: 'capelo', label: 'Capelo' },
 ]
 
 /** cores para chapéu, roupa e óculos */
@@ -233,6 +238,9 @@ export const GLASSES: Part[] = [
   { id: 'monoculo', label: 'Monóculo' },
   { id: 'sol', label: 'Escuros' },
   { id: 'coracao', label: 'Coração' },
+  { id: 'natacao', label: 'Óculos de natação' },
+  { id: 'mascara', label: 'Máscara de dormir' },
+  { id: 'meialua', label: 'Óculos meia-lua' },
 ]
 
 export const EARRINGS: Part[] = [
@@ -271,6 +279,10 @@ export const OUTFITS: Part[] = [
   { id: 'jaqueta', label: 'Jaqueta' },
   { id: 'cachecol', label: 'Cachecol' },
   { id: 'medalha', label: 'Medalha C', unlock: { achievement: 'streak7' } },
+  { id: 'toalha', label: 'Toalha no pescoço' },
+  { id: 'jaleco', label: 'Jaleco' },
+  { id: 'campeao', label: 'Faixa de campeão' },
+  { id: 'mochila', label: 'Mochila de explorador' },
   { id: 'capa', label: 'Capa' },
 ]
 
@@ -309,6 +321,31 @@ export const PATTERNS: Part[] = [
   { id: 'raios', label: 'Raios' },
   { id: 'estrelas', label: 'Estrelas' },
   { id: 'confete', label: 'Confete' },
+  { id: 'gotas', label: 'Chuva de gotas' },
+  { id: 'pista', label: 'Pista de corrida' },
+  { id: 'lua', label: 'Céu de lua' },
+  { id: 'estante', label: 'Estante' },
+  { id: 'zen', label: 'Jardim zen' },
+  { id: 'ervas', label: 'Folhas de ervas' },
+  { id: 'arcoiris', label: 'Arco-íris' },
+  { id: 'sorrisos', label: 'Sorrisos' },
+  { id: 'quadro', label: 'Quadro-negro' },
+  { id: 'constelacao', label: 'Constelação' },
+]
+
+/** objetos na mão: todos vêm da coleção de hábitos */
+export const HELD: Part[] = [
+  { id: 'nenhum', label: 'Mãos livres' },
+  { id: 'garrafa', label: 'Garrafinha' },
+  { id: 'haltere', label: 'Haltere' },
+  { id: 'ursinho', label: 'Ursinho de pelúcia' },
+  { id: 'livro', label: 'Livro aberto' },
+  { id: 'xicara', label: 'Xícara de chá' },
+  { id: 'maca', label: 'Maçã' },
+  { id: 'muda', label: 'Muda de planta' },
+  { id: 'balao', label: 'Balão de coração' },
+  { id: 'lapis', label: 'Lápis' },
+  { id: 'bandeira', label: 'Bandeirinha' },
 ]
 
 /** estilos de desenho do avatar (o mesmo bicho, pintado de três jeitos) */
@@ -363,6 +400,7 @@ export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; 
   style: { label: 'Estilo', parts: STYLES },
   earringSide: { label: 'Lado dos brincos', parts: SIDES },
   piercingSide: { label: 'Lado do piercing', parts: SIDES },
+  held: { label: 'Na mão', parts: HELD },
 }
 
 // ---------- loja: créditos e conquistas ----------
@@ -380,7 +418,7 @@ const PRICE_BY_KEY: Record<Key, number> = {
   hat: 2, glasses: 2, outfit: 2, hair: 2, eyes: 2, coat: 2,
   fur: 1, eyeColor: 1, brows: 1, mouth: 1, cheeks: 1, beard: 1, hairColor: 1,
   hatColor: 1, glassesColor: 1, outfitColor: 1, earrings: 1, piercing: 1, metal: 1, pattern: 1,
-  bg: 0, persona: 0, earringSide: 0, piercingSide: 0, style: 0,
+  bg: 0, persona: 0, earringSide: 0, piercingSide: 0, style: 0, held: 0,
 }
 
 /** recompensas de conquista (não se compram) */
@@ -445,6 +483,14 @@ for (const p of BGS) {
   delete p.unlock
   delete p.price
 }
+// itens da coleção: vêm com a prática dos hábitos de cada tema
+for (const it of HABIT_ITEMS) {
+  const p = (CATALOG[it.key].parts as Part[]).find((x) => x.id === it.id)
+  if (p) {
+    p.unlock = { habit: it.unlock }
+    delete p.price
+  }
+}
 
 /** chave de posse: cores de acessório valem para chapéu, óculos e roupa */
 export const ownKey = (key: Key, p: Part) => `${CATALOG[key].parts === ACCENTS ? 'accent' : key}:${p.id}`
@@ -454,12 +500,14 @@ export interface Wallet {
   achievements: ReadonlySet<AchievementId>
   /** código de acesso: tudo liberado */
   all?: boolean
+  /** degraus da coleção conquistados ("leitura:2") */
+  habits?: ReadonlySet<string>
 }
 
 /** a pessoa pode usar esta peça? */
 export function isOwned(key: Key, p: Part, w: Wallet): boolean {
   if (w.all) return true
-  if (p.unlock) return w.achievements.has(p.unlock.achievement)
+  if (p.unlock) return 'habit' in p.unlock ? Boolean(w.habits?.has(p.unlock.habit)) : w.achievements.has(p.unlock.achievement)
   if (!p.price) return true
   return w.owned.has(ownKey(key, p))
 }
@@ -496,7 +544,7 @@ export function ownedFrom(owned: string[] | undefined, worn?: Partial<AvatarConf
 
 /** texto do cadeado: preço ou conquista */
 export function lockHint(p: Part, achievementTitle: (id: AchievementId) => string): string {
-  if (p.unlock) return `Conquista: ${achievementTitle(p.unlock.achievement)}`
+  if (p.unlock) return 'habit' in p.unlock ? habitItemLabel(p.unlock.habit) : `Conquista: ${achievementTitle(p.unlock.achievement)}`
   if (p.price) return `${p.price} ${p.price === 1 ? 'crédito' : 'créditos'}`
   return ''
 }
@@ -530,6 +578,7 @@ export const DEFAULT_AVATAR: AvatarConfig = {
   style: 'chapado',
   earringSide: 'ambos',
   piercingSide: 'direito',
+  held: 'nenhum',
 }
 
 /** cores fixas que as peças tinham na v0.4 */
@@ -537,7 +586,7 @@ const V04_OUTFIT: Record<string, string> = { moletom: '#C0643F', cachecol: '#C03
 const V04_HAT: Record<string, string> = { gorro: '#E0A43A', fone: '#4A4F4A', flor: '#F4A7A0' }
 
 /** posição na vitrine: livres primeiro, depois por preço, conquistas no fim */
-export const unlockRank = (p: Part): number => (p.unlock ? 10000 : p.price ? p.price * 100 + (p.order ?? 0) : 0)
+export const unlockRank = (p: Part): number => (p.unlock ? ('habit' in p.unlock ? 20000 : 10000) : p.price ? p.price * 100 + (p.order ?? 0) : 0)
 
 /** Configuração segura para desenhar: valor desconhecido ou ausente vira o padrão. */
 export function normalizeAvatar(c: Partial<AvatarConfig> | null | undefined): AvatarConfig {

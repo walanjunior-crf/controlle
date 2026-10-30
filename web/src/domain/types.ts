@@ -210,6 +210,8 @@ export interface AvatarConfig {
   /** lado dos brincos e do piercing (como aparece na tela) */
   earringSide: string
   piercingSide: string
+  /** objeto na mão (itens da coleção, v0.5) */
+  held: string
 }
 
 export type AvatarChoice =

@@ -4,6 +4,7 @@
  */
 import { cutEllipse, f, layer } from './paper'
 import { torsoPath } from './parts/outfits'
+import { HELD } from './parts/held'
 import type { Ctx, OutfitDef, Pose } from './types'
 
 export const SHOULDERS = { l: [28.5, 86] as const, r: [71.5, 86] as const }
@@ -19,7 +20,12 @@ const POSES: Record<Pose, [number, number]> = {
   hug: [-38, 38],
 }
 
-function arm(x: Ctx, side: 'l' | 'r', angle: number, sleeve: string | null): string {
+/** braço esquerdo erguido ao lado da cabeça, mostrando o objeto */
+const HOLD_ANGLE = 128
+/** objetos na mão um pouco maiores que o desenho local, para ler bem pequeno */
+const HELD_SCALE = 1.25
+
+function arm(x: Ctx, side: 'l' | 'r', angle: number, sleeve: string | null, item = ''): string {
   const [sx, sy] = SHOULDERS[side]
   const len = ARM_LEN
   const shape = cutEllipse(sx, sy + len / 2, ARM_W / 2, len / 2 + ARM_W / 4, `arm-${side}`, { jitter: 0.03 })
@@ -28,6 +34,8 @@ function arm(x: Ctx, side: 'l' | 'r', angle: number, sleeve: string | null): str
     const top = cutEllipse(sx, sy + len * 0.28, ARM_W / 2 + 0.6, len * 0.34 + 0.6, `sleeve-${side}`, { jitter: 0.03 })
     s += layer(top, sleeve, { lift: 0.5 })
   }
+  // objeto na mão: de pé (desfaz a rotação do braço), atrás da pata
+  if (item) s += `<g transform="translate(${sx} ${f(sy + len + 0.4)}) rotate(${f(-angle)}) scale(${HELD_SCALE})">${item}</g>`
   s += layer(cutEllipse(sx, sy + len + 0.4, ARM_W / 2 - 0.2, ARM_W / 2 - 0.6, `paw-${side}`), x.muzzle.base, { lift: 0.4 })
   // pose no atributo (gira em torno do ombro); a animação fica num grupo interno
   const anim = `av-arm av-arm-${side}${x.expr.pose === 'wave' && side === 'r' ? ' av-waving' : ''}`
@@ -35,7 +43,10 @@ function arm(x: Ctx, side: 'l' | 'r', angle: number, sleeve: string | null): str
 }
 
 export function body(x: Ctx, dress: OutfitDef | undefined): string {
-  const [la, ra] = POSES[x.expr.pose]
+  let [la, ra] = POSES[x.expr.pose]
+  const item = (HELD[x.c.held] ?? HELD.nenhum)(x)
+  // segurando algo: o braço esquerdo ergue o objeto ao lado da cabeça (no "viva" já está para cima)
+  if (item && x.expr.pose !== 'up') la = HOLD_ANGLE
   const sleeve = dress?.sleeve ? dress.sleeve(x) : null
   let s = layer(torsoPath('torso'), x.fur.base)
   s += layer(cutEllipse(50, 98, 14, 13, 'belly'), x.muzzle.base, { shadow: false })
@@ -46,6 +57,6 @@ export function body(x: Ctx, dress: OutfitDef | undefined): string {
   }
   if (dress) s += dress.torso(x)
   // braço erguido passa por trás do ombro; os de baixo ficam na frente
-  s += arm(x, 'l', la, sleeve) + arm(x, 'r', ra, sleeve)
+  s += arm(x, 'l', la, sleeve, item) + arm(x, 'r', ra, sleeve)
   return s
 }
