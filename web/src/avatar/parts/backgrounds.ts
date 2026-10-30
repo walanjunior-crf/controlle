@@ -5,6 +5,13 @@
 import { adjust, lightness, mix } from '../color'
 import { cut, cutEllipse, cutPoly, f, layer, look, rng, stroke } from '../paper'
 import type { Ctx, Pt } from '../types'
+import { SCENE as AGUA } from './scenes/agua'
+import { SCENE as MOVIMENTO } from './scenes/movimento'
+import { SCENE as LEITURA } from './scenes/leitura'
+import { SCENE as MENTE } from './scenes/mente'
+import { SCENE as SAUDE } from './scenes/saude'
+import { SCENE as LARGAR } from './scenes/largar'
+import { SCENE as HUMOR } from './scenes/humor'
 
 /**
  * Chapado: formas sólidas de borda limpa, sem sombra. Pelúcia: retalhos de feltro/tecido
@@ -385,3 +392,12 @@ export const PATTERNS: Record<string, (x: Ctx) => string> = {
     return s
   },
 }
+
+// cenas lendárias da coleção (v0.5): substituem os padrões simples de mesmo id;
+// enquanto uma cena não estiver pronta (devolve ''), fica o padrão antigo
+const SCENES: Record<string, (x: Ctx) => string> = { gotas: AGUA, pista: MOVIMENTO, estante: LEITURA, zen: MENTE, ervas: SAUDE, arcoiris: LARGAR, sorrisos: HUMOR }
+for (const [id, scene] of Object.entries(SCENES)) {
+  const old = PATTERNS[id]
+  PATTERNS[id] = (x) => scene(x) || old(x)
+}
+
