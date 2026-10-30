@@ -142,7 +142,7 @@ export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {
     (COATS[c.coat] ?? COATS.liso)(x) +
     (hides.ears || !def.front ? '' : def.front(x)) +
     (CHEEKS[c.cheeks] ?? CHEEKS.nenhum)(x) +
-    `<g class="av-mouth">${mouthFn(x, mouthAt, 1)}</g>` +
+    `<g class="av-mouth">${def.mouth ? def.mouth(x, expr.mouth ?? c.mouth, mouthAt) : mouthFn(x, mouthAt, 1)}</g>` +
     (BEARDS[c.beard] ?? BEARDS.nenhum)(x) +
     def.nose(x) +
     `<g class="av-eyes">${eyes}</g>` +

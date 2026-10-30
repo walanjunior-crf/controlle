@@ -350,3 +350,12 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 ### v0.4.11 — Código de acesso
 
 - Ajustes → Código de acesso: um código libera todas as peças do avatar neste aparelho (inclusive as de conquista). Dá para desativar no mesmo lugar.
+
+### v0.5.0 — Coleção e aba Perfil
+
+- **Coleção:** cada tema de hábito (hidratação, movimento, sono, leitura, mente, saúde, largar um hábito, humor, estudo e outro) guarda três itens para o avatar, liberados com a prática em 10, 40 e 120 checks: um objeto na mão (comum), algo para vestir (rara) e uma cena de fundo (lendária). Conta o histórico. Em Perfil → Coleção, com botão "Usar".
+- **Tema do hábito:** escolhido ao criar ou editar, com sugestão automática pelo nome e pelo ícone.
+- **Aviso no Hoje** quando falta pouco para o próximo item.
+- **Aba Perfil** na ponta direita, com o avatar da pessoa; **Ajustes** foi para a engrenagem no canto do Perfil.
+- **Novidades:** resumo da versão na primeira abertura depois de cada atualização.
+- **Tubarão:** todas as bocas (e humores) com dentes grandes.

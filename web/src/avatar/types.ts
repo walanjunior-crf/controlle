@@ -77,6 +77,8 @@ export interface SpeciesDef {
   /** depois da estampa: orelhas caídas, bigodes, guelras */
   front?: Draw
   nose: Draw
+  /** boca própria do bicho (ex.: tubarão com dentes); recebe o tipo de boca do catálogo ou do humor */
+  mouth?: (x: Ctx, kind: string, p: Pt) => string
   /** cauda, atrás do corpo */
   tail?: Draw
 }
