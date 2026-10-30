@@ -23,7 +23,7 @@ const POSES: Record<Pose, [number, number]> = {
 /** braço esquerdo erguido ao lado da cabeça, mostrando o objeto */
 const HOLD_ANGLE = 128
 /** objetos na mão um pouco maiores que o desenho local, para ler bem pequeno */
-const HELD_SCALE = 1.25
+const HELD_SCALE = 1.3
 
 function arm(x: Ctx, side: 'l' | 'r', angle: number, sleeve: string | null, item = ''): string {
   const [sx, sy] = SHOULDERS[side]
