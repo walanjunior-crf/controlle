@@ -452,10 +452,13 @@ export const ownKey = (key: Key, p: Part) => `${CATALOG[key].parts === ACCENTS ?
 export interface Wallet {
   owned: ReadonlySet<string>
   achievements: ReadonlySet<AchievementId>
+  /** código de acesso: tudo liberado */
+  all?: boolean
 }
 
 /** a pessoa pode usar esta peça? */
 export function isOwned(key: Key, p: Part, w: Wallet): boolean {
+  if (w.all) return true
   if (p.unlock) return w.achievements.has(p.unlock.achievement)
   if (!p.price) return true
   return w.owned.has(ownKey(key, p))

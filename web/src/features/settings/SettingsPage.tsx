@@ -20,6 +20,8 @@ import { Avatar, useProfile } from '../profile/Avatar'
 
 import { APP_VERSION } from '../../version'
 import { FeedbackSheet } from '../feedback/FeedbackSheet'
+import { saveProfile } from '../../db/db'
+import { checkUnlockCode } from './unlockCode'
 export { APP_VERSION }
 
 function Group({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) {
@@ -34,6 +36,7 @@ function Group({ title, children, footer }: { title: string; children: ReactNode
 
 export function SettingsPage() {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [code, setCode] = useState('')
   const settings = useSettings()
   const trackers = useAllTrackers() ?? []
   const navigate = useNavigate()
@@ -220,6 +223,58 @@ export function SettingsPage() {
         </button>
       </Group>
       <FeedbackSheet open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+
+      <Group
+        title="Código de acesso"
+        footer={profile.unlockAll ? 'Todas as peças do avatar estão liberadas neste aparelho.' : 'Recebeu um código? Ele libera todas as peças do avatar neste aparelho.'}
+      >
+        {profile.unlockAll ? (
+          <div className="settings-row code-row">
+            <span className="code-on">✓ Tudo liberado</span>
+            <button
+              type="button"
+              className="btn btn-small btn-ghost"
+              onClick={() => {
+                void saveProfile({ unlockAll: false })
+                toast.show('Código desativado')
+              }}
+            >
+              Desativar
+            </button>
+          </div>
+        ) : (
+          <form
+            className="settings-row code-row"
+            onSubmit={(e) => {
+              e.preventDefault()
+              void (async () => {
+                if (await checkUnlockCode(code)) {
+                  await saveProfile({ unlockAll: true })
+                  setCode('')
+                  toast.show('🔓 Tudo liberado! Veja em Perfil → Montar avatar.')
+                } else {
+                  toast.show('Código não reconhecido.')
+                }
+              })()
+            }}
+          >
+            <input
+              className="input"
+              type="text"
+              value={code}
+              placeholder="Digite o código"
+              aria-label="Código de acesso"
+              autoComplete="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <button type="submit" className="btn btn-small btn-primary" disabled={!code.trim()}>
+              Aplicar
+            </button>
+          </form>
+        )}
+      </Group>
 
       {!isStandalone() && (
         <Group title="Instalar">

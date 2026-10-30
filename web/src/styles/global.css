@@ -2025,3 +2025,19 @@ input[type='time'].input {
   color: var(--text-2);
   font-weight: 700;
 }
+
+/* código de acesso (Ajustes) */
+.code-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.code-row .input {
+  flex: 1;
+  min-width: 0;
+}
+.code-on {
+  flex: 1;
+  font-weight: 800;
+  color: var(--primary);
+}

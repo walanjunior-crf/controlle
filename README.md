@@ -346,3 +346,7 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Ao escolher um ícone, dá para trocar a cor do fundo (todas livres) e trocar de desenho mantendo o fundo.
 - Trocar o avatar montado por um ícone, foto ou iniciais guarda a montagem: o botão "Voltar ao meu avatar" traz ela de volta.
 - As combinações prontas do avatar montado agora ficam na aba "Prontos" do editor, como ponto de partida. Peças que ainda não são suas pedem compra antes de salvar.
+
+### v0.4.11 — Código de acesso
+
+- Ajustes → Código de acesso: um código libera todas as peças do avatar neste aparelho (inclusive as de conquista). Dá para desativar no mesmo lugar.

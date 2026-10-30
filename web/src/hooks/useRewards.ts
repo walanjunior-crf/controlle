@@ -48,7 +48,7 @@ export function useRewards(): Rewards {
       level,
       counters,
       unlocked,
-      wallet: { owned, achievements: unlocked },
+      wallet: { owned, achievements: unlocked, all: profile?.unlockAll === true },
       credits: { earned, spent, balance: Math.max(0, earned - spent) },
     }
   }, [snapshots, restDays, events, profile, today, o])

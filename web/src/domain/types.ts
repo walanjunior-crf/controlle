@@ -223,6 +223,8 @@ export interface Profile {
   owned?: string[]
   /** último avatar montado, guardado quando a pessoa troca por ícone, foto ou iniciais */
   customAvatar?: AvatarConfig
+  /** código de acesso aplicado em Ajustes: todas as peças liberadas neste aparelho */
+  unlockAll?: boolean
   createdAt: number
   updatedAt: number
 }
