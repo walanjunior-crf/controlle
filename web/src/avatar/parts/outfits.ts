@@ -168,4 +168,89 @@ export const OUTFITS: Record<string, OutfitDef> = {
     },
     sleeve: () => null,
   },
+  toalha: {
+    torso: (x) => {
+      const r = ramp(x.c.outfitColor)
+      // volta atrás do pescoço e sobre os ombros
+      let s = layer(cut([[22, 85], [27, 79.4], [40, 76.8], [50, 76.4], [60, 76.8], [73, 79.4], [78, 85], [70, 88], [50, 84], [30, 88]], 'towel-wrap', 0.25), r.shade, { lift: 0.9 })
+      // pontas caindo na frente (a da direita por cima)
+      s += layer(cut([[31, 82], [46, 85.6], [46.6, 101], [44, 103.5], [30.6, 102]], 'towel-l', 0.25), r.base, { lift: 0.9 })
+      s += layer(cutPoly([[30.8, 94], [46.4, 95.6], [46.5, 98], [30.7, 96.4]], 'towel-l-s', 0.12), r.pale, { shadow: false, edge: false })
+      s += layer(cut([[53, 85], [69, 82.4], [69.6, 101], [56, 103.5], [53.4, 101]], 'towel-r', 0.25), r.light, { lift: 0.9 })
+      s += layer(cutPoly([[53.6, 95.6], [69.4, 94], [69.5, 96.4], [53.6, 98]], 'towel-r-s', 0.12), r.base, { shadow: false, edge: false })
+      s += layer(cutPoly([[53.6, 91], [69.3, 89.5], [69.4, 91.4], [53.6, 92.9]], 'towel-r-s2', 0.12), r.base, { shadow: false, edge: false })
+      s += layer(cutPoly([[30.9, 89.5], [46.3, 91], [46.4, 92.9], [30.8, 91.4]], 'towel-l-s2', 0.12), r.pale, { shadow: false, edge: false })
+      s += seam('M32.5 100.4L45 101.4M54.6 101.4L67.4 100.4', r.pale, 0.5, '1 0.9')
+      s += seam('M24.4 85Q30 80.6 40 78.6M75.6 85Q70 80.6 60 78.6', r.pale, 0.5, '1 0.9')
+      return s
+    },
+    sleeve: () => null,
+  },
+  jaleco: {
+    torso: () => {
+      const w = ramp('#F7F8FA')
+      const blue = ramp('#8EC1E6')
+      const steel = '#AEB6C2'
+      let s = layer(torsoPath('coat'), w.base)
+      // camisa azul no V da frente
+      s += layer(cutPoly([[41, 78.4], [59, 78.4], [50, 98]], 'coat-shirt', 0.2), blue.base, { lift: 0.4 })
+      // lapelas
+      s += layer(cutPoly([[36.5, 78], [47, 78.6], [50, 98], [41.8, 88.4]], 'coat-lapel-l', 0.2), w.light, { lift: 0.7 })
+      s += layer(cutPoly([[63.5, 78], [53, 78.6], [50, 98], [58.2, 88.4]], 'coat-lapel-r', 0.2), w.light, { lift: 0.7 })
+      s += stroke('M50 97L50 104', w.deep, 1.4)
+      s += layer(cutEllipse(50.2, 100.4, 1.2, 1.2, 'coat-btn'), w.deep, { lift: 0.3, edge: false })
+      // bolso com caneta
+      s += layer(cut([[56.6, 96], [68.2, 95.2], [68.8, 103.4], [57.2, 104]], 'coat-pocket', 0.2), w.shade, { lift: 0.5 })
+      s += stroke('M63.4 95.6L64 90.2', '#E24C6A', 1.5)
+      // estetoscópio: cordão pelo pescoço e peça no peito
+      s += stroke('M38.6 79Q34 93 42 97.6Q47 100 47.6 96', '#3A3F4B', 1.5)
+      s += layer(cutEllipse(46.6, 94.4, 2.2, 2.2, 'coat-steth'), steel, { lift: 0.4 })
+      s += seam('M30 98L28.8 92.5M72 98L71 92.5', w.deep, 0.5, '1 0.9') + seam('M58 97L67 96.4', w.deep, 0.45, '1 0.9')
+      return s
+    },
+    sleeve: () => '#F7F8FA',
+  },
+  campeao: {
+    torso: (x) => {
+      const r = ramp(x.c.outfitColor)
+      const g = ramp(GOLD)
+      // faixa em diagonal: ombro esquerdo até o quadril direito
+      let s = `<g clip-path="url(#avb)">` + layer(cutPoly([[32, 76.4], [43, 77.6], [95, 100], [95, 114], [76, 112], [18, 88]], 'champ-sash', 0.3), r.base, { lift: 0.8 }) + `</g>`
+      s += `<g clip-path="url(#avb)">` + layer(cutPoly([[26, 80.4], [35, 79.6], [92, 105], [92, 108.4], [86, 109.4], [22, 85.6]], 'champ-edge', 0.2), r.pale, { shadow: false, edge: false, opacity: 0.75 }) + `</g>`
+      s += seam('M31 78.6L90 104.4', r.pale, 0.5, '1 0.9')
+      // rosetas com fitas
+      s += layer(cutPoly([[47, 94], [51, 93], [49.2, 103.6], [45.4, 103]], 'champ-tail-l', 0.15), '#C0392B', { lift: 0.4 })
+      s += layer(cutPoly([[51, 94.4], [55, 95.6], [57.4, 103.4], [53.4, 103.8]], 'champ-tail-r', 0.15), '#2E6FB7', { lift: 0.4 })
+      for (let i = 0; i < 8; i++) {
+        const a = (i * Math.PI) / 4
+        s += layer(cutEllipse(51 + Math.cos(a) * 4.6, 91.4 + Math.sin(a) * 4.6, 2.6, 2.6, `champ-pt${i}`, { jitter: 0.04 }), i % 2 ? g.base : g.light, { lift: 0.4, shadow: i % 2 === 0 })
+      }
+      s += layer(cutEllipse(51, 91.4, 4.6, 4.6, 'champ-disc'), GOLD, { lift: 0.5 })
+      s += layer(cutEllipse(51, 91.4, 3, 3, 'champ-in'), '#F3CE55', { shadow: false, edge: false })
+      s += stroke('M51 89.4L51.9 91L53.6 91.2L52.3 92.3L52.7 94L51 93.1L49.3 94L49.7 92.3L48.4 91.2L50.1 91Z', '#8A6512', 0.6)
+      return s
+    },
+    sleeve: () => null,
+  },
+  mochila: {
+    torso: (x) => {
+      const r = ramp(x.c.outfitColor)
+      // mochila atrás: aparece acima e dos lados dos ombros
+      let s = layer(cut([[14, 90], [14, 78], [20, 70], [34, 67], [50, 66.4], [66, 67], [80, 70], [86, 78], [86, 90], [84, 100], [16, 100]], 'pack-back', 0.3), r.shade, { lift: 1 })
+      s += layer(cut([[12, 98], [11, 88], [14, 82.4], [21, 82.4], [22, 98], [17, 101]], 'pack-pk-l', 0.2), r.deep, { lift: 0.6 })
+      s += layer(cut([[88, 98], [89, 88], [86, 82.4], [79, 82.4], [78, 98], [83, 101]], 'pack-pk-r', 0.2), r.deep, { lift: 0.6 })
+      s += layer(cutEllipse(50, 68.6, 6.4, 3, 'pack-loop'), r.deep, { lift: 0.4 })
+      // corpo por cima da mochila
+      s += layer(torsoPath('torso'), x.fur.base)
+      s += layer(cutEllipse(50, 98, 14, 13, 'belly'), x.muzzle.base, { shadow: false })
+      // alças e tira do peito
+      s += layer(cut([[30.4, 82], [38.6, 78.6], [41.2, 92], [41.8, 104], [33.4, 104], [32.2, 92]], 'pack-strap-l', 0.2), r.base, { lift: 0.7 })
+      s += layer(cut([[69.6, 82], [61.4, 78.6], [58.8, 92], [58.2, 104], [66.6, 104], [67.8, 92]], 'pack-strap-r', 0.2), r.base, { lift: 0.7 })
+      s += layer(cut([[40.6, 90.6], [59.4, 90.6], [59.4, 93.4], [40.6, 93.4]], 'pack-chest', 0.12), r.deep, { lift: 0.4 })
+      s += layer(cut([[47.2, 89.2], [52.8, 89.2], [52.8, 94.8], [47.2, 94.8]], 'pack-buckle', 0.1), '#D8DCE2', { lift: 0.4 })
+      s += seam('M36 81L37.4 103M64 81L62.6 103', r.pale, 0.5, '1 0.9')
+      return s
+    },
+    sleeve: () => null,
+  },
 }

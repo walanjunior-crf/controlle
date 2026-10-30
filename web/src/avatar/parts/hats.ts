@@ -5,7 +5,7 @@
  * Cor do chapéu: x.c.hatColor (use ramp() para sombra/luz).
  */
 import { mix, ramp } from '../color'
-import { cut, cutEllipse, cutPoly, detail, f, layer, look } from '../paper'
+import { cut, cutEllipse, cutPoly, detail, f, layer, look, stroke } from '../paper'
 import type { Ctx } from '../types'
 
 /** pelúcia: linha de costura (tracejado curto) */
@@ -233,6 +233,91 @@ export const HATS: Record<string, (x: Ctx) => string> = {
       stripe(-18, -21, 'c') +
       layer(cutPoly([[-1.5, 3], [0, -26], [-3.5, 3]], 'uni-hl', 0.1), h.pale, { shadow: false, edge: false }) +
       layer(cut([[-9, 5], [-5, -1], [0, -2.5], [5, -1], [9, 5], [0, 8]], 'uni-base', 0.2), pink.base, { lift: 0.6 })
+    )
+  },
+  floral: (x) => {
+    const g = ramp('#4FA36B')
+    const arcY = (px: number) => 4.5 + (px / 25) ** 2 * 7
+    // trança de folhas em arco
+    const xs = [-25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25]
+    const band = cut([...xs.map((px) => [px, arcY(px) - 2.2] as [number, number]), ...xs.slice().reverse().map((px) => [px, arcY(px) + 2.2] as [number, number])], 'floral-band', 0.15)
+    let leaves = ''
+    xs.forEach((px, i) => {
+      if (i % 2 === 0) return
+      const up = i % 4 === 1
+      const ang = Math.atan2(arcY(px + 1) - arcY(px - 1), 2) * (180 / Math.PI)
+      leaves += layer(cutEllipse(px, arcY(px) + (up ? -2.4 : 2.2), 4.4, 2.1, `floral-lf${i}`, { rotate: ang + (up ? -28 : 28) }), up ? g.base : g.shade, { lift: 0.4 })
+    })
+    const flower = (px: number, col: string, k: string, s = 1) => {
+      const r = ramp(col)
+      const cy = arcY(px) - 0.5
+      let pet = ''
+      for (let i = 0; i < 5; i++) {
+        const a = (i * 2 * Math.PI) / 5 - Math.PI / 2
+        const ex = px + Math.cos(a) * 3.1 * s
+        const ey = cy + Math.sin(a) * 3.1 * s
+        pet += layer(cutEllipse(ex, ey, 2.9 * s, 2.9 * s, `floral-${k}p${i}`, { jitter: 0.04 }), r.base, { lift: 0.4 })
+      }
+      return pet + layer(cutEllipse(px, cy, 2 * s, 2 * s, `floral-${k}c`), GOLD, { lift: 0.3 })
+    }
+    return (
+      layer(band, g.deep, { lift: 0.5 }) +
+      leaves +
+      flower(-19, '#F4A6C6', 'a', 0.95) +
+      flower(-9.5, '#FFFFFF', 'b', 0.95) +
+      flower(0, x.c.hatColor, 'c', 1.2) +
+      flower(9.5, '#FFD86B', 'd', 0.95) +
+      flower(19, '#B9A3E8', 'e', 0.95)
+    )
+  },
+
+  tiara: (x) => {
+    const r = ramp(x.c.hatColor)
+    const arcY = (px: number) => 4 + (px / 25) ** 2 * 8
+    const xs = [-24, -18, -12, -6, 0, 6, 12, 18, 24]
+    const arch = cut([...xs.map((px) => [px, arcY(px) - 2.4] as [number, number]), ...xs.slice().reverse().map((px) => [px, arcY(px) + 2.4] as [number, number])], 'tiara-arch', 0.12)
+    const hp = (cx: number, cy: number, w: number): [number, number][] => {
+      const raw = Array.from({ length: 28 }, (_, i) => {
+        const t = (i / 28) * Math.PI * 2
+        return [16 * Math.sin(t) ** 3, -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))] as [number, number]
+      })
+      const ys = raw.map((p) => p[1])
+      const mid = (Math.min(...ys) + Math.max(...ys)) / 2
+      return raw.map(([px, py]) => [cx + (px * w) / 16, cy + ((py - mid) * w) / 16] as [number, number])
+    }
+    const big = cut(hp(0, -6.5, 14), 'tiara-heart', 0.1)
+    const inner = cut(hp(-0.4, -7, 7.8), 'tiara-heart-in', 0.08)
+    return (
+      layer(arch, r.shade, { lift: 0.5 }) +
+      layer(cut([[-17, 4.2], [-8, 1.6], [-8, 2.9], [-17, 5.6]], 'tiara-hl', 0.08), r.light, { shadow: false, edge: false, opacity: 0.8 }) +
+      layer(cutEllipse(-14.5, arcY(-14.5) - 0.2, 1.7, 1.7, 'tiara-b1'), r.light, { lift: 0.3 }) +
+      layer(cutEllipse(14.5, arcY(14.5) - 0.2, 1.7, 1.7, 'tiara-b2'), r.light, { lift: 0.3 }) +
+      layer(big, r.base, { lift: 0.8 }) +
+      layer(inner, r.light, { shadow: false, edge: false, opacity: 0.85 }) +
+      layer(cutEllipse(-5.4, -10.6, 1.8, 1.2, 'tiara-sp', { rotate: -35 }), '#FFFFFF', { shadow: false, edge: false, opacity: 0.9 })
+    )
+  },
+
+  capelo: (x) => {
+    const ink = ramp('#2D2A33')
+    const tas = ramp(x.c.hatColor)
+    const cap = cut([[-15.5, 2], [-15, 11], [-8, 15], [0, 16], [8, 15], [15, 11], [15.5, 2], [0, 7]], 'capelo-cap', 0.2)
+    const board = cutPoly([[-31, -3], [0, -13.5], [31, -3], [0, 8]], 'capelo-board', 0.3)
+    const edge = cutPoly([[-31, -3], [0, 8], [31, -3], [31, 0.8], [0, 12], [-31, 0.8]], 'capelo-edge', 0.2)
+    const stitched = plush() ? seam('M-27 -2.6L0 -11.2L27 -2.6L0 5.2Z', ink.light, 0.5, 0.7) : ''
+    // borla: cordão do botão até a ponta esquerda, depois pendurada
+    const tx = -27.5
+    return (
+      layer(cap, ink.shade) +
+      layer(edge, ink.deep, { lift: 0.5 }) +
+      layer(board, ink.base, { lift: 0.9 }) +
+      stitched +
+      layer(cutPoly([[-22, -3.4], [-6, -9.6], [-4, -8.4], [-20, -2]], 'capelo-hl', 0.1), mix(ink.light, '#FFFFFF', 0.15), { shadow: false, edge: false }) +
+      stroke(`M0 -3.2Q-14 -1 ${tx} -1.4`, tas.base, 1.3) +
+      stroke(`M${tx} -1.4L${tx - 0.4} 10`, tas.base, 1.4) +
+      layer(cut([[tx - 2.2, 8.6], [tx + 2.2, 8.6], [tx + 3, 16.5], [tx + 1, 18], [tx - 1.2, 18], [tx - 3, 16.5]], 'capelo-tassel', 0.12), tas.base, { lift: 0.5 }) +
+      layer(cutEllipse(tx, 8.8, 2.2, 1.6, 'capelo-knot'), tas.shade, { lift: 0.3, edge: false }) +
+      layer(cutEllipse(0, -3.2, 2.5, 2, 'capelo-btn'), tas.base, { lift: 0.4 })
     )
   },
 }

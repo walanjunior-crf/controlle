@@ -2,7 +2,7 @@
  * Óculos no sistema local dos olhos: olho esquerdo em (-10, 0), direito em (10, 0).
  * O motor escala pela distância real entre os olhos. Cor: x.c.glassesColor.
  */
-import { mix } from '../color'
+import { mix, ramp } from '../color'
 import { cut, cutEllipse, f, layer, look, rng, stroke } from '../paper'
 import type { Ctx, Pt } from '../types'
 
@@ -143,6 +143,55 @@ export const GLASSES: Record<string, (x: Ctx) => string> = {
       layer(cut([[-2, -3.2], [2, -3.2], [2, -1.4], [-2, -1.4]], 'h-br', 0.08), c, { lift: 0.4 }) +
       layer(cutEllipse(-13.4, -3.4, 1.7, 1.1, 'h-hl1', { rotate: -35 }), '#FFFFFF', { shadow: false, edge: false, opacity: 0.6 }) +
       layer(cutEllipse(6.6, -3.4, 1.7, 1.1, 'h-hl2', { rotate: -35 }), '#FFFFFF', { shadow: false, edge: false, opacity: 0.6 })
+    )
+  },
+  natacao: (x) => {
+    const c = x.c.glassesColor
+    const tint = '#5CC4EC'
+    const oval = (cx: number): Pt[] => Array.from({ length: 26 }, (_, i) => [cx + 8.6 * Math.cos((i / 26) * Math.PI * 2), 0.6 + 6.8 * Math.sin((i / 26) * Math.PI * 2)] as Pt)
+    const l = oval(-10.4)
+    const r = oval(10.4)
+    return (
+      // alça que contorna a cabeça
+      layer(cut([[-18, -3.8], [-24.5, -4.4], [-27.5, -3.4], [-27.5, 2.6], [-24.5, 3.4], [-18, 3.4]], 'nat-strap-l', 0.15), c, { lift: 0.5 }) +
+      layer(cut([[18, -3.8], [24.5, -4.4], [27.5, -3.4], [27.5, 2.6], [24.5, 3.4], [18, 3.4]], 'nat-strap-r', 0.15), c, { lift: 0.5 }) +
+      `<path d="${outline(l, 'nat-ll')}" fill="${tint}" fill-opacity="0.7"/><path d="${outline(r, 'nat-lr')}" fill="${tint}" fill-opacity="0.7"/>` +
+      layer(cut([[-15.5, -3.6], [-9, -4.6], [-9.8, -2.6], [-15.8, -1.4]], 'nat-hl-l', 0.08), '#FFFFFF', { shadow: false, edge: false, opacity: 0.6 }) +
+      layer(cut([[5.3, -3.6], [11.8, -4.6], [11, -2.6], [5, -1.4]], 'nat-hl-r', 0.08), '#FFFFFF', { shadow: false, edge: false, opacity: 0.6 }) +
+      frame('#2D2A33', l, 2.2, 'nat-fl', 0.7) + frame('#2D2A33', r, 2.2, 'nat-fr', 0.7) +
+      layer(cut([[-3, -1.6], [3, -1.6], [3, 1.6], [-3, 1.6]], 'nat-br', 0.1), '#2D2A33', { lift: 0.4 })
+    )
+  },
+
+  mascara: (x) => {
+    const c = x.c.glassesColor
+    const w = ramp(c)
+    const lum = (parseInt(c.slice(1, 3), 16) * 0.3 + parseInt(c.slice(3, 5), 16) * 0.59 + parseInt(c.slice(5, 7), 16) * 0.11) / 255
+    const ink = lum > 0.5 ? '#3A2A20' : mix(c, '#FFFFFF', 0.82)
+    const band = cut([[-24, -2], [-21, -7.4], [-12, -9.2], [-3, -8], [0, -7], [3, -8], [12, -9.2], [21, -7.4], [24, -2], [23, 4.4], [18, 9], [9, 9.4], [3.4, 6], [0, 5.2], [-3.4, 6], [-9, 9.4], [-18, 9], [-23, 4.4]], 'mas-band', 0.15)
+    const lash = (cx: number) =>
+      stroke(`M${f(cx - 5)} 0.2Q${f(cx)} 5.4 ${f(cx + 5)} 0.2`, ink, 1.5) +
+      (look.style === 'pelucia' ? '' : stroke(`M${f(cx - 5)} 0.2L${f(cx - 6.4)} -1.1M${f(cx + 5)} 0.2L${f(cx + 6.4)} -1.1`, ink, 1.1))
+    return (
+      layer(cut([[-23, -3.4], [-27, -3.6], [-27, 3.4], [-23, 3.2]], 'mas-str-l', 0.1), w.shade, { lift: 0.4 }) +
+      layer(cut([[23, -3.4], [27, -3.6], [27, 3.4], [23, 3.2]], 'mas-str-r', 0.1), w.shade, { lift: 0.4 }) +
+      layer(band, c, { lift: 0.8 }) +
+      layer(cut([[-19, -6], [-9, -7.4], [-11, -5.6], [-19, -4.4]], 'mas-hl', 0.08), w.light, { shadow: false, edge: false, opacity: 0.8 }) +
+      (look.style === 'pelucia' ? `<path d="M-21 -5.4Q-12 -7.8 -3.4 -6.2M3.4 -6.2Q12 -7.8 21 -5.4M-20.6 6Q-12 8.2 -4.6 6.4M4.6 6.4Q12 8.2 20.6 6" fill="none" stroke="${w.pale}" stroke-width="0.5" stroke-linecap="round" stroke-dasharray="0.9 0.9" stroke-opacity="0.85"/>` : '') +
+      lash(-10) + lash(10)
+    )
+  },
+
+  meialua: (x) => {
+    const c = x.c.glassesColor
+    const half = (cx: number): Pt[] => Array.from({ length: 13 }, (_, i) => [cx + 8.8 * Math.cos((i / 12) * Math.PI), -2.2 + 9.6 * Math.sin((i / 12) * Math.PI)] as Pt)
+    const l = half(-10)
+    const r = half(10)
+    return (
+      lens(outline(l, 'ml-ll')) + lens(outline(r, 'ml-lr')) +
+      frame(c, l, 1.8, 'ml-fl', 0.6) + frame(c, r, 1.8, 'ml-fr', 0.6) +
+      layer(cut([[-19, -3.6], [19, -3.6], [19, -1.8], [-19, -1.8]], 'ml-top', 0.1), c, { lift: 0.5 }) +
+      temples(c, -2.9)
     )
   },
 }
