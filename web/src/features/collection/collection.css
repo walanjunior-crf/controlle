@@ -107,10 +107,33 @@
   border-radius: 50%;
   background: color-mix(in srgb, var(--text-2) 10%, transparent);
 }
-.col-item-emoji {
-  font-size: 26px;
+.col-item-art {
+  position: relative;
+  overflow: visible;
+}
+.col-item-art svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
   filter: grayscale(1);
-  opacity: 0.4;
+  opacity: 0.45;
+}
+.col-item-lockbadge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  font-size: 14px;
+}
+.col-item-use {
+  flex: none;
+  min-height: 36px;
+  padding: 0 14px;
+}
+.col-item-wearing {
+  flex: none;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
 }
 .col-item-body {
   flex: 1;
@@ -166,7 +189,7 @@
 .col-item.is-on {
   color: var(--text);
 }
-.col-item.is-on .col-item-emoji {
+.col-item.is-on .col-item-art svg {
   filter: none;
   opacity: 1;
 }
@@ -200,8 +223,8 @@
 .col-item.is-next {
   color: var(--text);
 }
-.col-item.is-next .col-item-emoji {
-  opacity: 0.6;
+.col-item.is-next .col-item-art svg {
+  opacity: 0.65;
 }
 .col-item.is-next .col-item-sub {
   color: var(--text-2);

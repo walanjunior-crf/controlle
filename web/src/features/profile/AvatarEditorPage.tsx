@@ -81,6 +81,7 @@ const TABS: Tab[] = [
     ],
   },
   { id: 'roupa', label: 'Roupa', sections: [{ key: 'outfit', zoom: '10 30 80 80' }, { key: 'outfitColor' }] },
+  { id: 'mao', label: 'Na mão', sections: [{ key: 'held', zoom: '0 24 64 64' }] },
   { id: 'fantasia', label: 'Fantasia', sections: [{ key: 'costume' }] },
   { id: 'fundo', label: 'Fundo', sections: [{ key: 'bg' }, { key: 'pattern' }] },
 ]
@@ -89,6 +90,7 @@ const TABS: Tab[] = [
 /** chance de "nenhum" no Surpreenda-me, para não virar um carnaval toda vez */
 const NONE_WEIGHT: Partial<Record<Key, number>> = {
   costume: 0.8,
+  held: 0.7,
   beard: 0.8,
   piercing: 0.75,
   earrings: 0.55,

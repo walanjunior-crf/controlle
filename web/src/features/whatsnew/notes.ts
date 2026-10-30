@@ -14,7 +14,7 @@ export const RELEASES: ReleaseNote[] = [
     title: 'Coleção e um Perfil só seu',
     items: [
       { icon: '👤', text: 'O Perfil virou uma aba, na ponta direita, com o seu avatar. Ajustes agora fica na engrenagem ⚙️ no canto do Perfil.' },
-      { icon: '🎁', text: 'Coleção: cada tema de hábito (água, leitura, sono…) libera 3 itens para o avatar com a prática. O que você já fez conta.' },
+      { icon: '🎁', text: 'Coleção: cada tema de hábito (água, leitura, sono…) libera 3 itens para o avatar com a prática: algo para segurar, algo para vestir e um fundo. O que você já fez conta. Toque em Usar para pôr no avatar.' },
       { icon: '🏷️', text: 'Ao criar ou editar um hábito, escolha o tema dele. O app já sugere um pelo nome.' },
       { icon: '🔔', text: 'No Hoje, um aviso mostra quando falta pouco para o próximo item.' },
     ],

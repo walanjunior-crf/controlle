@@ -3,18 +3,41 @@ import { CATEGORIES, TIERS, TIER_LABELS, unlockKey, type CategoryProgress, type 
 import { BrandText } from '../../components/BrandText'
 import { IconChevronLeft } from '../../components/icons'
 import { useRewards } from '../../hooks/useRewards'
-import { ITEMS, SLOT_LABELS, itemFor } from './items'
+import { ITEMS, SLOT_LABELS, itemFor, type CollectionItem } from './items'
+import { renderAvatar } from '../../avatar'
+import { saveProfile } from '../../db/db'
+import type { AvatarConfig } from '../../domain/types'
+import { useToast } from '../../components/Toast'
+import { useProfileLoaded } from '../profile/Avatar'
+import { DEFAULT_AVATAR, normalizeAvatar } from '../profile/avatarParts'
 import '../profile/profile.css'
 import './collection.css'
 
 /** Álbum: cada tema de hábito com seus três itens (comum, rara, lendária). */
 export function CollectionPage() {
   const r = useRewards()
+  const profile = useProfileLoaded()
+  const toast = useToast()
   const navigate = useNavigate()
   const location = useLocation()
   const back = () => (location.key === 'default' ? navigate('/perfil', { replace: true }) : navigate(-1))
 
-  if (!r.ready) return <div className="page" aria-busy="true" />
+  if (!r.ready || !profile) return <div className="page" aria-busy="true" />
+
+  // miniaturas e "usar" partem do avatar montado da pessoa (ou do padrão)
+  const mine: AvatarConfig = normalizeAvatar(profile.avatar.kind === 'custom' ? profile.avatar.config : (profile.customAvatar ?? DEFAULT_AVATAR))
+  const base: AvatarConfig = { ...mine, costume: 'nenhum' }
+  const wearing = (it: CollectionItem) => profile.avatar.kind === 'custom' && String(profile.avatar.config[it.key]) === it.id
+  const use = async (it: CollectionItem) => {
+    const prev = profile.avatar
+    const config: AvatarConfig = { ...mine, [it.key]: it.id, ...(it.slot === 'mao' || it.slot === 'vestir' ? { costume: 'nenhum' } : {}) }
+    try {
+      await saveProfile({ avatar: { kind: 'custom', config } })
+      toast.show(`${it.name} no seu avatar`, { label: 'Desfazer', onAction: () => void saveProfile({ avatar: prev }) })
+    } catch {
+      toast.show('Não foi possível usar agora.')
+    }
+  }
 
   const { byCategory, unlocked } = r.collection
   // temas em uso primeiro (mais checks antes); os sem hábito vão para o fim
@@ -52,7 +75,7 @@ export function CollectionPage() {
       </div>
 
       {order.map((c) => (
-        <CategoryCard key={c.id} p={byCategory[c.id]} has={(t) => unlocked.has(unlockKey(c.id, t))} />
+        <CategoryCard key={c.id} p={byCategory[c.id]} has={(t) => unlocked.has(unlockKey(c.id, t))} base={base} wearing={wearing} onUse={(it) => void use(it)} />
       ))}
 
       <p className="muted col-foot">
@@ -62,7 +85,18 @@ export function CollectionPage() {
   )
 }
 
-function CategoryCard({ p, has }: { p: CategoryProgress; has: (t: Tier) => boolean }) {
+interface CardProps {
+  p: CategoryProgress
+  has: (t: Tier) => boolean
+  base: AvatarConfig
+  wearing: (it: CollectionItem) => boolean
+  onUse: (it: CollectionItem) => void
+}
+
+/** recorte da miniatura: objeto na mão mostra o braço erguido; o resto, o avatar inteiro */
+const THUMB_VIEW: Record<CollectionItem['slot'], string> = { mao: '0 26 62 62', vestir: '0 0 100 100', fundo: '0 0 100 100' }
+
+function CategoryCard({ p, has, base, wearing, onUse }: CardProps) {
   const info = CATEGORIES.find((c) => c.id === p.category)!
   const next = p.next
   return (
@@ -92,7 +126,8 @@ function CategoryCard({ p, has }: { p: CategoryProgress; has: (t: Tier) => boole
           return (
             <li key={t} className={`col-item tier-${t}${on ? ' is-on' : ''}${isNext ? ' is-next' : ''}`}>
               <span className="col-item-art" aria-hidden="true">
-                <span className="col-item-emoji">{it.emoji}</span>
+                <svg viewBox={THUMB_VIEW[it.slot]} dangerouslySetInnerHTML={{ __html: renderAvatar({ ...base, [it.key]: it.id }, { detail: 'lite' }) }} />
+                {!on && <span className="col-item-lockbadge">🔒</span>}
               </span>
               <div className="col-item-body">
                 <div className="col-item-line">
@@ -115,9 +150,15 @@ function CategoryCard({ p, has }: { p: CategoryProgress; has: (t: Tier) => boole
                   </p>
                 )}
               </div>
-              <span className="col-item-state" aria-label={on ? 'Liberado' : 'Bloqueado'}>
-                {on ? '✓' : '🔒'}
-              </span>
+              {on ? (
+                wearing(it) ? (
+                  <span className="col-item-wearing">Usando</span>
+                ) : (
+                  <button type="button" className="btn btn-small btn-ghost col-item-use" onClick={() => onUse(it)} aria-label={`Usar ${it.name} no avatar`}>
+                    Usar
+                  </button>
+                )
+              ) : null}
             </li>
           )
         })}
