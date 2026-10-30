@@ -28,14 +28,14 @@ const T = (category: HabitCategory, rows: [Row, Row, Row]): CollectionItem[] =>
   rows.map(([name, emoji, key, id], i) => ({ category, tier: (i + 1) as Tier, name, emoji, slot: SLOTS[i], key, id }))
 
 export const ITEMS: CollectionItem[] = [
-  ...T('agua', [['Garrafinha', '🧴', 'held', 'garrafa'], ['Óculos de natação', '🥽', 'glasses', 'natacao'], ['Chuva de gotas', '🌧️', 'pattern', 'gotas']]),
-  ...T('movimento', [['Haltere', '🏋️', 'held', 'haltere'], ['Toalha no pescoço', '🧣', 'outfit', 'toalha'], ['Pista de corrida', '🏟️', 'pattern', 'pista']]),
+  ...T('agua', [['Garrafinha', '🧴', 'held', 'garrafa'], ['Óculos de natação', '🥽', 'glasses', 'natacao'], ['Fundo do mar', '🐠', 'pattern', 'gotas']]),
+  ...T('movimento', [['Haltere', '🏋️', 'held', 'haltere'], ['Toalha no pescoço', '🧣', 'outfit', 'toalha'], ['Pista de atletismo', '🏃', 'pattern', 'pista']]),
   ...T('sono', [['Ursinho de pelúcia', '🧸', 'held', 'ursinho'], ['Máscara de dormir', '😴', 'glasses', 'mascara'], ['Céu de lua', '🌙', 'pattern', 'lua']]),
-  ...T('leitura', [['Livro aberto', '📖', 'held', 'livro'], ['Óculos meia-lua', '👓', 'glasses', 'meialua'], ['Estante', '📚', 'pattern', 'estante']]),
-  ...T('mente', [['Xícara de chá', '🍵', 'held', 'xicara'], ['Coroa de flores', '🌸', 'hat', 'floral'], ['Jardim zen', '🪷', 'pattern', 'zen']]),
-  ...T('saude', [['Maçã', '🍎', 'held', 'maca'], ['Jaleco', '🥼', 'outfit', 'jaleco'], ['Folhas de ervas', '🌿', 'pattern', 'ervas']]),
-  ...T('largar', [['Muda de planta', '🌱', 'held', 'muda'], ['Faixa de campeão', '🎗️', 'outfit', 'campeao'], ['Arco-íris', '🌈', 'pattern', 'arcoiris']]),
-  ...T('humor', [['Balão de coração', '🎈', 'held', 'balao'], ['Tiara de coração', '💖', 'hat', 'tiara'], ['Sorrisos', '😊', 'pattern', 'sorrisos']]),
+  ...T('leitura', [['Livro aberto', '📖', 'held', 'livro'], ['Óculos meia-lua', '👓', 'glasses', 'meialua'], ['Biblioteca', '📚', 'pattern', 'estante']]),
+  ...T('mente', [['Xícara de chá', '🍵', 'held', 'xicara'], ['Coroa de flores', '🌸', 'hat', 'floral'], ['Jardim budista', '🪷', 'pattern', 'zen']]),
+  ...T('saude', [['Maçã', '🍎', 'held', 'maca'], ['Jaleco', '🥼', 'outfit', 'jaleco'], ['Horta de ervas', '🌿', 'pattern', 'ervas']]),
+  ...T('largar', [['Muda de planta', '🌱', 'held', 'muda'], ['Faixa de campeão', '🎗️', 'outfit', 'campeao'], ['Depois da tempestade', '🌈', 'pattern', 'arcoiris']]),
+  ...T('humor', [['Balão de coração', '🎈', 'held', 'balao'], ['Tiara de coração', '💖', 'hat', 'tiara'], ['Dia de festa', '🎉', 'pattern', 'sorrisos']]),
   ...T('estudo', [['Lápis', '✏️', 'held', 'lapis'], ['Capelo', '🎓', 'hat', 'capelo'], ['Quadro-negro', '🧑‍🏫', 'pattern', 'quadro']]),
   ...T('outro', [['Bandeirinha', '🚩', 'held', 'bandeira'], ['Mochila de explorador', '🎒', 'outfit', 'mochila'], ['Constelação', '✨', 'pattern', 'constelacao']]),
 ]
