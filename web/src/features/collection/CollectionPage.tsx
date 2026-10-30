@@ -94,7 +94,7 @@ interface CardProps {
 }
 
 /** recorte da miniatura: objeto na mão mostra o braço erguido; o resto, o avatar inteiro */
-const THUMB_VIEW: Record<CollectionItem['slot'], string> = { mao: '0 26 62 62', vestir: '0 0 100 100', fundo: '0 0 100 100' }
+const THUMB_VIEW: Record<CollectionItem['slot'], string> = { mao: '0 0 100 100', vestir: '0 0 100 100', fundo: '0 0 100 100' }
 
 function CategoryCard({ p, has, base, wearing, onUse }: CardProps) {
   const info = CATEGORIES.find((c) => c.id === p.category)!
