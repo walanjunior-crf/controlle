@@ -363,3 +363,7 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 ### v0.5.1 — Asa de Camilla
 
 - Novo acessório livre para todos: asas de fada ("Asa de Camilla"), em Montar avatar → Roupa → Asas. Batem de leve no avatar vivo.
+
+### v0.5.2 — Asa de Camilla verde
+
+- A Asa de Camilla virou asa de fada verde brilhante (iridescente), com borda e espirais brancas.

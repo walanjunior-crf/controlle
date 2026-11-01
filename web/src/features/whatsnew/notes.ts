@@ -10,6 +10,11 @@ export interface ReleaseNote {
 
 export const RELEASES: ReleaseNote[] = [
   {
+    version: '0.5.2',
+    title: 'Asa de Camilla, agora verde',
+    items: [{ icon: '🧚', text: 'A Asa de Camilla ficou verde brilhante, com bordado branco em espiral. Livre para todo mundo em Perfil → Montar avatar → Roupa → Asas.' }],
+  },
+  {
     version: '0.5.1',
     title: 'Asa de Camilla',
     items: [{ icon: '🧚', text: 'Asas de fada para o seu avatar, liberadas para todo mundo. Em Perfil → Montar avatar → Roupa → Asas.' }],

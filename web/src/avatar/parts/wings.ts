@@ -5,23 +5,46 @@
 import { cut, cutEllipse, layer, look, mirror, stroke } from '../paper'
 import type { Ctx } from '../types'
 
-/** Asa de Camilla: asa de fada, translúcida, lilás com brilho rosado */
+/** espiral (traço) para os desenhos da asa */
+const spiral = (cx: number, cy: number, r: number, turns = 1.6, start = 0) => {
+  let d = ''
+  const n = 28
+  for (let k = 0; k <= n; k++) {
+    const t = k / n
+    const a = start + t * turns * Math.PI * 2
+    const rr = r * (1 - t * 0.85)
+    d += `${k ? 'L' : 'M'}${(cx + rr * Math.cos(a)).toFixed(2)} ${(cy + rr * Math.sin(a)).toFixed(2)}`
+  }
+  return d
+}
+
+/** Asa de Camilla: asa de fada de borboleta, verde iridescente com borda e espirais brancas */
 function fairy(_x: Ctx): string {
   const plush = look.style === 'pelucia'
-  const top = cut([[46, 84], [38, 68], [28, 52], [18, 40], [9, 34], [4, 39], [3, 51], [7, 64], [17, 76], [34, 88]], 'asa-cima', 0.25)
-  const topIn = cut([[42, 83], [34, 69], [25, 55], [16, 45], [9, 42], [8, 50], [11, 62], [20, 73], [34, 85]], 'asa-cima-in', 0.2)
-  const low = cut([[45, 89], [30, 88], [16, 90], [6, 96], [8, 104], [22, 104], [38, 97]], 'asa-baixo', 0.25)
-  const lowIn = cut([[41, 91], [29, 91], [17, 94], [11, 99], [23, 101], [36, 96]], 'asa-baixo-in', 0.2)
-  const veins = 'M44 84Q30 64 10 40M40 86Q22 74 6 56M42 90Q26 91 10 98'
+  const top = cut([[46, 84], [36, 66], [26, 50], [15, 38], [6, 34], [2, 41], [3, 54], [8, 66], [18, 77], [34, 87]], 'asa-cima', 0.2)
+  const low = cut([[45, 89], [32, 88], [18, 89], [8, 95], [6, 104], [16, 108], [30, 104], [40, 97]], 'asa-baixo', 0.2)
+  const shimmerTop = cut([[38, 76], [28, 62], [18, 50], [10, 45], [9, 52], [14, 62], [24, 72]], 'asa-brilho-cima', 0.3)
+  const shimmerTop2 = cut([[20, 46], [12, 40], [7, 42], [9, 48], [15, 50]], 'asa-brilho-cima2', 0.3)
+  const shimmerLow = cut([[36, 93], [24, 92], [14, 96], [12, 101], [22, 102], [32, 98]], 'asa-brilho-baixo', 0.3)
+  const ink = '#FFFFFF'
+  const w = plush ? 0.7 : 0.8
+  const dash = plush ? ' stroke-dasharray="1.4 1.1"' : ''
   let s =
-    layer(top, '#CBB3F2', { lift: 0.5, opacity: 0.88 }) +
-    layer(topIn, '#F2E6FF', { shadow: false, edge: false, opacity: 0.75 }) +
-    layer(low, '#F3B8D8', { lift: 0.5, opacity: 0.88 }) +
-    layer(lowIn, '#FFE8F4', { shadow: false, edge: false, opacity: 0.75 }) +
-    stroke(veins, '#9F82D6', plush ? 0.6 : 0.7, `stroke-opacity="0.7"${plush ? ' stroke-dasharray="1.4 1.1"' : ''}`)
-  // brilhos
-  for (const [cx, cy, r] of [[10, 47, 1.2], [17, 61, 0.9], [15, 98, 0.9], [7, 40, 0.7]] as const)
-    s += layer(cutEllipse(cx, cy, r, r, `asa-brilho-${cx}`), '#FFFFFF', { shadow: false, edge: false, opacity: 0.9 })
+    layer(top, '#D9F7CF', { lift: 0.4, opacity: 0.82 }) +
+    layer(low, '#D9F7CF', { lift: 0.4, opacity: 0.82 }) +
+    layer(shimmerTop, '#3EDC5E', { shadow: false, edge: false, opacity: 0.62 }) +
+    layer(shimmerTop2, '#A8F55A', { shadow: false, edge: false, opacity: 0.7 }) +
+    layer(shimmerLow, '#3EDC5E', { shadow: false, edge: false, opacity: 0.6 }) +
+    // borda branca e espirais, como a asa de tule com bordado
+    stroke(top, ink, 1.2, 'stroke-opacity="0.95"') +
+    stroke(low, ink, 1.2, 'stroke-opacity="0.95"') +
+    stroke(spiral(16, 52, 7, 1.7, 0.6), ink, w, `stroke-opacity="0.9"${dash}`) +
+    stroke(spiral(29, 70, 5, 1.5, 2.2), ink, w, `stroke-opacity="0.85"${dash}`) +
+    stroke(spiral(18, 99, 4.6, 1.5, 1), ink, w, `stroke-opacity="0.9"${dash}`) +
+    stroke('M44 84Q32 66 12 40M42 90Q28 91 9 98', ink, 0.6, 'stroke-opacity="0.6"')
+  // brilhos iridescentes
+  for (const [cx, cy, r, c] of [[8, 44, 1.2, '#FFFFFF'], [23, 60, 0.9, '#E9FFD6'], [12, 102, 0.9, '#FFFFFF'], [34, 78, 0.8, '#E9FFD6']] as const)
+    s += layer(cutEllipse(cx, cy, r, r, `asa-pt-${cx}`), c, { shadow: false, edge: false, opacity: 0.95 })
   return `<g class="av-wing av-wing-l">${s}</g><g class="av-wing av-wing-r">${mirror(s)}</g>`
 }
 
