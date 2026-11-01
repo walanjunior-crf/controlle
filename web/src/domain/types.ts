@@ -212,6 +212,8 @@ export interface AvatarConfig {
   piercingSide: string
   /** objeto na mão (itens da coleção, v0.5) */
   held: string
+  /** asas nas costas (livres para todos) */
+  wings: string
 }
 
 export type AvatarChoice =

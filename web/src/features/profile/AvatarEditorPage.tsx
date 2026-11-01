@@ -80,7 +80,7 @@ const TABS: Tab[] = [
       { key: 'metal' },
     ],
   },
-  { id: 'roupa', label: 'Roupa', sections: [{ key: 'outfit', zoom: '10 30 80 80' }, { key: 'outfitColor' }] },
+  { id: 'roupa', label: 'Roupa', sections: [{ key: 'outfit', zoom: '10 30 80 80' }, { key: 'outfitColor' }, { key: 'wings' }] },
   { id: 'mao', label: 'Na mão', sections: [{ key: 'held' }] },
   { id: 'fantasia', label: 'Fantasia', sections: [{ key: 'costume' }] },
   { id: 'fundo', label: 'Fundo', sections: [{ key: 'bg' }, { key: 'pattern' }] },
@@ -91,6 +91,7 @@ const TABS: Tab[] = [
 const NONE_WEIGHT: Partial<Record<Key, number>> = {
   costume: 0.8,
   held: 0.7,
+  wings: 0.85,
   beard: 0.8,
   piercing: 0.75,
   earrings: 0.55,

@@ -334,6 +334,12 @@ export const PATTERNS: Part[] = [
 ]
 
 /** objetos na mão: todos vêm da coleção de hábitos */
+/** asas nas costas: presente para todo mundo */
+export const WINGS: Part[] = [
+  { id: 'nenhum', label: 'Sem asas' },
+  { id: 'fada', label: 'Asa de Camilla' },
+]
+
 export const HELD: Part[] = [
   { id: 'nenhum', label: 'Mãos livres' },
   { id: 'garrafa', label: 'Garrafinha' },
@@ -401,6 +407,7 @@ export const CATALOG: Record<Key, { label: string; parts: Part[] | ColorPart[]; 
   earringSide: { label: 'Lado dos brincos', parts: SIDES },
   piercingSide: { label: 'Lado do piercing', parts: SIDES },
   held: { label: 'Na mão', parts: HELD },
+  wings: { label: 'Asas', parts: WINGS },
 }
 
 // ---------- loja: créditos e conquistas ----------
@@ -418,7 +425,7 @@ const PRICE_BY_KEY: Record<Key, number> = {
   hat: 2, glasses: 2, outfit: 2, hair: 2, eyes: 2, coat: 2,
   fur: 1, eyeColor: 1, brows: 1, mouth: 1, cheeks: 1, beard: 1, hairColor: 1,
   hatColor: 1, glassesColor: 1, outfitColor: 1, earrings: 1, piercing: 1, metal: 1, pattern: 1,
-  bg: 0, persona: 0, earringSide: 0, piercingSide: 0, style: 0, held: 0,
+  bg: 0, persona: 0, earringSide: 0, piercingSide: 0, style: 0, held: 0, wings: 0,
 }
 
 /** recompensas de conquista (não se compram) */
@@ -579,6 +586,7 @@ export const DEFAULT_AVATAR: AvatarConfig = {
   earringSide: 'ambos',
   piercingSide: 'direito',
   held: 'nenhum',
+  wings: 'nenhum',
 }
 
 /** cores fixas que as peças tinham na v0.4 */

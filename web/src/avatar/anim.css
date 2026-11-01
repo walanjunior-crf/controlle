@@ -59,3 +59,27 @@
 @media (prefers-reduced-motion: reduce) {
   .avatar.is-alive *, .avatar > svg { animation: none !important; }
 }
+
+/* asas batendo de leve */
+.avatar.is-alive .av-wing {
+  transform-box: view-box;
+  animation: av-flutter 2.6s ease-in-out infinite;
+}
+.avatar.is-alive .av-wing-l {
+  transform-origin: 46px 86px;
+}
+.avatar.is-alive .av-wing-r {
+  transform-origin: 54px 86px;
+  animation-name: av-flutter-r;
+}
+@keyframes av-flutter {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(5deg); }
+}
+@keyframes av-flutter-r {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-5deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar.is-alive .av-wing { animation: none; }
+}

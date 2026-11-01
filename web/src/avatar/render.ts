@@ -9,6 +9,7 @@
  * piercing, brincos, cabelo da frente, óculos, fantasia, chapéu) → efeitos → textura.
  */
 import type { AvatarConfig } from '../domain/types'
+import { WINGS } from './parts/wings'
 import { effective, normalizeAvatar } from '../features/profile/avatarParts'
 import { body } from './body'
 import { adjust, mix, ramp } from './color'
@@ -134,7 +135,7 @@ export function renderAvatar(config: Partial<AvatarConfig>, opts: RenderOpts = {
     (PATTERNS[c.pattern] ?? PATTERNS.nenhum)(x) +
     // personagem um pouco menor, ancorado na base: sobra espaço para orelhas e chapéus
     `<g transform="translate(50 100) scale(0.92) translate(-50 -100)">` +
-    `<g class="av-body">${def.tail ? def.tail(x) : ''}${body(x, dress)}${extraBody(x)}</g>` +
+    `<g class="av-body">${(WINGS[c.wings] ?? WINGS.nenhum)(x)}${def.tail ? def.tail(x) : ''}${body(x, dress)}${extraBody(x)}</g>` +
     `<g class="av-head">` +
     (hair?.back ? onHead(x, hair.back(x)) : '') +
     (hides.ears ? '' : def.back(x)) +

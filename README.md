@@ -359,3 +359,7 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - **Aba Perfil** na ponta direita, com o avatar da pessoa; **Ajustes** foi para a engrenagem no canto do Perfil.
 - **Novidades:** resumo da versão na primeira abertura depois de cada atualização.
 - **Tubarão:** todas as bocas (e humores) com dentes grandes.
+
+### v0.5.1 — Asa de Camilla
+
+- Novo acessório livre para todos: asas de fada ("Asa de Camilla"), em Montar avatar → Roupa → Asas. Batem de leve no avatar vivo.
