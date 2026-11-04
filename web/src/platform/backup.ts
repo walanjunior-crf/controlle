@@ -122,7 +122,15 @@ export async function importJSON(
   } catch {
     throw new BackupFormatError('Não foi possível ler o arquivo selecionado.')
   }
-  const data = parseBackup(text)
+  return importBackup(parseBackup(text), mode, database)
+}
+
+/** Grava um backup já validado (arquivo ou cópia na nuvem). */
+export async function importBackup(
+  data: BackupFile,
+  mode: 'merge' | 'replace',
+  database: ControlleDB = db,
+): Promise<{ trackers: number; entries: number }> {
   const tables = [
     database.trackers,
     database.goals,

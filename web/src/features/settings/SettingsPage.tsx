@@ -21,7 +21,8 @@ import { useProfile } from '../profile/Avatar'
 import { APP_VERSION } from '../../version'
 import { FeedbackSheet } from '../feedback/FeedbackSheet'
 import { saveProfile } from '../../db/db'
-import { checkUnlockCode } from './unlockCode'
+import { checkBetaCode, checkUnlockCode } from './unlockCode'
+import { enableCloudBeta } from '../account/beta'
 export { APP_VERSION }
 
 function Group({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) {
@@ -220,7 +221,7 @@ export function SettingsPage() {
         title="Código de acesso"
         footer={profile.unlockAll ? 'Todas as peças do avatar estão liberadas neste aparelho.' : 'Recebeu um código? Ele libera todas as peças do avatar neste aparelho.'}
       >
-        {profile.unlockAll ? (
+        {profile.unlockAll && (
           <div className="settings-row code-row">
             <span className="code-on">✓ Tudo liberado</span>
             <button
@@ -234,7 +235,8 @@ export function SettingsPage() {
               Desativar
             </button>
           </div>
-        ) : (
+        )}
+        {(
           <form
             className="settings-row code-row"
             onSubmit={(e) => {
@@ -244,6 +246,10 @@ export function SettingsPage() {
                   await saveProfile({ unlockAll: true })
                   setCode('')
                   toast.show('🔓 Tudo liberado! Veja em Perfil → Montar avatar.')
+                } else if (await checkBetaCode(code)) {
+                  enableCloudBeta()
+                  setCode('')
+                  toast.show('☁️ Conta liberada para teste. Veja em Perfil.')
                 } else {
                   toast.show('Código não reconhecido.')
                 }

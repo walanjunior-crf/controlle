@@ -8,6 +8,8 @@ import { IconCamera, IconGear, IconTrash, IconUpload } from '../../components/ic
 import { useToast } from '../../components/Toast'
 import { ICONS, safeBg } from './icons'
 import { ITEMS } from '../collection/items'
+import { AccountCard } from '../account/AccountCard'
+import { cloudBeta } from '../account/beta'
 import { ACHIEVEMENTS } from '../../domain'
 import { BGS, DEFAULT_AVATAR } from './avatarParts'
 import { Avatar, IconSvg, useProfileLoaded } from './Avatar'
@@ -87,6 +89,14 @@ export function ProfilePage() {
           Trocar foto
         </button>
       </section>
+
+      {rewards.ready && (
+        cloudBeta() && (
+          <section className="profile-section" aria-label="Conta">
+            <AccountCard />
+          </section>
+        )
+      )}
 
       {rewards.ready && (
         <section className="profile-section" aria-label="Seu nível">

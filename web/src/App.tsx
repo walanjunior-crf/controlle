@@ -14,6 +14,7 @@ import { CollectionPage } from './features/collection/CollectionPage'
 import { useRewardToasts } from './features/rewards/useRewardToasts'
 import { FeedbackInvite } from './features/feedback/FeedbackInvite'
 import { WhatsNew } from './features/whatsnew/WhatsNew'
+import { CloudSync } from './features/account/CloudSync'
 import { OnboardingPage } from './features/onboarding/OnboardingPage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { StatsPage } from './features/stats/StatsPage'
@@ -127,6 +128,7 @@ function Shell() {
       <RewardSync />
       <FeedbackInvite />
       <WhatsNew />
+      <CloudSync />
       <UpdateBand />
       <ScrollToTop />
       <Routes>
