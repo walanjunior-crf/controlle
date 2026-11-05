@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { signOut, useSession } from '../../platform/cloud/client'
 import { forgetCloudLink, syncNow, useCloudStatus } from '../../platform/cloud/useCloudSync'
@@ -14,29 +15,24 @@ const ago = (t: number) => {
   return h < 24 ? `há ${h} h` : `há ${Math.round(h / 24)} dias`
 }
 
-/** Conta no Perfil: entrar, estado da cópia na nuvem, sair. */
-export function AccountCard() {
+/**
+ * Conta no Perfil, discreta: um selo embaixo do nome. Sem conta, convida a guardar
+ * na nuvem; com conta, mostra se está em dia e abre os detalhes (e-mail, sair).
+ */
+export function AccountChip() {
   const { ready, session } = useSession()
   const status = useCloudStatus()
   const toast = useToast()
   const [login, setLogin] = useState(false)
+  const [details, setDetails] = useState(false)
 
-  if (!ready) return <div className="card account-card" aria-busy="true" />
+  if (!ready) return null
 
   if (!session) {
     return (
       <>
-        <button type="button" className="card account-card account-cta" onClick={() => setLogin(true)}>
-          <span className="account-icon" aria-hidden="true">
-            ☁️
-          </span>
-          <span className="account-text">
-            <strong>Criar conta ou entrar</strong>
-            <span className="muted">Guarde seus hábitos na nuvem e jogue com amigos.</span>
-          </span>
-          <span className="col-entry-go" aria-hidden="true">
-            ›
-          </span>
+        <button type="button" className="account-chip" onClick={() => setLogin(true)}>
+          <span aria-hidden="true">☁️</span> Guardar na nuvem
         </button>
         <LoginSheet
           open={login}
@@ -50,42 +46,52 @@ export function AccountCard() {
     )
   }
 
+  const error = status.phase === 'error'
+  const short = status.phase === 'syncing' ? 'Sincronizando…' : error ? 'Sem sincronizar' : 'Na nuvem'
   const line =
     status.phase === 'syncing'
       ? 'Sincronizando…'
-      : status.phase === 'error'
+      : error
         ? status.message ?? 'Não foi possível sincronizar.'
         : status.lastAt
-          ? `Cópia na nuvem atualizada ${ago(status.lastAt)}`
-          : 'Cópia na nuvem ligada'
+          ? `Cópia atualizada ${ago(status.lastAt)}.`
+          : 'Cópia na nuvem ligada.'
 
   return (
-    <div className="card account-card">
-      <span className="account-icon" aria-hidden="true">
-        {status.phase === 'error' ? '⚠️' : '☁️'}
-      </span>
-      <span className="account-text">
-        <strong>{session.user.email}</strong>
-        <span className={`muted${status.phase === 'error' ? ' is-error' : ''}`} role="status">
+    <>
+      <button type="button" className={`account-chip is-on${error ? ' is-error' : ''}`} onClick={() => setDetails(true)} aria-label={`Conta: ${line}`}>
+        <span aria-hidden="true">{error ? '⚠️' : '☁️'}</span> {short}
+      </button>
+      <Sheet
+        open={details}
+        onClose={() => setDetails(false)}
+        title="Sua conta"
+        footer={
+          <div className="feedback-actions">
+            <button type="button" className="btn btn-primary btn-block" disabled={status.phase === 'syncing'} onClick={() => void syncNow()}>
+              Sincronizar agora
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost btn-block"
+              onClick={async () => {
+                await signOut()
+                forgetCloudLink()
+                setDetails(false)
+                toast.show('Você saiu da conta. Os dados continuam neste aparelho.')
+              }}
+            >
+              Sair da conta
+            </button>
+          </div>
+        }
+      >
+        <p className="account-email">{session.user.email}</p>
+        <p className={`muted account-line${error ? ' is-error' : ''}`} role="status">
           {line}
-        </span>
-      </span>
-      <span className="account-actions">
-        <button type="button" className="btn btn-small btn-ghost" onClick={() => void syncNow()} disabled={status.phase === 'syncing'}>
-          Sincronizar
-        </button>
-        <button
-          type="button"
-          className="btn btn-small btn-ghost"
-          onClick={async () => {
-            await signOut()
-            forgetCloudLink()
-            toast.show('Você saiu da conta. Os dados continuam neste aparelho.')
-          }}
-        >
-          Sair
-        </button>
-      </span>
-    </div>
+        </p>
+        <p className="muted account-note">Seus hábitos ficam guardados na nuvem e voltam sozinhos se você trocar de celular. Só você vê seus registros.</p>
+      </Sheet>
+    </>
   )
 }

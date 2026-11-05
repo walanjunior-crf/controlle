@@ -1,47 +1,41 @@
-/* ---------- Conta (v0.6) ---------- */
-.account-card {
-  display: flex;
+/* ---------- Conta (v0.6): selo discreto no Perfil ---------- */
+.account-chip {
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  margin-top: 10px;
-  width: 100%;
-  text-align: left;
-  color: var(--text);
-  flex-wrap: wrap;
-}
-.account-cta {
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-2);
+  background: color-mix(in srgb, var(--text-2) 9%, transparent);
   cursor: pointer;
 }
-.account-icon {
-  font-size: 26px;
-  flex: none;
+.account-chip.is-on {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 11%, transparent);
 }
-.account-text {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+.account-chip.is-error {
+  color: var(--amber-text);
+  background: color-mix(in srgb, var(--amber) 16%, transparent);
 }
-.account-text strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.account-email {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
 }
-.account-text .muted {
-  font-size: 14px;
+.account-line {
+  margin: 4px 0 12px;
 }
-.account-text .is-error {
+.account-line.is-error {
   color: var(--amber-text);
 }
-.account-actions {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
-.account-actions .btn {
-  min-height: 36px;
-  padding: 0 12px;
+.account-note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
 }
 .login-text {
   margin: 0 0 14px;
@@ -51,8 +45,4 @@
   font-size: 26px;
   letter-spacing: 0.3em;
   text-align: center;
-}
-.account-card:not(.account-cta) .account-actions {
-  flex-basis: 100%;
-  justify-content: flex-end;
 }

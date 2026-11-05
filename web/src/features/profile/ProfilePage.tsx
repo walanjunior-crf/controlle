@@ -8,7 +8,7 @@ import { IconCamera, IconGear, IconTrash, IconUpload } from '../../components/ic
 import { useToast } from '../../components/Toast'
 import { ICONS, safeBg } from './icons'
 import { ITEMS } from '../collection/items'
-import { AccountCard } from '../account/AccountCard'
+import { AccountChip } from '../account/AccountCard'
 import { cloudBeta } from '../account/beta'
 import { ACHIEVEMENTS } from '../../domain'
 import { BGS, DEFAULT_AVATAR } from './avatarParts'
@@ -85,18 +85,8 @@ export function ProfilePage() {
         </div>
         <p className="profile-hero-name">{draft.displayName.trim() || 'Sem nome'}</p>
         {profile.handle && <p className="profile-hero-handle">@{profile.handle}</p>}
-        <button type="button" className="btn btn-small btn-ghost" onClick={photo.openGallery}>
-          Trocar foto
-        </button>
+        {cloudBeta() && <AccountChip />}
       </section>
-
-      {rewards.ready && (
-        cloudBeta() && (
-          <section className="profile-section" aria-label="Conta">
-            <AccountCard />
-          </section>
-        )
-      )}
 
       {rewards.ready && (
         <section className="profile-section" aria-label="Seu nível">

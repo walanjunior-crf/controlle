@@ -4,7 +4,7 @@ import { sendLoginCode, verifyLoginCode } from '../../platform/cloud/client'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-/** Entrar com e-mail: o app manda um código de 6 dígitos (sem senha). */
+/** Entrar com e-mail: o app manda um código numérico (8 dígitos neste projeto), sem senha. */
 export function LoginSheet({ open, onClose, onDone }: { open: boolean; onClose: () => void; onDone: () => void }) {
   const ids = { email: useId(), code: useId() }
   const [step, setStep] = useState<'email' | 'code'>('email')
@@ -39,7 +39,7 @@ export function LoginSheet({ open, onClose, onDone }: { open: boolean; onClose: 
 
   const verify = async () => {
     const c = code.replace(/\D/g, '')
-    if (c.length < 6) return setError('O código tem 6 dígitos.')
+    if (c.length < 6) return setError('Digite o código completo que chegou no e-mail.')
     setBusy(true)
     setError('')
     try {
@@ -99,12 +99,12 @@ export function LoginSheet({ open, onClose, onDone }: { open: boolean; onClose: 
           }}
         >
           <p className="muted login-text">
-            Mandamos um código para <strong>{email}</strong>. Pode levar um minutinho; confira também o spam.
+            Mandamos um código de 8 números para <strong>{email}</strong>. Pode levar um minutinho; confira também o spam.
           </p>
           <label className="field-label" htmlFor={ids.code}>
             Código
           </label>
-          <input id={ids.code} className="input login-code num" inputMode="numeric" autoComplete="one-time-code" maxLength={8} placeholder="000000" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} />
+          <input id={ids.code} className="input login-code num" inputMode="numeric" autoComplete="one-time-code" maxLength={10} placeholder="00000000" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} />
         </form>
       )}
       {error && (
