@@ -30,14 +30,16 @@ export function useCloudData<T>(load: () => Promise<T>, deps: unknown[]) {
   return { data, error, reload }
 }
 
-export function PageHeader({ title, fallback, right }: { title: string; fallback: string; right?: React.ReactNode }) {
+export function PageHeader({ title, fallback, right }: { title: string; fallback?: string; right?: React.ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   return (
-    <header className="page-head with-back soc-head">
-      <button type="button" className="icon-btn" aria-label="Voltar" onClick={() => (location.key === 'default' ? navigate(fallback, { replace: true }) : navigate(-1))}>
-        <IconChevronLeft />
-      </button>
+    <header className={`page-head soc-head${fallback ? ' with-back' : ''}`}>
+      {fallback && (
+        <button type="button" className="icon-btn" aria-label="Voltar" onClick={() => (location.key === 'default' ? navigate(fallback, { replace: true }) : navigate(-1))}>
+          <IconChevronLeft />
+        </button>
+      )}
       <BrandText as="h1" className="page-title soc-title">
         {title}
       </BrandText>

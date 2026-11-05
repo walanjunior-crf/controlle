@@ -1,10 +1,10 @@
 import { format } from 'date-fns'
+import { PlanTitle } from '../../components/PlanSwitch'
 import { ptBR } from 'date-fns/locale'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { deleteEntry, restoreEntry, toggleRestDay } from '../../db/actions'
 import { dayKeyFor, formatDayLong, formatValue, monthHeatmap, parseDayKey, weekdayOf, yearSummary, type DailyValue } from '../../domain'
 import type { DayKey, Entry, Tracker } from '../../domain/types'
-import { BrandText } from '../../components/BrandText'
 import { colorFor } from '../../components/colors'
 import { EmptyState, SegmentedControl } from '../../components/controls'
 import { IconChevronLeft, IconChevronRight, IconTrash } from '../../components/icons'
@@ -114,9 +114,7 @@ export function HistoryPage() {
   return (
     <div className="page history-page">
       <header className="page-head">
-        <BrandText as="h1" className="page-title">
-          Histórico
-        </BrandText>
+        <PlanTitle value="historico" />
       </header>
 
       <SegmentedControl

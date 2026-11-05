@@ -24,7 +24,7 @@ export function SocialPage() {
 
   return (
     <div className="page soc-page">
-      <PageHeader title="Juntos" fallback="/perfil" />
+      <PageHeader title="Juntos" />
       {!ready ? (
         <div aria-busy="true" />
       ) : !session ? (

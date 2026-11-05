@@ -24,6 +24,15 @@ export const IconToday = ({ size = 26, className }: IconProps) => (
   </svg>
 )
 
+export const IconPeople = ({ size = 26, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <circle cx="9" cy="8.5" r="3.2" />
+    <path d="M3.5 19.5c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2" />
+    <circle cx="16.5" cy="9.5" r="2.6" />
+    <path d="M15.8 14.4c2.5-.3 4.3 1.4 4.8 4.3" />
+  </svg>
+)
+
 export const IconHistory = ({ size = 26, className }: IconProps) => (
   <svg {...base(size)} className={className}>
     <rect x="3.5" y="5" width="17" height="15.5" rx="4" />

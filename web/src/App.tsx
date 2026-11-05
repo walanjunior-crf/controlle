@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { HashRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { IconAgenda, IconHistory, IconStats, IconToday } from './components/icons'
+import { IconAgenda, IconPeople, IconStats, IconToday } from './components/icons'
 import { Avatar, useProfile } from './features/profile/Avatar'
 import { ToastProvider } from './components/Toast'
 import { TrackerBuilderPage } from './features/builder/TrackerBuilderPage'
@@ -31,8 +31,8 @@ import { useUpdateAvailable } from './platform/update'
 
 const TABS = [
   { to: '/', label: 'Hoje', Icon: IconToday, end: true },
-  { to: '/agenda', label: 'Agenda', Icon: IconAgenda, end: false },
-  { to: '/historico', label: 'Histórico', Icon: IconHistory, end: false },
+  { to: '/agenda', label: 'Agenda', Icon: IconAgenda, end: false, also: '/historico' },
+  { to: '/juntos', label: 'Juntos', Icon: IconPeople, end: false },
   { to: '/estatisticas', label: 'Estatísticas', Icon: IconStats, end: false },
 ]
 
@@ -43,10 +43,16 @@ function ProfileTabIcon() {
 }
 
 function TabBar() {
+  const { pathname } = useLocation()
   return (
     <nav className="tab-bar" aria-label="Navegação principal">
-      {TABS.map(({ to, label, Icon, end }) => (
-        <NavLink key={to} to={to} end={end} className={({ isActive }) => `tab${isActive ? ' is-active' : ''}`}>
+      {TABS.map(({ to, label, Icon, end, also }) => (
+        <NavLink
+          key={to}
+          to={to}
+          end={end}
+          className={({ isActive }) => `tab${isActive || (also && pathname.startsWith(also)) ? ' is-active' : ''}`}
+        >
           <Icon />
           <span>{label}</span>
         </NavLink>
@@ -174,7 +180,7 @@ function Shell() {
         <Route path="/agenda/:id" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
         <Route path="/perfil" element={<WithTabs><ProfilePage /></WithTabs>} />
         <Route path="/perfil/avatar" element={<main className="app-main no-tabs"><AvatarEditorPage /></main>} />
-        <Route path="/juntos" element={<main className="app-main no-tabs"><SocialPage /></main>} />
+        <Route path="/juntos" element={<WithTabs><SocialPage /></WithTabs>} />
         <Route path="/juntos/g/:id" element={<main className="app-main no-tabs"><GroupPage /></main>} />
         <Route path="/juntos/d/:id" element={<main className="app-main no-tabs"><ChallengePage /></main>} />
         <Route path="/juntos/entrar/:code" element={<main className="app-main no-tabs"><JoinPage /></main>} />

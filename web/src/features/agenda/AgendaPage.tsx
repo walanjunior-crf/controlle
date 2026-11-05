@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { PlanTitle } from '../../components/PlanSwitch'
 import { ptBR } from 'date-fns/locale'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
@@ -149,9 +150,7 @@ export function AgendaPage() {
     <div className="page agenda-page">
       <header className="ag-head">
         <div className="ag-head-text">
-          <BrandText as="h1" className="page-title">
-            Agenda
-          </BrandText>
+          <PlanTitle value="agenda" />
           <p className="ag-month" aria-live="polite">
             {monthLabel}
           </p>
