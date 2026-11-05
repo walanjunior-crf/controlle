@@ -3,7 +3,7 @@ import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { useSession } from '../../platform/cloud/client'
 import { PushDenied, pushSupport, usePush } from '../../platform/cloud/push'
-import { afterWhatsNew } from '../whatsnew/WhatsNew'
+import { afterAccountNudge } from './AccountNudge'
 import { LoginSheet } from './LoginSheet'
 import './account.css'
 
@@ -54,7 +54,7 @@ export function NotifyTutorial() {
   useEffect(() => {
     if (seen() || support === 'unsupported') return
     let t = 0
-    const stop = afterWhatsNew(() => {
+    const stop = afterAccountNudge(() => {
       t = window.setTimeout(() => setOpen(true), 1200)
     })
     return () => {

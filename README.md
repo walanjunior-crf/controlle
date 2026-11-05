@@ -384,3 +384,4 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 - Tutorial de uma vez só ensinando a ligar as notificações (no iPhone, ensina antes a pôr o app na tela inicial).
 - Apelido único: com conta, o app confere se ninguém usa antes de salvar; se houver conflito, o apelido sai do aparelho também.
 - Primeiro acesso oferece os ícones simples (peixe, abelha…); os bichos vestidos ficam no avatar montado.
+- Convite para criar conta e apelido a cada abertura do app, até a pessoa completar os dois ou marcar "Não mostrar mais este aviso". O tutorial das notificações vem depois dele.
