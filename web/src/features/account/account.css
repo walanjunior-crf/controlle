@@ -46,3 +46,49 @@
   letter-spacing: 0.3em;
   text-align: center;
 }
+
+/* ---------- Notificações (v0.6) ---------- */
+.push-settings {
+  margin-top: 18px;
+}
+.push-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 800;
+}
+.push-settings .ag-group {
+  margin-bottom: 0;
+}
+.push-settings .ag-switch-row + .ag-switch-row {
+  border-top: 1px solid var(--line);
+}
+.push-hint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.push-prompt {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+}
+.push-bell {
+  font-size: 26px;
+  line-height: 1;
+}
+.push-prompt-text {
+  flex: 1;
+  min-width: 0;
+}
+.push-prompt-text p {
+  margin: 4px 0 10px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.push-prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

@@ -1,3 +1,4 @@
+import { PushPrompt } from '../account/PushControls'
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { SegmentedControl } from '../../components/controls'
@@ -38,6 +39,7 @@ export function SocialPage() {
         </div>
       ) : (
         <>
+          <PushPrompt />
           <SegmentedControl
             ariaLabel="Grupos ou amigos"
             className="soc-tabs"

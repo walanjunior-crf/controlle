@@ -3,7 +3,9 @@ import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { signOut, useSession } from '../../platform/cloud/client'
 import { forgetCloudLink, syncNow, useCloudStatus } from '../../platform/cloud/useCloudSync'
+import { disablePush } from '../../platform/cloud/push'
 import { LoginSheet } from './LoginSheet'
+import { PushSettings } from './PushControls'
 import './account.css'
 
 const ago = (t: number) => {
@@ -75,6 +77,7 @@ export function AccountChip() {
               type="button"
               className="btn btn-ghost btn-block"
               onClick={async () => {
+                await disablePush().catch(() => {})
                 await signOut()
                 forgetCloudLink()
                 setDetails(false)
@@ -91,6 +94,7 @@ export function AccountChip() {
           {line}
         </p>
         <p className="muted account-note">Seus hábitos ficam guardados na nuvem e voltam sozinhos se você trocar de celular. Só você vê seus registros.</p>
+        <PushSettings />
       </Sheet>
     </>
   )

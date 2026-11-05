@@ -367,3 +367,15 @@ O guia completo em PDF está em `docs/Controlle-Guia.pdf`.
 ### v0.5.2 — Asa de Camilla verde
 
 - A Asa de Camilla virou asa de fada verde brilhante (iridescente), com borda e espirais brancas.
+
+### v0.6.0 — Conta, nuvem e Juntos (em teste, código "nuvem")
+
+Liberado só para quem digita o código **nuvem** em Ajustes → Código de acesso.
+
+- **Conta por e-mail** (código de 8 dígitos): cópia dos hábitos na nuvem, que volta sozinha em outro celular. Selo "Na nuvem" embaixo do nome no Perfil.
+- **Juntos** (Perfil → Amigos e grupos): amigos, grupos de até 20 pessoas com convite por link, mural do grupo com 👏.
+- **Desafios em grupo** com placar. Dois modos: *Automático* (os hábitos do tema contam) e *Check-in* (cada um posta o dia, com legenda e foto; quem cria escolhe se a foto é obrigatória). Reações (🔥 💪 👏 😂 ❤️) e comentários nos check-ins.
+- **Chat** em cada desafio, em tempo real.
+- **Notificações:** mensagens, check-ins, reações, comentários e pedidos de amizade; lembrete às 20h (Brasília) se faltar marcar o dia. No iPhone, só com o app instalado na tela inicial (iOS 16.4+).
+
+**Servidor (Supabase, plano grátis).** Na ordem, no SQL Editor: `supabase/01-conta-e-nuvem.sql`, `02-amigos-grupos-desafios.sql`, `03-checkin-e-chat.sql`, `04-notificacoes.sql`. A função `supabase/functions/notify` vai em Edge Functions com o nome `notify` e "Verify JWT" desligado, e precisa do segredo `VAPID_PRIVATE_KEY` (a chave privada do par VAPID; a pública já está no app em `web/src/platform/cloud/push.ts`).

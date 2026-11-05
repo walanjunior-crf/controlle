@@ -6,9 +6,23 @@ export interface ReleaseNote {
   version: string
   title: string
   items: Array<{ icon: string; text: string }>
+  /** só para quem tem o teste da nuvem ligado */
+  beta?: boolean
 }
 
 export const RELEASES: ReleaseNote[] = [
+  {
+    version: '0.6.0',
+    title: 'Juntos: hábitos com os amigos',
+    beta: true,
+    items: [
+      { icon: '☁️', text: 'Conta com e-mail: seus hábitos ganham cópia na nuvem e voltam sozinhos se você trocar de celular. No Perfil, embaixo do seu nome.' },
+      { icon: '🤝', text: 'Juntos: adicione amigos, crie grupos e chame a turma por link. Em Perfil → Amigos e grupos.' },
+      { icon: '🏁', text: 'Desafios em grupo com placar. No modo Check-in, cada um posta o dia (com foto, se quem criou pedir) e a turma reage e comenta.' },
+      { icon: '💬', text: 'Cada desafio tem o seu chat.' },
+      { icon: '🔔', text: 'Notificações de mensagens, check-ins, reações e amizades, e um lembrete às 20h se faltar marcar o dia. No iPhone, com o app na tela inicial.' },
+    ],
+  },
   {
     version: '0.5.2',
     title: 'Asa de Camilla, agora verde',
@@ -43,6 +57,6 @@ export function compareVersions(a: string, b: string): number {
 }
 
 /** notas que a pessoa ainda não viu (mais nova primeiro), até `current` */
-export function unseenNotes(lastSeen: string, current: string): ReleaseNote[] {
-  return RELEASES.filter((r) => compareVersions(r.version, lastSeen) > 0 && compareVersions(r.version, current) <= 0)
+export function unseenNotes(lastSeen: string, current: string, beta = true): ReleaseNote[] {
+  return RELEASES.filter((r) => (beta || !r.beta) && compareVersions(r.version, lastSeen) > 0 && compareVersions(r.version, current) <= 0)
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Sheet } from '../../components/Sheet'
 import { APP_VERSION } from '../../version'
+import { cloudBeta } from '../account/beta'
 import { inviteSeen } from '../feedback/feedback'
 import { unseenNotes, type ReleaseNote } from './notes'
 
@@ -30,7 +31,7 @@ export function WhatsNew() {
   useEffect(() => {
     if (!inviteSeen()) return // o convite de sugestões vem primeiro; as novidades ficam para a próxima abertura
     const seen = lastSeen()
-    const list = unseenNotes(seen, APP_VERSION)
+    const list = unseenNotes(seen, APP_VERSION, cloudBeta())
     if (!list.length) {
       markSeen()
       return
