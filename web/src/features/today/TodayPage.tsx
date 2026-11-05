@@ -37,6 +37,8 @@ import { useRewards } from '../../hooks/useRewards'
 import { UpcomingEvents } from '../agenda/UpcomingEvents'
 import { closestMilestone } from '../../domain/collection'
 import { itemFor } from '../collection/items'
+import { TodayChallenges } from '../social/TodayChallenges'
+import '../social/social.css'
 
 function greeting(hour: number): string {
   if (hour >= 5 && hour < 12) return 'Bom dia'
@@ -262,6 +264,7 @@ export function TodayPage() {
             {celebrating && <Confetti />}
           </section>
 
+          <TodayChallenges snapshots={snapshots} restDays={restDays} today={today} o={o} />
           <UpcomingEvents />
 
           <section className="tracker-grid" aria-label="Seus trackers">

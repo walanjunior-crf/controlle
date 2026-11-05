@@ -56,3 +56,13 @@ describe('escada da coleção', () => {
     expect(closestMilestone(c, 1)).toBeNull()
   })
 })
+
+describe('desafio por tema', () => {
+  it('conta os dias com check no tema, dentro da janela', async () => {
+    const { daysMetInCategory } = await import('../collection')
+    const a = snap({ name: 'Água', icon: '💧', createdAt: ts(2026, 1, 1, 9) }, {}, daily('2026-10-20', '2026-10-25'))
+    const b = snap({ name: 'Leitura', icon: '📚', createdAt: ts(2026, 1, 1, 9) }, {}, daily('2026-10-20', '2026-10-25'))
+    expect(daysMetInCategory([a, b], [], 'agua', '2026-10-22', '2026-10-24', OPTS)).toEqual(['2026-10-22', '2026-10-23', '2026-10-24'])
+    expect(daysMetInCategory([a, b], [], 'sono', '2026-10-01', '2026-10-31', OPTS)).toEqual([])
+  })
+})

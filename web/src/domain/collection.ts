@@ -1,5 +1,5 @@
 import { checksByTracker } from './rewards'
-import type { EngineOptions } from './progress'
+import { dayProgress, type EngineOptions } from './progress'
 import type { DayKey, HabitCategory, RestDay, Tracker, TrackerSnapshot } from './types'
 
 // Coleção (v0.5): cada tema de hábito tem uma escada de marcos. Ao cruzar um marco, a
@@ -139,4 +139,32 @@ export function closestMilestone(c: Collection, within = 3): CategoryProgress | 
     if (!best || p.next.left < best.next!.left) best = p
   }
   return best
+}
+
+// --- desafios em grupo -------------------------------------------------------------
+
+/**
+ * Dias, entre `from` e `to` (inclusive), em que a pessoa fez um check em algum hábito
+ * do tema (mesma regra dos checks: meta cumprida, ou dia de treino em meta semanal).
+ */
+export function daysMetInCategory(
+  all: TrackerSnapshot[],
+  restDays: RestDay[],
+  category: HabitCategory,
+  from: DayKey,
+  to: DayKey,
+  o: EngineOptions,
+): DayKey[] {
+  const out = new Set<DayKey>()
+  for (const s of all) {
+    if (categoryOf(s.tracker) !== category) continue
+    const days = new Set<DayKey>()
+    for (const e of s.entries) if (e.day >= from && e.day <= to) days.add(e.day)
+    for (const d of days) {
+      const p = dayProgress(s, restDays, d, o)
+      if (!p.isActive || p.entryCount === 0) continue
+      if (p.period === 'week' || p.target === null || p.isMet) out.add(d)
+    }
+  }
+  return [...out].sort()
 }

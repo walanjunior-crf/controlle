@@ -101,6 +101,16 @@ export function ProfilePage() {
             </span>
             <span className="col-entry-go" aria-hidden="true">›</span>
           </Link>
+          {cloudBeta() && (
+            <Link to="/juntos" className="card col-entry">
+              <span className="col-entry-icon" aria-hidden="true">🤝</span>
+              <span className="col-entry-text">
+                <strong>Amigos e grupos</strong>
+                <span className="muted">Desafios com a turma</span>
+              </span>
+              <span className="col-entry-go" aria-hidden="true">›</span>
+            </Link>
+          )}
           <Link to="/conquistas" className="card col-entry">
             <span className="col-entry-icon" aria-hidden="true">🏆</span>
             <span className="col-entry-text">

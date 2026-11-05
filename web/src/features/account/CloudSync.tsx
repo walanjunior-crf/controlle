@@ -6,11 +6,13 @@ import { cloud, useSession } from '../../platform/cloud/client'
 import { syncNow, useCloudStatus, useCloudSync } from '../../platform/cloud/useCloudSync'
 import { useProfileLoaded } from '../profile/Avatar'
 import { toPublic } from './publicProfile'
+import { usePublisher } from '../social/usePublisher'
 
 /** Roda em segundo plano enquanto há conta: cópia na nuvem e perfil público. */
 export function CloudSync() {
   useCloudSync()
   usePublishProfile()
+  usePublisher()
   const status = useCloudStatus()
   const [busy, setBusy] = useState(false)
   const choose = async (c: 'merge' | 'cloud' | 'device') => {

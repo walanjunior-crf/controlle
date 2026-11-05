@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
-import { HashRouter, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { HashRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { IconAgenda, IconHistory, IconStats, IconToday } from './components/icons'
 import { Avatar, useProfile } from './features/profile/Avatar'
 import { ToastProvider } from './components/Toast'
@@ -11,6 +11,9 @@ import { ProfilePage } from './features/profile/ProfilePage'
 import { AvatarEditorPage } from './features/profile/AvatarEditorPage'
 import { ConquistasPage } from './features/rewards/ConquistasPage'
 import { CollectionPage } from './features/collection/CollectionPage'
+import { SocialPage } from './features/social/SocialPage'
+import { GroupPage } from './features/social/GroupPage'
+import { JoinPage } from './features/social/JoinPage'
 import { useRewardToasts } from './features/rewards/useRewardToasts'
 import { FeedbackInvite } from './features/feedback/FeedbackInvite'
 import { WhatsNew } from './features/whatsnew/WhatsNew'
@@ -76,6 +79,23 @@ function RewardSync() {
   return null
 }
 
+/** abre o convite guardado antes do primeiro acesso */
+function PendingInvite() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    let code: string | null = null
+    try {
+      code = localStorage.getItem('controlle.invite')
+      localStorage.removeItem('controlle.invite')
+    } catch {
+      /* nada guardado */
+    }
+    // espera o onboarding terminar a própria navegação
+    if (code) window.setTimeout(() => navigate(`/juntos/entrar/${code}`), 400)
+  }, [navigate])
+  return null
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => {
@@ -112,6 +132,16 @@ function Shell() {
 
   if (!settings) return <div className="boot" aria-busy="true" />
 
+  // convite aberto antes do primeiro acesso: guarda e abre depois do onboarding
+  const invite = /#\/juntos\/entrar\/([a-z0-9]+)/i.exec(location.hash)?.[1]
+  if (!settings.onboarded && invite) {
+    try {
+      localStorage.setItem('controlle.invite', invite)
+    } catch {
+      /* sem armazenamento: a pessoa abre o link de novo */
+    }
+  }
+
   if (!settings.onboarded) {
     return (
       <Routes>
@@ -129,6 +159,7 @@ function Shell() {
       <FeedbackInvite />
       <WhatsNew />
       <CloudSync />
+      <PendingInvite />
       <UpdateBand />
       <ScrollToTop />
       <Routes>
@@ -138,6 +169,9 @@ function Shell() {
         <Route path="/agenda/:id" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
         <Route path="/perfil" element={<WithTabs><ProfilePage /></WithTabs>} />
         <Route path="/perfil/avatar" element={<main className="app-main no-tabs"><AvatarEditorPage /></main>} />
+        <Route path="/juntos" element={<main className="app-main no-tabs"><SocialPage /></main>} />
+        <Route path="/juntos/g/:id" element={<main className="app-main no-tabs"><GroupPage /></main>} />
+        <Route path="/juntos/entrar/:code" element={<main className="app-main no-tabs"><JoinPage /></main>} />
         <Route path="/colecao" element={<main className="app-main no-tabs"><CollectionPage /></main>} />
         <Route path="/conquistas" element={<main className="app-main no-tabs"><ConquistasPage /></main>} />
         <Route path="/historico" element={<WithTabs><HistoryPage /></WithTabs>} />
