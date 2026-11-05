@@ -15,7 +15,9 @@ export function JoinPage() {
   const toast = useToast()
   const [login, setLogin] = useState(false)
   const [busy, setBusy] = useState(false)
-  useEffect(() => enableCloudBeta(), [])
+  useEffect(() => {
+    enableCloudBeta()
+  }, [])
 
   return (
     <div className="page soc-page">

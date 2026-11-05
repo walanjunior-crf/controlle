@@ -14,6 +14,7 @@ import { CollectionPage } from './features/collection/CollectionPage'
 import { SocialPage } from './features/social/SocialPage'
 import { GroupPage } from './features/social/GroupPage'
 import { JoinPage } from './features/social/JoinPage'
+import { ChallengePage } from './features/social/ChallengePage'
 import { useRewardToasts } from './features/rewards/useRewardToasts'
 import { FeedbackInvite } from './features/feedback/FeedbackInvite'
 import { WhatsNew } from './features/whatsnew/WhatsNew'
@@ -171,6 +172,7 @@ function Shell() {
         <Route path="/perfil/avatar" element={<main className="app-main no-tabs"><AvatarEditorPage /></main>} />
         <Route path="/juntos" element={<main className="app-main no-tabs"><SocialPage /></main>} />
         <Route path="/juntos/g/:id" element={<main className="app-main no-tabs"><GroupPage /></main>} />
+        <Route path="/juntos/d/:id" element={<main className="app-main no-tabs"><ChallengePage /></main>} />
         <Route path="/juntos/entrar/:code" element={<main className="app-main no-tabs"><JoinPage /></main>} />
         <Route path="/colecao" element={<main className="app-main no-tabs"><CollectionPage /></main>} />
         <Route path="/conquistas" element={<main className="app-main no-tabs"><ConquistasPage /></main>} />

@@ -55,6 +55,8 @@ export function usePublisher() {
     try {
       // 1) desafios: meus dias cumpridos
       for (const { c, done } of await myChallenges()) {
+        // no check-in, o dia conta pelo post (enviado na hora); aqui só o automático
+        if (c.mode === 'checkin') continue
         const end = challengeEnd(c)
         if (today < c.start_day || today > addDays(end, 2)) continue
         const days = daysMetInCategory(snapshots, restDays, c.category as HabitCategory, c.start_day, end < today ? end : today, o)

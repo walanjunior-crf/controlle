@@ -430,3 +430,271 @@
 .today-ch-text .muted {
   font-size: 13px;
 }
+
+/* ---------- página do desafio (parte 3) ---------- */
+.soc-ch-title h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.soc-ch-open {
+  margin-left: auto;
+  font-size: 26px;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 0 4px;
+}
+.soc-ch-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.soc-ch-hero .soc-ch-title {
+  flex: 1;
+  min-width: 0;
+}
+.soc-ch-hero p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.soc-ch-status {
+  font-weight: 800;
+  color: var(--text);
+}
+.soc-ch-status a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.soc-ch-join {
+  flex-basis: 100%;
+}
+.soc-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.soc-toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+}
+.soc-board-card {
+  padding: 14px 18px;
+}
+.soc-board-card .soc-board {
+  margin-top: 0;
+}
+.soc-board-foot {
+  margin: 12px 0 0;
+}
+.soc-rank {
+  width: 16px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-2);
+  text-align: center;
+}
+
+/* check-ins */
+.soc-checkin-cta {
+  margin-bottom: 14px;
+}
+.soc-done-today {
+  margin: 0 0 14px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.soc-checkins {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.soc-checkin {
+  padding: 14px 16px;
+}
+.soc-checkin-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.soc-checkin-who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.soc-checkin-photo {
+  display: block;
+  width: 100%;
+  max-height: 460px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-top: 12px;
+  background: color-mix(in srgb, var(--text-2) 10%, transparent);
+}
+.soc-checkin-caption {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+.soc-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.soc-react {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 16px;
+  background: color-mix(in srgb, var(--text-2) 8%, transparent);
+}
+.soc-react .num {
+  font-size: 13px;
+  font-weight: 800;
+}
+.soc-react.is-on {
+  background: color-mix(in srgb, var(--amber) 24%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--amber) 60%, transparent);
+}
+.soc-comments-btn {
+  margin-left: auto;
+}
+.soc-comments {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.soc-comment {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.soc-comment-form,
+.soc-chat-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.soc-comment-form .input,
+.soc-chat-form .input {
+  flex: 1;
+  min-width: 0;
+}
+.soc-photo-pick {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 160px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  border: 2px dashed color-mix(in srgb, var(--primary) 40%, transparent);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--primary);
+  overflow: hidden;
+}
+.soc-photo-pick.has-photo {
+  border: 0;
+  padding: 0;
+}
+.soc-photo-pick img {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+}
+.soc-caption {
+  resize: none;
+  min-height: 64px;
+}
+
+/* chat */
+.soc-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: calc(76px + var(--safe-bottom, 0px));
+}
+.soc-msgs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.soc-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.soc-msg.is-first {
+  margin-top: 8px;
+}
+.soc-msg.is-mine {
+  justify-content: flex-end;
+}
+.soc-msg-face {
+  flex: none;
+  width: 28px;
+}
+.soc-bubble {
+  max-width: 78%;
+  padding: 8px 12px 6px;
+  border-radius: 18px 18px 18px 6px;
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+.soc-msg.is-mine .soc-bubble {
+  border-radius: 18px 18px 6px 18px;
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.soc-msg-name {
+  font-size: 12px;
+  color: var(--primary);
+}
+.soc-msg-text {
+  font-size: 15px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.soc-msg-time {
+  align-self: flex-end;
+  font-size: 11px;
+  opacity: 0.65;
+}
+.soc-chat-form {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px calc(16px + var(--safe-right, 0px)) calc(10px + var(--safe-bottom, 0px)) calc(16px + var(--safe-left, 0px));
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  z-index: 15;
+}

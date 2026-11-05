@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { SegmentedControl } from '../../components/controls'
+import { Link } from 'react-router-dom'
 import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { addDays, CATEGORIES, categoryInfo, daysBetween, formatDayLong, type HabitCategory } from '../../domain'
 import { useToday } from '../../hooks/useToday'
 import {
-  challengeEnd, challengeState, cheer, createChallenge, inviteLink, joinChallenge, leaveChallenge, leaveGroup, loadGroup, postActivity,
+  challengeState, cheer, createChallenge, inviteLink, joinChallenge, leaveChallenge, leaveGroup, loadGroup, postActivity,
   type GroupDetail, type Person,
 } from '../../platform/cloud/social'
 import { refreshSocial } from './usePublisher'
@@ -149,10 +151,10 @@ export function GroupPage() {
         open={newCh}
         onClose={() => setNewCh(false)}
         today={today}
-        onCreate={async (cat, days, start) => {
+        onCreate={async (cat, days, start, mode, photo) => {
           const title = `${days} dias de ${categoryInfo(cat).label}`
           await act(async () => {
-            await createChallenge(group.id, cat, title, start, days)
+            await createChallenge(group.id, cat, title, start, days, mode, photo)
             await postActivity(group.id, 'challenge_new', `criou o desafio “${title}”`)
             refreshSocial()
           }, 'Desafio criado! Você já está dentro.')
@@ -187,7 +189,6 @@ interface CardProps {
 function ChallengeCard({ x, me, today, people, onJoin, onLeave }: CardProps) {
   const { c, members } = x
   const state = challengeState(c, today)
-  const end = challengeEnd(c)
   const info = categoryInfo(c.category as HabitCategory)
   const dayN = state === 'running' ? daysBetween(c.start_day, today).length : 0
   const inIt = members.some((m) => m.user_id === me)
@@ -200,11 +201,16 @@ function ChallengeCard({ x, me, today, people, onJoin, onLeave }: CardProps) {
           {info.icon}
         </span>
         <div className="soc-ch-title">
-          <h3>{c.title}</h3>
+          <h3>
+            <Link to={`/juntos/d/${c.id}`}>{c.title}</Link>
+          </h3>
           <p className="muted">
-            {status} · vale qualquer hábito de {info.label}
+            {status} · {c.mode === 'checkin' ? `📸 check-in${c.photo_required ? ' com foto' : ''}` : `vale qualquer hábito de ${info.label}`}
           </p>
         </div>
+        <Link to={`/juntos/d/${c.id}`} className="soc-ch-open" aria-label={`Abrir ${c.title}`}>
+          ›
+        </Link>
       </header>
       {ranked.length > 0 && (
         <ul className="soc-board">
@@ -232,7 +238,9 @@ function ChallengeCard({ x, me, today, people, onJoin, onLeave }: CardProps) {
         <div className="soc-ch-foot">
           {inIt ? (
             <>
-              <span className="muted soc-small">Seus hábitos de {info.label} contam sozinhos. Até {formatDayLong(end).toLowerCase()}.</span>
+              <span className="muted soc-small">
+                {c.mode === 'checkin' ? <Link to={`/juntos/d/${c.id}`}>Fazer check-in e ver o chat</Link> : <>Seus hábitos de {info.label} contam sozinhos. <Link to={`/juntos/d/${c.id}?aba=chat`}>Chat</Link></>}
+              </span>
               {onLeave && (
                 <button type="button" className="link-btn soc-small" onClick={onLeave}>
                   Sair
@@ -284,8 +292,10 @@ function InviteSheet({ open, onClose, code, name }: { open: boolean; onClose: ()
   )
 }
 
-function NewChallengeSheet({ open, onClose, today, onCreate }: { open: boolean; onClose: () => void; today: string; onCreate: (cat: HabitCategory, days: number, start: string) => Promise<void> }) {
+function NewChallengeSheet({ open, onClose, today, onCreate }: { open: boolean; onClose: () => void; today: string; onCreate: (cat: HabitCategory, days: number, start: string, mode: 'auto' | 'checkin', photo: boolean) => Promise<void> }) {
   const [cat, setCat] = useState<HabitCategory>('agua')
+  const [mode, setMode] = useState<'auto' | 'checkin'>('auto')
+  const [photo, setPhoto] = useState(true)
   const [days, setDays] = useState(7)
   const [start, setStart] = useState<'hoje' | 'amanha'>('hoje')
   const [busy, setBusy] = useState(false)
@@ -303,7 +313,7 @@ function NewChallengeSheet({ open, onClose, today, onCreate }: { open: boolean; 
           onClick={async () => {
             setBusy(true)
             try {
-              await onCreate(cat, days, start === 'hoje' ? today : addDays(today, 1))
+              await onCreate(cat, days, start === 'hoje' ? today : addDays(today, 1), mode, photo)
             } finally {
               setBusy(false)
             }
@@ -322,7 +332,29 @@ function NewChallengeSheet({ open, onClose, today, onCreate }: { open: boolean; 
             </button>
           ))}
         </div>
-        <p className="field-hint">Conta o dia de quem fizer um check em qualquer hábito desse tema.</p>
+      </div>
+      <div className="field">
+        <span className="field-label">Como conta</span>
+        <SegmentedControl
+          ariaLabel="Como o dia conta"
+          value={mode}
+          onChange={setMode}
+          options={[
+            { value: 'auto', label: 'Automático' },
+            { value: 'checkin', label: 'Check-in' },
+          ]}
+        />
+        <p className="field-hint">
+          {mode === 'auto'
+            ? 'Conta o dia de quem fizer um check em qualquer hábito desse tema. Ninguém precisa postar nada.'
+            : 'Cada pessoa posta o check-in do dia, com legenda, e o grupo reage e comenta.'}
+        </p>
+        {mode === 'checkin' && (
+          <label className="soc-toggle">
+            <input type="checkbox" checked={photo} onChange={(e) => setPhoto(e.target.checked)} />
+            <span>Foto obrigatória como prova</span>
+          </label>
+        )}
       </div>
       <div className="field">
         <span className="field-label">Duração</span>

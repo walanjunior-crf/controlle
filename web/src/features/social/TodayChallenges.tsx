@@ -19,19 +19,19 @@ function Strip({ snapshots, restDays, today, o }: { snapshots: TrackerSnapshot[]
   if (!running.length) return null
   return (
     <section className="today-ch" aria-label="Seus desafios">
-      {running.map(({ c }) => {
+      {running.map(({ c, done }) => {
         const end = challengeEnd(c)
-        const days = daysMetInCategory(snapshots, restDays, c.category as HabitCategory, c.start_day, end < today ? end : today, o)
+        const days = c.mode === 'checkin' ? done : daysMetInCategory(snapshots, restDays, c.category as HabitCategory, c.start_day, end < today ? end : today, o)
         const did = days.includes(today)
         return (
-          <Link key={c.id} to={`/juntos/g/${c.group_id}`} className="card">
+          <Link key={c.id} to={`/juntos/d/${c.id}`} className="card">
             <span className="today-ch-icon" aria-hidden="true">
               {categoryInfo(c.category as HabitCategory).icon}
             </span>
             <span className="today-ch-text">
               <strong>{c.title}</strong>
               <span className="muted num">
-                {days.length}/{c.days} · {did ? 'hoje ✓' : 'falta hoje'}
+                {days.length}/{c.days} · {did ? 'hoje ✓' : c.mode === 'checkin' ? 'falta o check-in' : 'falta hoje'}
               </span>
             </span>
           </Link>
