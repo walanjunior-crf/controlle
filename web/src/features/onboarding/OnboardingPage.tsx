@@ -10,12 +10,12 @@ import { CLogo } from '../../components/CLogo'
 import { Stepper } from '../../components/controls'
 import { IconCamera } from '../../components/icons'
 import { templateToDraft } from '../../hooks/templateDraft'
-import { AVATARS } from '../profile/avatars'
-import { Avatar, PresetSvg } from '../profile/Avatar'
+import { Avatar, IconSvg } from '../profile/Avatar'
+import { ICONS } from '../profile/icons'
 import { usePhotoFlow } from '../profile/PhotoCropSheet'
 
-/** avatares oferecidos no primeiro acesso (o resto fica no perfil) */
-const ONB_AVATARS = AVATARS.filter((a) => ['raposa', 'coruja', 'gato', 'urso', 'sapo', 'coelho', 'panda'].includes(a.id))
+/** no primeiro acesso: os ícones simples (o avatar montado fica para o Perfil) */
+const ONB_AVATARS = ICONS
 
 interface Choice {
   target: number
@@ -132,7 +132,7 @@ export function OnboardingPage() {
                 <IconCamera size={22} />
               </button>
               {ONB_AVATARS.map((a) => {
-                const on = avatar.kind === 'preset' && avatar.id === a.id
+                const on = avatar.kind === 'icon' && avatar.id === a.id
                 return (
                   <button
                     key={a.id}
@@ -140,10 +140,10 @@ export function OnboardingPage() {
                     className={`avatar-option${on ? ' is-on' : ''}`}
                     aria-pressed={on}
                     aria-label={a.label}
-                    onClick={() => setAvatar(on ? { kind: 'initials' } : { kind: 'preset', id: a.id })}
+                    onClick={() => setAvatar(on ? { kind: 'initials' } : { kind: 'icon', id: a.id })}
                   >
                     <span className="avatar-option-art">
-                      <PresetSvg avatar={a} />
+                      <IconSvg icon={a} />
                     </span>
                   </button>
                 )

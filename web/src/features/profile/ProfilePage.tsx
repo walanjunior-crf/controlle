@@ -9,7 +9,8 @@ import { useToast } from '../../components/Toast'
 import { ICONS, safeBg } from './icons'
 import { ITEMS } from '../collection/items'
 import { AccountChip } from '../account/AccountCard'
-import { cloudBeta } from '../account/beta'
+import { hasStoredSession } from '../../platform/cloud/client'
+import { handleTaken } from '../../platform/cloud/social'
 import { ACHIEVEMENTS } from '../../domain'
 import { BGS, DEFAULT_AVATAR } from './avatarParts'
 import { Avatar, IconSvg, useProfileLoaded } from './Avatar'
@@ -32,6 +33,7 @@ export function ProfilePage() {
   const [handle, setHandle] = useState<string | null>(null)
   const [bio, setBio] = useState<string | null>(null)
   const [handleTouched, setHandleTouched] = useState(false)
+  const [takenErr, setTakenErr] = useState<string | null>(null)
 
   // rascunhos: null = mostra o valor salvo
   const save = async (patch: Patch, undo?: Patch) => {
@@ -61,7 +63,7 @@ export function ProfilePage() {
   const draft: Profile = { ...profile, displayName: name ?? profile.displayName }
   const nameValue = name ?? profile.displayName
   const handleValue = handle ?? profile.handle
-  const handleErr = handleTouched ? handleError(handleValue) : null
+  const handleErr = handleTouched ? (handleError(handleValue) ?? takenErr) : null
   const bioValue = bio ?? profile.bio
   const choice = profile.avatar
 
@@ -85,7 +87,7 @@ export function ProfilePage() {
         </div>
         <p className="profile-hero-name">{draft.displayName.trim() || 'Sem nome'}</p>
         {profile.handle && <p className="profile-hero-handle">@{profile.handle}</p>}
-        {cloudBeta() && <AccountChip />}
+        <AccountChip />
       </section>
 
       {rewards.ready && (
@@ -101,16 +103,14 @@ export function ProfilePage() {
             </span>
             <span className="col-entry-go" aria-hidden="true">›</span>
           </Link>
-          {cloudBeta() && (
-            <Link to="/juntos" className="card col-entry">
-              <span className="col-entry-icon" aria-hidden="true">🤝</span>
-              <span className="col-entry-text">
-                <strong>Amigos e grupos</strong>
-                <span className="muted">Desafios com a turma</span>
-              </span>
-              <span className="col-entry-go" aria-hidden="true">›</span>
-            </Link>
-          )}
+          <Link to="/juntos" className="card col-entry">
+            <span className="col-entry-icon" aria-hidden="true">🤝</span>
+            <span className="col-entry-text">
+              <strong>Amigos e grupos</strong>
+              <span className="muted">Desafios com a turma</span>
+            </span>
+            <span className="col-entry-go" aria-hidden="true">›</span>
+          </Link>
           <Link to="/conquistas" className="card col-entry">
             <span className="col-entry-icon" aria-hidden="true">🏆</span>
             <span className="col-entry-text">
@@ -260,10 +260,19 @@ export function ProfilePage() {
                 value={handleValue}
                 aria-invalid={handleErr ? true : undefined}
                 aria-describedby={ids.handleHint}
-                onChange={(e) => setHandle(normalizeHandle(e.target.value))}
-                onBlur={() => {
+                onChange={(e) => {
+                  setHandle(normalizeHandle(e.target.value))
+                  setTakenErr(null)
+                }}
+                onBlur={async () => {
                   setHandleTouched(true)
-                  if (handleError(handleValue) === null && handleValue !== profile.handle) void save({ handle: handleValue })
+                  if (handleError(handleValue) !== null || handleValue === profile.handle) return
+                  // com conta, confere antes se ninguém usa esse apelido
+                  if (hasStoredSession() && (await handleTaken(handleValue).catch(() => false))) {
+                    setTakenErr(`@${handleValue} já é de outra pessoa. Tente outro.`)
+                    return
+                  }
+                  void save({ handle: handleValue })
                 }}
               />
             </div>

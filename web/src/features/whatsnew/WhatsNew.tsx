@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Sheet } from '../../components/Sheet'
 import { APP_VERSION } from '../../version'
-import { cloudBeta } from '../account/beta'
 import { inviteSeen } from '../feedback/feedback'
 import { unseenNotes, type ReleaseNote } from './notes'
 
@@ -25,15 +24,31 @@ export function markSeen() {
   }
 }
 
+// Outras telas de boas-vindas (como o tutorial das notificações) esperam as novidades fecharem.
+let finished = false
+const waiting = new Set<() => void>()
+function finish() {
+  finished = true
+  waiting.forEach((f) => f())
+  waiting.clear()
+}
+/** Chama `cb` quando as novidades não estão (mais) na tela. */
+export function afterWhatsNew(cb: () => void): () => void {
+  if (finished) cb()
+  else waiting.add(cb)
+  return () => void waiting.delete(cb)
+}
+
 /** Resumo das novidades, uma vez por atualização (depois do convite de sugestões, se houver). */
 export function WhatsNew() {
   const [notes, setNotes] = useState<ReleaseNote[]>([])
   useEffect(() => {
     if (!inviteSeen()) return // o convite de sugestões vem primeiro; as novidades ficam para a próxima abertura
     const seen = lastSeen()
-    const list = unseenNotes(seen, APP_VERSION, cloudBeta())
+    const list = unseenNotes(seen, APP_VERSION)
     if (!list.length) {
       markSeen()
+      finish()
       return
     }
     const t = window.setTimeout(() => setNotes(list), 900)
@@ -43,6 +58,7 @@ export function WhatsNew() {
   const close = () => {
     markSeen()
     setNotes([])
+    finish()
   }
   const [first] = notes
   return (

@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useToast } from '../../components/Toast'
 import { useSession } from '../../platform/cloud/client'
 import { groupPreview, joinGroup, postActivity } from '../../platform/cloud/social'
 import { LoginSheet } from '../account/LoginSheet'
-import { enableCloudBeta } from '../account/beta'
 import { PageHeader, useCloudData } from './common'
 
 /** Abre pelo link de convite: mostra o grupo e entra com um toque. */
@@ -15,9 +14,6 @@ export function JoinPage() {
   const toast = useToast()
   const [login, setLogin] = useState(false)
   const [busy, setBusy] = useState(false)
-  useEffect(() => {
-    enableCloudBeta()
-  }, [])
 
   return (
     <div className="page soc-page">

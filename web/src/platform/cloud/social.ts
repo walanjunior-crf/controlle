@@ -125,6 +125,17 @@ export async function searchPeople(q: string): Promise<Person[]> {
   return rows
 }
 
+/** O apelido já é de outra pessoa? (sem conta, não dá para saber: responde false) */
+export async function handleTaken(handle: string): Promise<boolean> {
+  if (!handle) return false
+  const c = await cloud()
+  const { data } = await c.auth.getSession()
+  const uid = data.session?.user.id
+  if (!uid) return false
+  const rows = check<{ id: string }[]>(await c.from('profiles').select('id').eq('handle', handle).neq('id', uid).limit(1))
+  return rows.length > 0
+}
+
 export async function requestFriend(id: string) {
   const c = await cloud()
   check(await c.from('friendships').insert({ addressee: id }))

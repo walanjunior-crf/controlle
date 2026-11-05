@@ -18,9 +18,3 @@ describe('novidades', () => {
   })
 })
 
-describe('novidades do teste da nuvem', () => {
-  it('somem para quem não tem o teste ligado', () => {
-    expect(unseenNotes('0.5.2', '0.6.0', false)).toEqual([])
-    expect(unseenNotes('0.5.2', '0.6.0', true).map((r) => r.version)).toEqual(['0.6.0'])
-  })
-})

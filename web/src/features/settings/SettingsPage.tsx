@@ -21,8 +21,7 @@ import { useProfile } from '../profile/Avatar'
 import { APP_VERSION } from '../../version'
 import { FeedbackSheet } from '../feedback/FeedbackSheet'
 import { saveProfile } from '../../db/db'
-import { checkBetaCode, checkUnlockCode } from './unlockCode'
-import { enableCloudBeta } from '../account/beta'
+import { checkUnlockCode } from './unlockCode'
 export { APP_VERSION }
 
 function Group({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) {
@@ -246,10 +245,6 @@ export function SettingsPage() {
                   await saveProfile({ unlockAll: true })
                   setCode('')
                   toast.show('🔓 Tudo liberado! Veja em Perfil → Montar avatar.')
-                } else if (await checkBetaCode(code)) {
-                  enableCloudBeta()
-                  setCode('')
-                  toast.show('☁️ Conta liberada para teste. Veja em Perfil.')
                 } else {
                   toast.show('Código não reconhecido.')
                 }

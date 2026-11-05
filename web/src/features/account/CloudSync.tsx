@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Sheet } from '../../components/Sheet'
+import { saveProfile } from '../../db/db'
 import { useToast } from '../../components/Toast'
 import { useRewards } from '../../hooks/useRewards'
 import { cloud, useSession } from '../../platform/cloud/client'
@@ -77,6 +78,8 @@ function usePublishProfile() {
               warned.current = row.handle
               toast.show(`O apelido @${row.handle} já é de outra pessoa. Escolha outro no Perfil para os amigos te acharem.`)
             }
+            // tira daqui também: duas pessoas não podem aparecer com o mesmo apelido
+            await saveProfile({ handle: '' })
             await c.from('profiles').upsert({ ...row, handle: null, updated_at: new Date().toISOString() })
           } else throw error
         }

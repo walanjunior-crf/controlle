@@ -92,3 +92,77 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* ---------- Tutorial das notificações (v0.6.1) ---------- */
+.nt-hero {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin: 2px auto 12px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+.nt-bell {
+  font-size: 38px;
+  line-height: 1;
+  animation: nt-ring 2.4s var(--ease) 0.4s 2;
+  transform-origin: 50% 10%;
+}
+@keyframes nt-ring {
+  0%, 60%, 100% { transform: rotate(0); }
+  10%, 30% { transform: rotate(14deg); }
+  20%, 40% { transform: rotate(-14deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nt-bell { animation: none; }
+}
+.nt-lead {
+  margin: 0 0 16px;
+  text-align: center;
+  line-height: 1.45;
+}
+.nt-steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nt-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  line-height: 1.4;
+}
+.nt-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+  background: var(--primary);
+}
+.nt-step.is-done .nt-num {
+  background: color-mix(in srgb, var(--primary) 55%, transparent);
+}
+.nt-step.is-done .nt-text {
+  color: var(--text-2);
+}
+.nt-share {
+  vertical-align: -3px;
+  color: #2f7bf5;
+}
+.nt-foot {
+  margin: 14px 0 0;
+  font-size: 13px;
+  text-align: center;
+}

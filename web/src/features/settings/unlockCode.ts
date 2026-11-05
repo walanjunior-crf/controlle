@@ -8,7 +8,6 @@ export const normalizeCode = (s: string) =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '')
 
 /** código de teste da conta (v0.6) */
-const BETA_HASH = 'dd26c14597fcbcdd89627806bfa199b56a6a13918c9d9e6d5ffe415caa01fc44'
 
 async function sha(input: string): Promise<string | null> {
   const code = normalizeCode(input)
@@ -21,6 +20,3 @@ export async function checkUnlockCode(input: string): Promise<boolean> {
   return (await sha(input)) === HASH
 }
 
-export async function checkBetaCode(input: string): Promise<boolean> {
-  return (await sha(input)) === BETA_HASH
-}
