@@ -27,3 +27,4 @@ jobs:
         run: |
           gh api -X POST "repos/${{ github.repository }}/pages/deployments/$DEPLOYMENT/cancel" && echo "cancelada" || echo "nada para cancelar"
           gh api "repos/${{ github.repository }}/pages/deployments/$DEPLOYMENT" || true
+# tentativa 2: 20:20
