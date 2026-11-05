@@ -1,0 +1,29 @@
+# Cancela uma publicação do GitHub Pages que ficou presa em "em andamento"
+# (acontece quando o próprio GitHub trava). Roda sozinho quando este arquivo muda,
+# ou à mão em Actions → "Destravar GitHub Pages" → Run workflow.
+name: Destravar GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment:
+        description: "Código (SHA) da publicação presa"
+        required: true
+  push:
+    branches: [main]
+    paths: [.github/workflows/destravar-pages.yml]
+
+permissions:
+  pages: write
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancelar publicação presa
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYMENT: ${{ inputs.deployment || 'aeb386850b71576b0dd9a6638ca49d5ec451bf76' }}
+        run: |
+          gh api -X POST "repos/${{ github.repository }}/pages/deployments/$DEPLOYMENT/cancel" && echo "cancelada" || echo "nada para cancelar"
+          gh api "repos/${{ github.repository }}/pages/deployments/$DEPLOYMENT" || true
