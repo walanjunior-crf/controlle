@@ -1,9 +1,10 @@
-import type { AvatarChoice, DayKey, HabitCategory } from '../../domain/types'
+import { scoreBoard, type ScoreRow, type Scoring } from '../../domain/challengeScore'
+import type { AvatarChoice, DayKey } from '../../domain/types'
 import { cloud } from './client'
 
 /**
- * Amigos, grupos, desafios e mural (supabase/02-amigos-grupos-desafios.sql).
- * Cada função faz poucas consultas simples; as regras de privacidade ficam no banco.
+ * Amigos e desafios (supabase/02, 03 e 05). Cada função faz poucas consultas simples;
+ * as regras de privacidade ficam no banco: só quem participa vê o desafio.
  */
 
 export interface Person {
@@ -22,42 +23,23 @@ export interface Friendship {
   status: 'pending' | 'accepted'
 }
 
-export interface Group {
-  id: string
-  name: string
-  emoji: string
-  owner: string
-  invite_code: string
-}
-
 export interface Challenge {
   id: string
-  group_id: string
-  category: HabitCategory
   title: string
+  emoji: string
   start_day: DayKey
   days: number
+  scoring: Scoring
+  photo_required: boolean
+  invite_code: string
   created_by: string
-  /** 'auto': os hábitos do tema contam; 'checkin': post do dia (foto opcional ou obrigatória) */
-  mode?: 'auto' | 'checkin'
-  photo_required?: boolean
+  created_at: string
 }
 
 export interface ChallengeMember {
   challenge_id: string
   user_id: string
   done_days: DayKey[]
-}
-
-export type ActivityKind = 'join' | 'challenge_new' | 'challenge_join' | 'challenge_done' | 'perfect_day' | 'item'
-
-export interface Activity {
-  id: number
-  group_id: string
-  user_id: string
-  kind: ActivityKind
-  text: string
-  created_at: string
 }
 
 const PERSON = 'id, handle, display_name, avatar, level, items'
@@ -149,153 +131,10 @@ export async function removeFriend(f: Friendship) {
   check(await c.from('friendships').delete().eq('id', f.id))
 }
 
-// ---------------------------------------------------------------------------------
-// Grupos
-
-export interface GroupSummary extends Group {
-  members: number
-  challenges: Challenge[]
-}
-
-export async function loadGroups(): Promise<GroupSummary[]> {
-  const uid = await me()
+export async function friendCount(): Promise<number> {
   const c = await cloud()
-  const mine = check<{ group_id: string }[]>(await c.from('group_members').select('group_id').eq('user_id', uid))
-  const ids = mine.map((m) => m.group_id)
-  if (!ids.length) return []
-  const [groups, members, challenges] = await Promise.all([
-    c.from('groups').select('id, name, emoji, owner, invite_code').in('id', ids).then(check<Group[]>),
-    c.from('group_members').select('group_id').in('group_id', ids).then(check<{ group_id: string }[]>),
-    c.from('challenges').select('*').in('group_id', ids).then(check<Challenge[]>),
-  ])
-  return groups
-    .map((g) => ({ ...g, members: members.filter((m) => m.group_id === g.id).length, challenges: challenges.filter((x) => x.group_id === g.id) }))
-    .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
-}
-
-export async function createGroup(name: string, emoji: string): Promise<Group> {
-  const c = await cloud()
-  return check<Group>(await c.from('groups').insert({ name: name.trim().slice(0, 40), emoji }).select('id, name, emoji, owner, invite_code').single())
-}
-
-export async function groupPreview(code: string): Promise<{ id: string; name: string; emoji: string; members: number } | null> {
-  const c = await cloud()
-  const rows = check<Array<{ id: string; name: string; emoji: string; members: number }>>(await c.rpc('group_preview', { code }))
-  return rows[0] ?? null
-}
-
-export async function joinGroup(code: string): Promise<string> {
-  const c = await cloud()
-  return check<string>(await c.rpc('join_group', { code }))
-}
-
-export async function leaveGroup(groupId: string) {
-  const uid = await me()
-  const c = await cloud()
-  check(await c.from('group_members').delete().eq('group_id', groupId).eq('user_id', uid))
-}
-
-export interface GroupDetail {
-  me: string
-  group: Group
-  members: Person[]
-  challenges: Array<{ c: Challenge; members: ChallengeMember[] }>
-  activity: Array<{ a: Activity; who: Person; cheers: number; cheered: boolean }>
-}
-
-export async function loadGroup(id: string): Promise<GroupDetail | null> {
-  const uid = await me()
-  const c = await cloud()
-  const group = check<Group | null>(await c.from('groups').select('id, name, emoji, owner, invite_code').eq('id', id).maybeSingle())
-  if (!group) return null
-  const [mem, chs, acts] = await Promise.all([
-    c.from('group_members').select('user_id').eq('group_id', id).then(check<{ user_id: string }[]>),
-    c.from('challenges').select('*').eq('group_id', id).order('start_day', { ascending: false }).then(check<Challenge[]>),
-    c.from('group_activity').select('*').eq('group_id', id).order('created_at', { ascending: false }).limit(40).then(check<Activity[]>),
-  ])
-  const chIds = chs.map((x) => x.id)
-  const actIds = acts.map((a) => a.id)
-  const [cms, cheers] = await Promise.all([
-    chIds.length ? c.from('challenge_members').select('challenge_id, user_id, done_days').in('challenge_id', chIds).then(check<ChallengeMember[]>) : Promise.resolve([] as ChallengeMember[]),
-    actIds.length ? c.from('activity_cheers').select('activity_id, user_id').in('activity_id', actIds).then(check<{ activity_id: number; user_id: string }[]>) : Promise.resolve([]),
-  ])
-  const ps = await people([...mem.map((m) => m.user_id), ...acts.map((a) => a.user_id)])
-  const person = (u: string) => ps.get(u) ?? unknownPerson(u)
-  return {
-    me: uid,
-    group,
-    members: mem.map((m) => person(m.user_id)),
-    challenges: chs.map((x) => ({ c: x, members: cms.filter((m) => m.challenge_id === x.id) })),
-    activity: acts.map((a) => {
-      const mine = cheers.filter((h) => h.activity_id === a.id)
-      return { a, who: person(a.user_id), cheers: mine.length, cheered: mine.some((h) => h.user_id === uid) }
-    }),
-  }
-}
-
-// ---------------------------------------------------------------------------------
-// Desafios e mural
-
-export async function createChallenge(
-  groupId: string,
-  category: HabitCategory,
-  title: string,
-  startDay: DayKey,
-  days: number,
-  mode: 'auto' | 'checkin' = 'auto',
-  photoRequired = false,
-): Promise<Challenge> {
-  const c = await cloud()
-  const ch = check<Challenge>(
-    await c.from('challenges').insert({ group_id: groupId, category, title, start_day: startDay, days, mode, photo_required: mode === 'checkin' && photoRequired }).select('*').single(),
-  )
-  await joinChallenge(ch.id)
-  return ch
-}
-
-export async function joinChallenge(id: string) {
-  const c = await cloud()
-  check(await c.from('challenge_members').upsert({ challenge_id: id }, { onConflict: 'challenge_id,user_id', ignoreDuplicates: true }))
-}
-
-export async function leaveChallenge(id: string) {
-  const uid = await me()
-  const c = await cloud()
-  check(await c.from('challenge_members').delete().eq('challenge_id', id).eq('user_id', uid))
-}
-
-export async function postActivity(groupId: string, kind: ActivityKind, text: string) {
-  const c = await cloud()
-  check(await c.from('group_activity').insert({ group_id: groupId, kind, text: text.slice(0, 140) }))
-}
-
-export async function cheer(activityId: number, on: boolean) {
-  const uid = await me()
-  const c = await cloud()
-  if (on) check(await c.from('activity_cheers').insert({ activity_id: activityId }))
-  else check(await c.from('activity_cheers').delete().eq('activity_id', activityId).eq('user_id', uid))
-}
-
-/** desafios em que estou, com os dias que já enviei (para o publicador) */
-export async function myChallenges(): Promise<Array<{ c: Challenge; done: DayKey[] }>> {
-  const uid = await me()
-  const c = await cloud()
-  const mine = check<ChallengeMember[]>(await c.from('challenge_members').select('challenge_id, user_id, done_days').eq('user_id', uid))
-  if (!mine.length) return []
-  const chs = check<Challenge[]>(await c.from('challenges').select('*').in('id', mine.map((m) => m.challenge_id)))
-  return chs.map((x) => ({ c: x, done: mine.find((m) => m.challenge_id === x.id)?.done_days ?? [] }))
-}
-
-export async function setMyDays(challengeId: string, days: DayKey[]) {
-  const uid = await me()
-  const c = await cloud()
-  check(await c.from('challenge_members').update({ done_days: days, updated_at: new Date().toISOString() }).eq('challenge_id', challengeId).eq('user_id', uid))
-}
-
-export async function myGroupIds(): Promise<string[]> {
-  const uid = await me()
-  const c = await cloud()
-  return check<{ group_id: string }[]>(await c.from('group_members').select('group_id').eq('user_id', uid)).map((m) => m.group_id)
+  const { count } = await c.from('friendships').select('id', { count: 'exact', head: true }).eq('status', 'accepted')
+  return count ?? 0
 }
 
 // ---------------------------------------------------------------------------------
@@ -311,11 +150,97 @@ export type ChallengeState = 'soon' | 'running' | 'over'
 export const challengeState = (ch: Pick<Challenge, 'start_day' | 'days'>, today: DayKey): ChallengeState =>
   today < ch.start_day ? 'soon' : today > challengeEnd(ch) ? 'over' : 'running'
 
-/** link de convite (abre o app direto na tela de entrar no grupo) */
-export const inviteLink = (code: string) => `${location.origin}${location.pathname}#/juntos/entrar/${code}`
+/** link de convite (abre o app direto na tela de entrar no desafio) */
+export const inviteLink = (code: string) => `${location.origin}${location.pathname}#/desafios/entrar/${code}`
 
 // ---------------------------------------------------------------------------------
-// Página do desafio: check-ins (com foto), reações, comentários e chat
+// Desafios
+
+export interface NewChallenge {
+  title: string
+  emoji: string
+  startDay: DayKey
+  days: number
+  scoring: Scoring
+  photoRequired: boolean
+}
+
+export async function createChallenge(n: NewChallenge): Promise<Challenge> {
+  const c = await cloud()
+  return check<Challenge>(
+    await c
+      .from('challenges')
+      .insert({ title: n.title.trim().slice(0, 60), emoji: n.emoji, start_day: n.startDay, days: n.days, scoring: n.scoring, photo_required: n.photoRequired, mode: 'checkin' })
+      .select('*')
+      .single(),
+  )
+}
+
+export interface ChallengePreview {
+  id: string
+  title: string
+  emoji: string
+  start_day: DayKey
+  days: number
+  scoring: Scoring
+  photo_required: boolean
+  members: number
+  creator: string
+}
+
+export async function challengePreview(code: string): Promise<ChallengePreview | null> {
+  const c = await cloud()
+  const rows = check<ChallengePreview[]>(await c.rpc('challenge_preview', { code }))
+  return rows[0] ?? null
+}
+
+export async function joinChallenge(code: string): Promise<string> {
+  const c = await cloud()
+  return check<string>(await c.rpc('join_challenge', { code }))
+}
+
+export async function leaveChallenge(id: string) {
+  const uid = await me()
+  const c = await cloud()
+  check(await c.from('challenge_members').delete().eq('challenge_id', id).eq('user_id', uid))
+}
+
+export async function deleteChallenge(id: string) {
+  const c = await cloud()
+  check(await c.from('challenges').delete().eq('id', id))
+}
+
+/** Um desafio na lista: com o meu placar e o de todos (para a posição). */
+export interface ChallengeCard {
+  c: Challenge
+  members: number
+  board: ScoreRow[]
+  mine: ScoreRow | undefined
+}
+
+/** desafios em que estou, com placar */
+export async function myChallenges(today: DayKey): Promise<ChallengeCard[]> {
+  const uid = await me()
+  const c = await cloud()
+  const mine = check<{ challenge_id: string }[]>(await c.from('challenge_members').select('challenge_id').eq('user_id', uid))
+  const ids = mine.map((m) => m.challenge_id)
+  if (!ids.length) return []
+  const [chs, mems, ks] = await Promise.all([
+    c.from('challenges').select('*').in('id', ids).then(check<Challenge[]>),
+    c.from('challenge_members').select('challenge_id, user_id').in('challenge_id', ids).then(check<{ challenge_id: string; user_id: string }[]>),
+    c.from('checkins').select('challenge_id, user_id, day').in('challenge_id', ids).then(check<{ challenge_id: string; user_id: string; day: DayKey }[]>),
+  ])
+  return chs
+    .map((ch) => {
+      const who = mems.filter((m) => m.challenge_id === ch.id).map((m) => m.user_id)
+      const board = scoreBoard(who, ks.filter((k) => k.challenge_id === ch.id), ch.scoring, { start: ch.start_day, end: challengeEnd(ch) }, today)
+      return { c: ch, members: who.length, board, mine: board.find((r) => r.user_id === uid) }
+    })
+    .sort((a, b) => b.c.start_day.localeCompare(a.c.start_day))
+}
+
+// ---------------------------------------------------------------------------------
+// Página do desafio: mural de check-ins, ranking e chat
 
 export const REACTIONS = ['🔥', '💪', '👏', '😂', '❤️'] as const
 export type Reaction = (typeof REACTIONS)[number]
@@ -328,6 +253,8 @@ export interface Checkin {
   photo_path: string | null
   caption: string
   created_at: string
+  /** veio sozinho de um hábito marcado no Hoje */
+  auto: boolean
 }
 
 export interface CheckinView {
@@ -341,39 +268,39 @@ export interface CheckinView {
 export interface ChallengeDetail {
   me: string
   c: Challenge
-  group: Pick<Group, 'id' | 'name' | 'emoji'>
-  members: ChallengeMember[]
+  members: string[]
   people: Map<string, Person>
-  joined: boolean
+  board: ScoreRow[]
+  /** os mais recentes primeiro */
   checkins: CheckinView[]
 }
 
-export async function loadChallenge(id: string): Promise<ChallengeDetail | null> {
+const FEED = 80
+
+export async function loadChallenge(id: string, today: DayKey): Promise<ChallengeDetail | null> {
   const uid = await me()
   const c = await cloud()
   const ch = check<Challenge | null>(await c.from('challenges').select('*').eq('id', id).maybeSingle())
   if (!ch) return null
-  const [group, members, ks] = await Promise.all([
-    c.from('groups').select('id, name, emoji').eq('id', ch.group_id).single().then(check<Pick<Group, 'id' | 'name' | 'emoji'>>),
-    c.from('challenge_members').select('challenge_id, user_id, done_days').eq('challenge_id', id).then(check<ChallengeMember[]>),
-    ch.mode === 'checkin'
-      ? c.from('checkins').select('*').eq('challenge_id', id).order('created_at', { ascending: false }).limit(60).then(check<Checkin[]>)
-      : Promise.resolve([] as Checkin[]),
+  const [mems, all, ks] = await Promise.all([
+    c.from('challenge_members').select('user_id').eq('challenge_id', id).then(check<{ user_id: string }[]>),
+    c.from('checkins').select('user_id, day').eq('challenge_id', id).then(check<{ user_id: string; day: DayKey }[]>),
+    c.from('checkins').select('*').eq('challenge_id', id).order('created_at', { ascending: false }).limit(FEED).then(check<Checkin[]>),
   ])
+  const members = mems.map((m) => m.user_id)
   const ids = ks.map((k) => k.id)
   const [reacts, comms, urls] = await Promise.all([
     ids.length ? c.from('checkin_reactions').select('checkin_id, user_id, emoji').in('checkin_id', ids).then(check<{ checkin_id: string; user_id: string; emoji: string }[]>) : Promise.resolve([]),
     ids.length ? c.from('checkin_comments').select('checkin_id').in('checkin_id', ids).then(check<{ checkin_id: string }[]>) : Promise.resolve([]),
     signedPhotos(ks.map((k) => k.photo_path).filter((p): p is string => !!p)),
   ])
-  const people = await peopleOf([...members.map((m) => m.user_id), ...ks.map((k) => k.user_id)])
+  const ps = await people([...members, ...ks.map((k) => k.user_id)])
   return {
     me: uid,
     c: ch,
-    group,
     members,
-    people,
-    joined: members.some((m) => m.user_id === uid),
+    people: ps,
+    board: scoreBoard(members, all, ch.scoring, { start: ch.start_day, end: challengeEnd(ch) }, today),
     checkins: ks.map((k) => {
       const reactions: CheckinView['reactions'] = {}
       for (const r of reacts.filter((x) => x.checkin_id === k.id)) {
@@ -383,7 +310,7 @@ export async function loadChallenge(id: string): Promise<ChallengeDetail | null>
       }
       return {
         k,
-        who: people.get(k.user_id) ?? unknownPerson(k.user_id),
+        who: ps.get(k.user_id) ?? unknownPerson(k.user_id),
         photo: k.photo_path ? (urls.get(k.photo_path) ?? null) : null,
         reactions,
         comments: comms.filter((x) => x.checkin_id === k.id).length,
@@ -404,8 +331,16 @@ async function signedPhotos(paths: string[]): Promise<Map<string, string>> {
   return out
 }
 
-/** posta o check-in do dia (foto já reduzida) e marca o dia no placar */
-export async function postCheckin(ch: Challenge, day: DayKey, caption: string, photo: Blob | null): Promise<void> {
+/** guarda os dias com check-in (usado pelo lembrete das 20h) */
+async function syncMyDays(challengeId: string, uid: string) {
+  const c = await cloud()
+  const rows = check<{ day: DayKey }[]>(await c.from('checkins').select('day').eq('challenge_id', challengeId).eq('user_id', uid))
+  const days = [...new Set(rows.map((r) => r.day))].sort()
+  check(await c.from('challenge_members').update({ done_days: days, updated_at: new Date().toISOString() }).eq('challenge_id', challengeId).eq('user_id', uid))
+}
+
+/** posta um check-in (foto já reduzida); pode haver vários no mesmo dia */
+export async function postCheckin(ch: Pick<Challenge, 'id'>, day: DayKey, caption: string, photo: Blob | null): Promise<void> {
   const uid = await me()
   const c = await cloud()
   let photo_path: string | null = null
@@ -416,18 +351,28 @@ export async function postCheckin(ch: Challenge, day: DayKey, caption: string, p
     photo_path = path
   }
   check(await c.from('checkins').insert({ challenge_id: ch.id, day, caption: caption.trim().slice(0, 280), photo_path }))
-  const mine = check<ChallengeMember | null>(await c.from('challenge_members').select('challenge_id, user_id, done_days').eq('challenge_id', ch.id).eq('user_id', uid).maybeSingle())
-  const days = [...new Set([...(mine?.done_days ?? []), day])].sort()
-  await setMyDays(ch.id, days)
+  await syncMyDays(ch.id, uid)
+}
+
+/** check-in automático de um hábito ligado ao desafio (um por dia; repetir não faz nada) */
+export async function postAutoCheckin(challengeId: string, day: DayKey, caption: string): Promise<boolean> {
+  const uid = await me()
+  const c = await cloud()
+  const r = await c.from('checkins').insert({ challenge_id: challengeId, day, caption: caption.slice(0, 280), auto: true })
+  if (r.error) {
+    if (r.error.code === '23505') return false
+    throw Object.assign(new Error(r.error.message), { code: r.error.code })
+  }
+  await syncMyDays(challengeId, uid)
+  return true
 }
 
 export async function deleteCheckin(k: Checkin): Promise<void> {
+  const uid = await me()
   const c = await cloud()
   if (k.photo_path) await c.storage.from('checkins').remove([k.photo_path])
   check(await c.from('checkins').delete().eq('id', k.id))
-  const uid = await me()
-  const mine = check<ChallengeMember | null>(await c.from('challenge_members').select('challenge_id, user_id, done_days').eq('challenge_id', k.challenge_id).eq('user_id', uid).maybeSingle())
-  if (mine) await setMyDays(k.challenge_id, mine.done_days.filter((d) => d !== k.day))
+  await syncMyDays(k.challenge_id, uid)
 }
 
 export async function react(checkinId: string, emoji: Reaction, on: boolean) {

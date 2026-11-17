@@ -253,7 +253,7 @@ export function TodayPage() {
             {celebrating && <Confetti />}
           </section>
 
-          <TodayChallenges snapshots={snapshots} restDays={restDays} today={today} o={o} />
+          <TodayChallenges today={today} />
           <UpcomingEvents />
 
           <section className="tracker-grid" aria-label="Seus trackers">

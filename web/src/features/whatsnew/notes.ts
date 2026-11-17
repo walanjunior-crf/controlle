@@ -10,6 +10,17 @@ export interface ReleaseNote {
 
 export const RELEASES: ReleaseNote[] = [
   {
+    version: '0.7.0',
+    title: 'Desafios, do jeito da turma',
+    items: [
+      { icon: '🏁', text: 'Agora é só desafio, sem grupo: crie em uma tela, mande o link e quem entrar já participa. Fica na nova aba Desafios.' },
+      { icon: '📸', text: 'Faça quantos check-ins quiser, com foto. Quem cria escolhe a pontuação: 1 ponto por dia ativo ou 1 ponto por check-in.' },
+      { icon: '🏆', text: 'Ranking com sequência de cada um e pódio no fim do desafio.' },
+      { icon: '🔗', text: 'Ligue um hábito ao desafio e o check-in sai sozinho quando você cumpre no Hoje.' },
+      { icon: '👥', text: 'Seus amigos ficam no Perfil, embaixo do seu nome.' },
+    ],
+  },
+  {
     version: '0.6.1',
     title: 'Juntos: hábitos com os amigos',
     items: [

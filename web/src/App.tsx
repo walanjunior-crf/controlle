@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
-import { HashRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { IconAgenda, IconPeople, IconStats, IconToday } from './components/icons'
+import { HashRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { IconAgenda, IconStats, IconToday, IconTrophy } from './components/icons'
 import { Avatar, useProfile } from './features/profile/Avatar'
 import { ToastProvider } from './components/Toast'
 import { TrackerBuilderPage } from './features/builder/TrackerBuilderPage'
@@ -11,10 +11,10 @@ import { ProfilePage } from './features/profile/ProfilePage'
 import { AvatarEditorPage } from './features/profile/AvatarEditorPage'
 import { ConquistasPage } from './features/rewards/ConquistasPage'
 import { CollectionPage } from './features/collection/CollectionPage'
-import { SocialPage } from './features/social/SocialPage'
-import { GroupPage } from './features/social/GroupPage'
-import { JoinPage } from './features/social/JoinPage'
-import { ChallengePage } from './features/social/ChallengePage'
+import { ChallengesPage } from './features/challenges/ChallengesPage'
+import { ChallengePage } from './features/challenges/ChallengePage'
+import { JoinChallengePage } from './features/challenges/JoinChallengePage'
+import { FriendsPage } from './features/social/FriendsPage'
 import { useRewardToasts } from './features/rewards/useRewardToasts'
 import { FeedbackInvite } from './features/feedback/FeedbackInvite'
 import { WhatsNew } from './features/whatsnew/WhatsNew'
@@ -32,7 +32,7 @@ import { useUpdateAvailable } from './platform/update'
 const TABS = [
   { to: '/', label: 'Hoje', Icon: IconToday, end: true },
   { to: '/agenda', label: 'Agenda', Icon: IconAgenda, end: false, also: '/historico' },
-  { to: '/juntos', label: 'Juntos', Icon: IconPeople, end: false },
+  { to: '/desafios', label: 'Desafios', Icon: IconTrophy, end: false },
   { to: '/estatisticas', label: 'Estatísticas', Icon: IconStats, end: false },
 ]
 
@@ -100,9 +100,18 @@ function PendingInvite() {
       /* nada guardado */
     }
     // espera o onboarding terminar a própria navegação
-    if (code) window.setTimeout(() => navigate(`/juntos/entrar/${code}`), 400)
+    if (code) window.setTimeout(() => navigate(`/desafios/entrar/${code}`), 400)
   }, [navigate])
   return null
+}
+
+function LegacyChallenge() {
+  const { id } = useParams<{ id: string }>()
+  return <Navigate to={`/desafios/${id}`} replace />
+}
+function LegacyInvite() {
+  const { code } = useParams<{ code: string }>()
+  return <Navigate to={`/desafios/entrar/${code}`} replace />
 }
 
 function ScrollToTop() {
@@ -142,7 +151,7 @@ function Shell() {
   if (!settings) return <div className="boot" aria-busy="true" />
 
   // convite aberto antes do primeiro acesso: guarda e abre depois do onboarding
-  const invite = /#\/juntos\/entrar\/([a-z0-9]+)/i.exec(location.hash)?.[1]
+  const invite = /#\/(?:juntos|desafios)\/entrar\/([a-z0-9]+)/i.exec(location.hash)?.[1]
   if (!settings.onboarded && invite) {
     try {
       localStorage.setItem('controlle.invite', invite)
@@ -180,10 +189,15 @@ function Shell() {
         <Route path="/agenda/:id" element={<main className="app-main no-tabs"><EventEditorPage /></main>} />
         <Route path="/perfil" element={<WithTabs><ProfilePage /></WithTabs>} />
         <Route path="/perfil/avatar" element={<main className="app-main no-tabs"><AvatarEditorPage /></main>} />
-        <Route path="/juntos" element={<WithTabs><SocialPage /></WithTabs>} />
-        <Route path="/juntos/g/:id" element={<main className="app-main no-tabs"><GroupPage /></main>} />
-        <Route path="/juntos/d/:id" element={<main className="app-main no-tabs"><ChallengePage /></main>} />
-        <Route path="/juntos/entrar/:code" element={<main className="app-main no-tabs"><JoinPage /></main>} />
+        <Route path="/desafios" element={<WithTabs><ChallengesPage /></WithTabs>} />
+        <Route path="/desafios/:id" element={<main className="app-main no-tabs"><ChallengePage /></main>} />
+        <Route path="/desafios/entrar/:code" element={<main className="app-main no-tabs"><JoinChallengePage /></main>} />
+        <Route path="/amigos" element={<main className="app-main no-tabs"><FriendsPage /></main>} />
+        {/* endereços antigos (convites e notificações já enviados) */}
+        <Route path="/juntos" element={<Navigate to="/desafios" replace />} />
+        <Route path="/juntos/g/:id" element={<Navigate to="/desafios" replace />} />
+        <Route path="/juntos/d/:id" element={<LegacyChallenge />} />
+        <Route path="/juntos/entrar/:code" element={<LegacyInvite />} />
         <Route path="/colecao" element={<main className="app-main no-tabs"><CollectionPage /></main>} />
         <Route path="/conquistas" element={<main className="app-main no-tabs"><ConquistasPage /></main>} />
         <Route path="/historico" element={<WithTabs><HistoryPage /></WithTabs>} />

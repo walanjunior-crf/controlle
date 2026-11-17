@@ -1,0 +1,606 @@
+/* ---------- Desafios (v0.7): lista, criação, tela do desafio ---------- */
+
+/* lista */
+.ch-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ch-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ch-card:active {
+  background: color-mix(in srgb, var(--primary) 6%, var(--card));
+}
+.ch-emoji {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--primary-soft);
+  font-size: 26px;
+}
+.ch-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.ch-card-text strong {
+  font-size: 17px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ch-card-text .muted {
+  font-size: 14px;
+}
+.ch-card-score {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+}
+.ch-today {
+  flex: none;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--amber-text);
+  background: color-mix(in srgb, var(--amber) 16%, transparent);
+}
+.ch-today.is-done {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+.ch-join-link {
+  display: block;
+  margin: 16px auto 0;
+}
+.ch-old-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 8px 0 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.ch-empty h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 600;
+}
+.ch-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* criação */
+.ch-field {
+  border: 0;
+  margin: 0 0 16px;
+  padding: 0;
+  min-width: 0;
+}
+.ch-emojis {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.ch-emoji-pick {
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  font-size: 24px;
+  cursor: pointer;
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1), background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ch-emoji-pick.is-on {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.ch-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ch-chip {
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1), background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ch-chip.is-on {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font-weight: 600;
+}
+.ch-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.ch-custom .input {
+  width: 96px;
+}
+.ch-scoring {
+  display: grid;
+  gap: 8px;
+}
+.ch-score-opt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1), background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ch-score-opt strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+.ch-score-opt span {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.ch-score-opt.is-on {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--card));
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+.ch-photo {
+  margin-bottom: 0;
+}
+
+/* tela do desafio */
+.ch-page.has-cta {
+  padding-bottom: calc(96px + var(--safe-bottom, 0px));
+}
+.ch-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 16px;
+}
+.ch-hero-emoji {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--primary-soft);
+  font-size: 30px;
+}
+.ch-hero-text p {
+  margin: 0;
+}
+.ch-hero-status {
+  font-size: 18px;
+  font-weight: 600;
+}
+.ch-hero-text .muted {
+  font-size: 14px;
+  margin-top: 2px;
+}
+.ch-hero-me {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.ch-hero-me div {
+  text-align: center;
+}
+.ch-hero-me dt {
+  font-size: 13px;
+  color: var(--text-2);
+}
+.ch-hero-me dd {
+  margin: 2px 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* mural */
+.ch-feed section + section {
+  margin-top: 16px;
+}
+.ch-day {
+  margin: 4px 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.ch-feed-empty .btn {
+  margin-top: 12px;
+}
+
+/* ranking */
+.ch-rank-card {
+  padding: 4px 0;
+}
+.ch-rank {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ch-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+}
+.ch-rank-row + .ch-rank-row {
+  border-top: 1px solid var(--line);
+}
+.ch-rank-row.is-me {
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+.ch-rank-n {
+  width: 20px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.ch-rank-row:nth-child(-n + 3) .ch-rank-n {
+  color: var(--amber-text);
+}
+.ch-rank-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.ch-rank-who strong {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ch-rank-who .muted {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.ch-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--amber-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ch-rank-pts {
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.ch-rank-pts small {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-2);
+}
+.ch-rank-foot {
+  margin: 0;
+  padding: 10px 16px 8px;
+  border-top: 1px solid var(--line);
+}
+
+/* pódio */
+.ch-podium {
+  padding: 16px 16px 0;
+  overflow: hidden;
+}
+.ch-podium-title {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+}
+.ch-podium-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ch-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  max-width: 120px;
+}
+.ch-step-name {
+  max-width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ch-step-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font-size: 20px;
+  font-weight: 700;
+}
+.ch-step-block small {
+  font-size: 12px;
+  font-weight: 500;
+}
+.ch-step-1 .ch-step-block {
+  height: 96px;
+  background: color-mix(in srgb, var(--amber) 28%, var(--card));
+  color: var(--amber-text);
+}
+.ch-step-2 .ch-step-block {
+  height: 72px;
+}
+.ch-step-3 .ch-step-block {
+  height: 56px;
+}
+
+/* botão fixo de check-in */
+.ch-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  padding: 12px calc(16px + var(--safe-right, 0px)) calc(16px + var(--safe-bottom, 0px)) calc(16px + var(--safe-left, 0px));
+  background: linear-gradient(to top, var(--bg) 60%, color-mix(in srgb, var(--bg) 0%, transparent));
+  z-index: 15;
+  pointer-events: none;
+}
+.ch-cta-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+  height: 52px;
+  border-radius: 14px;
+  font-size: 17px;
+  box-shadow: 0 8px 24px rgba(26, 51, 26, 0.18);
+}
+.ch-cta-btn:active {
+  transform: scale(0.98);
+}
+.ch-note {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+/* convite, hábito e opções */
+.ch-code {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+}
+.ch-code strong {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.ch-link-intro {
+  margin: 0 0 12px;
+}
+.ch-link-list {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.ch-link-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+.ch-link-opt span {
+  font-size: 22px;
+}
+.ch-link-opt.is-on {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  font-weight: 600;
+}
+.ch-menu {
+  display: grid;
+  gap: 4px;
+}
+.ch-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 12px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.ch-menu-item .muted {
+  font-size: 14px;
+  font-weight: 400;
+}
+.ch-menu-item.is-danger {
+  border-bottom: 0;
+  color: var(--danger);
+}
+.ch-confirm p {
+  margin: 12px 0;
+}
+
+/* convite recebido */
+.ch-invite {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 20px 20px;
+  text-align: center;
+}
+.ch-invite .ch-hero-emoji {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  font-size: 38px;
+}
+.ch-invite h2 {
+  margin: 8px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+.ch-invite > .muted {
+  margin: 0;
+}
+.ch-invite-facts {
+  width: 100%;
+  margin: 12px 0 16px;
+  text-align: left;
+}
+.ch-invite-facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+.ch-invite-facts dt {
+  color: var(--text-2);
+}
+.ch-invite-facts dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* perfil: amigos */
+.profile-hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.friend-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-2) 10%, transparent);
+  color: var(--text);
+  font-size: 15px;
+  text-decoration: none;
+}
+.friend-count strong {
+  font-weight: 700;
+}
+
+/* Hoje: faltou o check-in */
+.today-ch a {
+  flex: 1 0 260px;
+}
+.today-ch-go {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+/* nome do desafio no topo: até duas linhas, sem cortar */
+.ch-page .soc-title {
+  font-size: 24px;
+  line-height: 1.2;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

@@ -1,44 +1,24 @@
 import { useEffect, useRef } from 'react'
-import { addDays, daysMetInCategory, overallProgress } from '../../domain'
+import { dayProgress } from '../../domain/progress'
 import { useEngineOptions } from '../../hooks/useEngineOptions'
-import { useRewards } from '../../hooks/useRewards'
 import { useRestDays, useSnapshots } from '../../hooks/useSnapshots'
 import { useToday } from '../../hooks/useToday'
 import { useSession } from '../../platform/cloud/client'
-import { challengeEnd, myChallenges, myGroupIds, postActivity, setMyDays } from '../../platform/cloud/social'
-import { itemFor } from '../collection/items'
-import type { HabitCategory } from '../../domain/types'
-import type { Tier } from '../../domain/collection'
+import { challengeState, myChallenges, postAutoCheckin } from '../../platform/cloud/social'
+import { allLinks } from '../challenges/links'
 
-const read = (k: string) => {
-  try {
-    return localStorage.getItem(k)
-  } catch {
-    return null
-  }
-}
-const write = (k: string, v: string) => {
-  try {
-    localStorage.setItem(k, v)
-  } catch {
-    /* sem armazenamento: no pior caso repete um aviso */
-  }
-}
-
-/** pede uma nova rodada do publicador (ex.: ao entrar num desafio) */
+/** pede uma nova rodada do publicador (ex.: ao ligar um hábito a um desafio) */
 export const refreshSocial = () => window.dispatchEvent(new Event('controlle:social'))
 
 /**
- * Em segundo plano, com conta: envia os dias cumpridos de cada desafio (calculados dos
- * hábitos do tema, aqui no aparelho) e publica no mural dos grupos quando a pessoa
- * completa o dia, ganha item da coleção ou termina um desafio.
+ * Em segundo plano, com conta: para cada desafio com um hábito ligado, quando o
+ * hábito é cumprido hoje, posta o check-in automático do dia (um por dia).
  */
 export function usePublisher() {
   const { session } = useSession()
   const uid = session?.user.id
   const snapshots = useSnapshots()
   const restDays = useRestDays()
-  const r = useRewards()
   const o = useEngineOptions()
   const today = useToday()
   const busy = useRef(false)
@@ -50,56 +30,33 @@ export function usePublisher() {
   })
 
   const run = async () => {
-    if (!uid || !snapshots || !r.ready || busy.current) return
+    if (!uid || !snapshots || busy.current) return
+    const links = allLinks()
+    if (!Object.keys(links).length) return
     busy.current = true
     try {
-      // 1) desafios: meus dias cumpridos
-      for (const { c, done } of await myChallenges()) {
-        // no check-in, o dia conta pelo post (enviado na hora); aqui só o automático
-        if (c.mode === 'checkin') continue
-        const end = challengeEnd(c)
-        if (today < c.start_day || today > addDays(end, 2)) continue
-        const days = daysMetInCategory(snapshots, restDays, c.category as HabitCategory, c.start_day, end < today ? end : today, o)
-        if (days.join() !== [...done].sort().join()) await setMyDays(c.id, days)
-        const key = `controlle.social.done.${c.id}`
-        if (days.length >= c.days && !read(key)) {
-          write(key, '1')
-          await postActivity(c.group_id, 'challenge_done', `completou o desafio “${c.title}”! 🏆`)
-        }
-      }
-      // 2) mural: dia completo e itens novos
-      const groups = await myGroupIds()
-      if (!groups.length) return
-      const day = overallProgress(snapshots, restDays, today, o)
-      if (day.active > 0 && day.complete && read('controlle.social.perfect') !== today) {
-        write('controlle.social.perfect', today)
-        for (const g of groups) await postActivity(g, 'perfect_day', 'completou todas as metas de hoje ✅')
-      }
-      const items = [...r.collection.unlocked]
-      const seenRaw = read('controlle.social.items')
-      if (seenRaw === null) write('controlle.social.items', JSON.stringify(items))
-      else {
-        const seen = new Set<string>(JSON.parse(seenRaw) as string[])
-        const fresh = items.filter((k) => !seen.has(k)).slice(0, 2)
-        write('controlle.social.items', JSON.stringify(items))
-        for (const k of fresh) {
-          const [cat, t] = k.split(':') as [HabitCategory, string]
-          const it = itemFor(cat, Number(t) as Tier)
-          if (it) for (const g of groups) await postActivity(g, 'item', `ganhou ${it.name} ${it.emoji} na coleção`)
-        }
+      for (const { c, mine } of await myChallenges(today)) {
+        const trackerId = links[c.id]
+        if (!trackerId || challengeState(c, today) !== 'running') continue
+        if (mine?.today) continue
+        const s = snapshots.find((x) => x.tracker.id === trackerId)
+        if (!s) continue
+        const p = dayProgress(s, restDays, today, o)
+        if (!p.isActive || p.entryCount === 0) continue
+        if (p.period === 'week' || p.target === null || p.isMet) await postAutoCheckin(c.id, today, `Marcou ${s.tracker.name} no Controlle`)
       }
     } catch (e) {
-      console.warn('[grupos]', e)
+      console.warn('[desafios]', e)
     } finally {
       busy.current = false
     }
   }
 
   // roda ao abrir e alguns segundos depois de mudanças nos hábitos
-  const sig = `${uid}|${today}|${snapshots?.reduce((n, s) => n + s.entries.length, 0) ?? -1}|${r.collection.unlocked.size}`
+  const sig = `${uid}|${today}|${snapshots?.reduce((n, s) => n + s.entries.length, 0) ?? -1}`
   useEffect(() => {
     if (!uid) return
-    const t = window.setTimeout(() => void run(), 5000)
+    const t = window.setTimeout(() => void run(), 4000)
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sig])

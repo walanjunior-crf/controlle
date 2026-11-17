@@ -1,42 +1,37 @@
 import { Link } from 'react-router-dom'
-import { categoryInfo, daysMetInCategory, type HabitCategory, type TrackerSnapshot } from '../../domain'
-import type { RestDay } from '../../domain/types'
-import type { EngineOptions } from '../../domain/progress'
+import { IconCamera } from '../../components/icons'
 import { useSession } from '../../platform/cloud/client'
-import { challengeEnd, challengeState, myChallenges } from '../../platform/cloud/social'
+import { challengeState, myChallenges } from '../../platform/cloud/social'
 import { useCloudData } from './common'
+import '../challenges/challenges.css'
 
-/** No Hoje: os desafios em grupo que estão rolando, com o seu placar (conta na hora). */
-export function TodayChallenges({ snapshots, restDays, today, o }: { snapshots: TrackerSnapshot[]; restDays: RestDay[]; today: string; o: EngineOptions }) {
+/** No Hoje: desafios rolando em que ainda falta o seu check-in do dia. */
+export function TodayChallenges({ today }: { today: string }) {
   const { session } = useSession()
   if (!session) return null
-  return <Strip snapshots={snapshots} restDays={restDays} today={today} o={o} />
+  return <Strip today={today} />
 }
 
-function Strip({ snapshots, restDays, today, o }: { snapshots: TrackerSnapshot[]; restDays: RestDay[]; today: string; o: EngineOptions }) {
-  const { data } = useCloudData(myChallenges, [])
-  const running = (data ?? []).filter(({ c }) => challengeState(c, today) === 'running')
-  if (!running.length) return null
+function Strip({ today }: { today: string }) {
+  const { data } = useCloudData(() => myChallenges(today), [today])
+  const pending = (data ?? []).filter(({ c, mine }) => challengeState(c, today) === 'running' && !mine?.today)
+  if (!pending.length) return null
   return (
-    <section className="today-ch" aria-label="Seus desafios">
-      {running.map(({ c, done }) => {
-        const end = challengeEnd(c)
-        const days = c.mode === 'checkin' ? done : daysMetInCategory(snapshots, restDays, c.category as HabitCategory, c.start_day, end < today ? end : today, o)
-        const did = days.includes(today)
-        return (
-          <Link key={c.id} to={`/juntos/d/${c.id}`} className="card">
-            <span className="today-ch-icon" aria-hidden="true">
-              {categoryInfo(c.category as HabitCategory).icon}
-            </span>
-            <span className="today-ch-text">
-              <strong>{c.title}</strong>
-              <span className="muted num">
-                {days.length}/{c.days} · {did ? 'hoje ✓' : c.mode === 'checkin' ? 'falta o check-in' : 'falta hoje'}
-              </span>
-            </span>
-          </Link>
-        )
-      })}
+    <section className="today-ch" aria-label="Check-ins que faltam">
+      {pending.map(({ c, mine }) => (
+        <Link key={c.id} to={`/desafios/${c.id}?checkin=1`} className="card">
+          <span className="today-ch-icon" aria-hidden="true">
+            {c.emoji}
+          </span>
+          <span className="today-ch-text">
+            <strong>{c.title}</strong>
+            <span className="muted num">Falta seu check-in · {mine ? `${mine.rank}º lugar` : ''}</span>
+          </span>
+          <span className="today-ch-go" aria-hidden="true">
+            <IconCamera size={18} />
+          </span>
+        </Link>
+      ))}
     </section>
   )
 }

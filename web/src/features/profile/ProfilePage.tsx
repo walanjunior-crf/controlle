@@ -1,10 +1,11 @@
 import { useId, useState } from 'react'
+import { FriendCount } from '../social/FriendCount'
 import { Link } from 'react-router-dom'
 import { saveProfile } from '../../db/db'
 import type { AvatarChoice, Profile } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
 import { ColorPicker } from '../../components/pickers'
-import { IconCamera, IconGear, IconGift, IconPeople, IconTrash, IconTrophy, IconUpload } from '../../components/icons'
+import { IconCamera, IconGear, IconGift, IconTrash, IconTrophy, IconUpload } from '../../components/icons'
 import { useToast } from '../../components/Toast'
 import { ICONS, safeBg } from './icons'
 import { ITEMS } from '../collection/items'
@@ -87,7 +88,10 @@ export function ProfilePage() {
         </div>
         <p className="profile-hero-name">{draft.displayName.trim() || 'Sem nome'}</p>
         {profile.handle && <p className="profile-hero-handle">@{profile.handle}</p>}
-        <AccountChip />
+        <div className="profile-hero-chips">
+          <AccountChip />
+          <FriendCount />
+        </div>
       </section>
 
       {rewards.ready && (
@@ -100,14 +104,6 @@ export function ProfilePage() {
               <span className="muted">
                 <span className="num">{rewards.collection.unlocked.size}</span> de <span className="num">{ITEMS.length}</span> itens ganhos com seus hábitos
               </span>
-            </span>
-            <span className="col-entry-go" aria-hidden="true">›</span>
-          </Link>
-          <Link to="/juntos" className="card col-entry">
-            <span className="col-entry-icon" aria-hidden="true"><IconPeople size={20} /></span>
-            <span className="col-entry-text">
-              <strong>Amigos e grupos</strong>
-              <span className="muted">Desafios com a turma</span>
             </span>
             <span className="col-entry-go" aria-hidden="true">›</span>
           </Link>
