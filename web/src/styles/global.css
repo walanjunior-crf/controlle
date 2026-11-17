@@ -661,8 +661,7 @@ input[type='time'].input {
   font-weight: 500;
   color: var(--text-2);
 }
-.today-greet::first-letter,
-.today-date::first-letter {
+.today-greet::first-letter {
   text-transform: uppercase;
 }
 .today-greet {

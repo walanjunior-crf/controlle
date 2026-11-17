@@ -314,16 +314,6 @@ export function ProfilePage() {
         </div>
       </section>
 
-      <aside className="card profile-soon">
-        <span className="profile-soon-tag">Em breve</span>
-        <BrandText as="h2" className="profile-soon-title">
-          Desafios em grupo
-        </BrandText>
-        <p className="muted">
-          Seu perfil é o que os amigos vão ver quando os grupos chegarem. Por enquanto ele fica só neste aparelho e vai junto no backup.
-        </p>
-      </aside>
-
       {photo.elements}
     </div>
   )
