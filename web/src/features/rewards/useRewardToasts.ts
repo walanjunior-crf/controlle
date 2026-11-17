@@ -57,8 +57,8 @@ export function useRewardToasts() {
     if (seen) return
     const items = ACHIEVEMENT_REWARDS.filter(([, , a]) => r.unlocked.has(a)).length
     if (r.credits.earned > 0)
-      toast.show(`🪙 Você recebeu ${r.credits.earned} créditos pelos níveis e conquistas que já tinha. Use em Perfil → Montar avatar.`)
-    if (items > 0) toast.show(`🏆 ${items} ${items === 1 ? 'peça especial liberada' : 'peças especiais liberadas'} pelas suas conquistas.`)
+      toast.show(`Você recebeu ${r.credits.earned} créditos pelos níveis e conquistas que já tinha. Use em Perfil → Montar avatar.`)
+    if (items > 0) toast.show(`${items} ${items === 1 ? 'peça especial liberada' : 'peças especiais liberadas'} pelas suas conquistas.`)
   }, [r.ready, r.credits.earned, r.unlocked, toast])
 
   useEffect(() => {
@@ -82,9 +82,9 @@ export function useRewardToasts() {
     for (const k of newItems.slice(0, 2)) {
       const [c, t] = k.split(':') as [HabitCategory, string]
       const it = itemFor(c, Number(t) as Tier)
-      if (it) toast.show(`🎁 Item novo de ${categoryInfo(c).label}: ${it.name}!`)
+      if (it) toast.show(`Item novo de ${categoryInfo(c).label}: ${it.name}`)
     }
-    if (newItems.length > 2) toast.show(`🎁 Mais ${newItems.length - 2} itens novos na sua coleção.`)
+    if (newItems.length > 2) toast.show(`Mais ${newItems.length - 2} itens novos na sua coleção.`)
     const fresh = ids.filter((id) => !seen.ids.includes(id))
     const leveled = r.level.level > seen.level
     const allItems = [...new Set([...seen.items!, ...items])]
@@ -93,12 +93,12 @@ export function useRewardToasts() {
       return
     }
     if (leveled) {
-      toast.show(`Subiu para o nível ${r.level.level}: ${r.level.title}! 🎉 +${CREDITS_PER_LEVEL} créditos para o avatar.`)
+      toast.show(`Nível ${r.level.level}: ${r.level.title}. +${CREDITS_PER_LEVEL} créditos para o avatar`)
     }
     if (fresh.length === 1) {
       const a = ACHIEVEMENTS.find((x) => x.id === fresh[0])
-      if (a) toast.show(`${a.icon} Conquista: ${a.title}`)
-    } else if (fresh.length > 1) toast.show(`🏆 ${fresh.length} conquistas novas!`)
+      if (a) toast.show(`Conquista: ${a.title}`)
+    } else if (fresh.length > 1) toast.show(`${fresh.length} conquistas novas`)
     write({ level: Math.max(seen.level, r.level.level), ids: [...new Set([...seen.ids, ...ids])], items: allItems })
   }, [r.ready, r.unlocked, r.level, r.collection, toast])
 }

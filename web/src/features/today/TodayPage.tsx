@@ -18,7 +18,7 @@ import { BrandText } from '../../components/BrandText'
 import { CLogo } from '../../components/CLogo'
 import { CRing } from '../../components/CRing'
 import { StreakChip } from '../../components/controls'
-import { IconBell, IconPlus } from '../../components/icons'
+import { IconBell, IconGift, IconPlus } from '../../components/icons'
 import { TrackerCard } from '../../components/TrackerCard'
 import { useToast } from '../../components/Toast'
 import { useEngineOptions } from '../../hooks/useEngineOptions'
@@ -40,12 +40,6 @@ import { itemFor } from '../collection/items'
 import { TodayChallenges } from '../social/TodayChallenges'
 import '../social/social.css'
 
-function greeting(hour: number): string {
-  if (hour >= 5 && hour < 12) return 'Bom dia'
-  if (hour >= 12 && hour < 18) return 'Boa tarde'
-  return 'Boa noite'
-}
-
 const CELEBRATED_KEY = 'controlle.celebrated'
 
 export function TodayPage() {
@@ -60,7 +54,6 @@ export function TodayPage() {
   const profile = useProfile()
   const rewards = useRewards()
 
-  const hour = new Date().getHours()
   const [detailsId, setDetailsId] = useState<string | null>(null)
   const [pulseId, setPulseId] = useState<string | null>(null)
   const [celebrating, setCelebrating] = useState(false)
@@ -158,13 +151,9 @@ export function TodayPage() {
           </Link>
           <div>
             <p className="today-date">
-              {formatDayLong(today)} {rewards.ready && <LevelChip level={rewards.level.level} />}
+              {name && <BrandText>{name}</BrandText>} {rewards.ready && <LevelChip level={rewards.level.level} />}
             </p>
-            <h1 className="today-greet">
-              {greeting(hour)}
-              {name ? ', ' : ''}
-              {name && <BrandText>{name}</BrandText>}
-            </h1>
+            <h1 className="today-greet">{formatDayLong(today)}</h1>
           </div>
         </div>
         <Link to="/tracker/new" className="icon-btn icon-btn-filled" aria-label="Criar tracker">
@@ -256,7 +245,7 @@ export function TodayPage() {
               ) : (
                 milestone?.next && (
                   <Link to="/colecao" className="milestone-note">
-                    🎁 {milestone.next.left === 1 ? 'Falta' : 'Faltam'} <span className="num">{milestone.next.left}</span> {milestone.next.left === 1 ? 'check' : 'checks'} para {itemFor(milestone.category, milestone.next.tier).name}
+                    <IconGift size={16} /> {milestone.next.left === 1 ? 'Falta' : 'Faltam'} <span className="num">{milestone.next.left}</span> {milestone.next.left === 1 ? 'check' : 'checks'} para {itemFor(milestone.category, milestone.next.tier).name}
                   </Link>
                 )
               )}

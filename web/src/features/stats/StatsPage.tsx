@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { IconTrophy } from '../../components/icons'
 import { Link } from 'react-router-dom'
 import { addDays, ACHIEVEMENTS, daysBetween, formatValue, goalOn, overallProgress, overallStreak, trackerStats, trackerStreak } from '../../domain'
 import { BrandText } from '../../components/BrandText'
@@ -122,7 +123,11 @@ export function StatsPage() {
                   </BrandText>
                   <StreakChip count={streak.current} size="sm" unit={goal?.period === 'week' ? 'week' : 'day'} />
                 </header>
-                <BarChart series={stats.series} target={showLine ? goal.target : null} color={color} label={t.name} />
+                {stats.series.some((d) => (d.value ?? 0) > 0) ? (
+                  <BarChart series={stats.series} target={showLine ? goal.target : null} color={color} label={t.name} />
+                ) : (
+                  <p className="stats-empty">Nenhum registro neste período</p>
+                )}
                 <dl className="stat-grid">
                   <div>
                     <dt>Adesão</dt>
@@ -175,7 +180,7 @@ export function StatsPage() {
             <LevelCard level={rewards.level} credits={rewards.credits.balance} />
             <Link to="/conquistas" className="card ach-link" style={{ marginTop: 10 }}>
               <span>
-                🏆 Conquistas <span className="ach-count num">{rewards.unlocked.size}/{ACHIEVEMENTS.length}</span>
+                <IconTrophy size={18} /> Conquistas <span className="ach-count num">{rewards.unlocked.size}/{ACHIEVEMENTS.length}</span>
               </span>
               <span aria-hidden="true">›</span>
             </Link>

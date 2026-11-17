@@ -210,14 +210,14 @@ svg {
 }
 .page-title {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
 .section-title {
   display: block;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text);
   margin-bottom: var(--space);
 }
@@ -247,7 +247,7 @@ svg {
   color: var(--text-2);
   text-decoration: none;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: 14px;
   transition: color var(--t-fast) var(--ease);
 }
@@ -273,7 +273,7 @@ svg {
   min-height: 50px;
   padding: 0 20px;
   border-radius: 14px;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 16px;
   transition: transform var(--t-fast) var(--ease), background var(--t-fast) var(--ease), opacity var(--t-fast);
   user-select: none;
@@ -366,17 +366,17 @@ svg {
 .input-lg {
   min-height: 56px;
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 600;
 }
 input[type='time'].input {
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight: 600;
 }
 .select {
   width: auto;
   min-width: 140px;
   padding-right: 36px;
-  font-weight: 700;
+  font-weight: 600;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%235A665A' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
@@ -401,7 +401,7 @@ input[type='time'].input {
 }
 .field-label {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
 }
 .field-hint {
@@ -411,7 +411,7 @@ input[type='time'].input {
 }
 .field-error {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--danger);
 }
 
@@ -441,7 +441,7 @@ input[type='time'].input {
 .segmented button {
   min-height: 44px;
   padding: 0 6px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
   color: var(--text-2);
   border-radius: 11px;
@@ -465,7 +465,7 @@ input[type='time'].input {
   background: var(--primary-soft);
   color: var(--primary-strong);
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 600;
   transition: transform var(--t-fast) var(--ease);
 }
 .stepper > button:active:not(:disabled) {
@@ -494,7 +494,7 @@ input[type='time'].input {
   background: none;
   text-align: center;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   padding: 0 4px;
   -moz-appearance: textfield;
@@ -511,7 +511,7 @@ input[type='time'].input {
 .stepper-suffix {
   padding-right: 12px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
   white-space: nowrap;
 }
@@ -526,7 +526,7 @@ input[type='time'].input {
   aspect-ratio: 1;
   min-height: 44px;
   border-radius: 50%;
-  font-weight: 800;
+  font-weight: 600;
   background: var(--primary-soft);
   color: var(--text-2);
   transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast) var(--ease);
@@ -564,7 +564,7 @@ input[type='time'].input {
   border-radius: 999px;
   background: var(--card);
   border: 1.5px solid var(--line);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
   white-space: nowrap;
   transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
@@ -652,15 +652,15 @@ input[type='time'].input {
 }
 .today-date {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-2);
 }
 .today-date::first-letter {
   text-transform: uppercase;
 }
 .today-greet {
-  font-size: 30px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.12;
   margin-top: 2px;
@@ -688,12 +688,12 @@ input[type='time'].input {
 }
 .hero-pct {
   font-size: 40px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.03em;
 }
 .hero-pct-unit {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   margin-left: 1px;
 }
@@ -706,18 +706,18 @@ input[type='time'].input {
 }
 .hero-count {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--text-2);
 }
 .hero-count strong {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text);
 }
 .hero.is-complete .hero-count {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text);
 }
 .hero.is-complete .hero-ring .cring-progress {
@@ -739,7 +739,7 @@ input[type='time'].input {
 }
 .risk-note {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--amber-text);
   line-height: 1.3;
 }
@@ -748,27 +748,19 @@ input[type='time'].input {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px 4px 8px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--amber) 18%, transparent);
   color: var(--amber-text);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 15px;
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 .streak-unit {
   font-size: 0.8em;
-  font-weight: 700;
+  font-weight: 600;
   margin-left: 1px;
 }
 .streak-chip.streak-sm {
   font-size: 13px;
-  padding: 3px 8px 3px 6px;
-}
-.streak-chip.is-zero {
-  background: color-mix(in srgb, var(--text-2) 10%, transparent);
-  color: var(--text-2);
-  filter: grayscale(1);
 }
 
 .confetti {
@@ -880,7 +872,7 @@ input[type='time'].input {
 }
 .tracker-name {
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -891,7 +883,7 @@ input[type='time'].input {
   color: var(--text);
 }
 .tracker-value strong {
-  font-weight: 800;
+  font-weight: 600;
 }
 .tracker-card.is-done .tracker-value strong {
   color: var(--tc);
@@ -938,7 +930,7 @@ input[type='time'].input {
   padding: 8px 8px 8px 14px;
   border-radius: 16px;
   background: var(--card);
-  border: 1.5px solid color-mix(in srgb, var(--amber) 55%, transparent);
+  border: 1px solid var(--line);
 }
 .due-banner > svg {
   color: var(--amber-text);
@@ -947,7 +939,7 @@ input[type='time'].input {
 .due-text {
   flex: 1;
   min-width: 0;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
 }
 .install-banner {
@@ -983,7 +975,7 @@ input[type='time'].input {
   padding: calc(var(--safe-top) + 6px) 16px 6px;
   background: var(--primary);
   color: var(--on-primary);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* Estado vazio */
@@ -997,7 +989,7 @@ input[type='time'].input {
 }
 .today-empty .empty-title {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.15;
   max-width: 16ch;
@@ -1032,7 +1024,7 @@ input[type='time'].input {
   margin-bottom: 6px;
 }
 .template-name {
-  font-weight: 800;
+  font-weight: 600;
 }
 .template-desc {
   font-size: 13px;
@@ -1050,7 +1042,7 @@ input[type='time'].input {
 }
 .empty-state .empty-title {
   font-size: 19px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text);
 }
 
@@ -1080,7 +1072,7 @@ input[type='time'].input {
   background: var(--green-900);
   color: var(--green-50);
   box-shadow: 0 8px 28px rgba(15, 26, 15, 0.28);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
   animation: toast-in var(--t) var(--ease-spring);
 }
@@ -1092,7 +1084,7 @@ input[type='time'].input {
   min-height: 44px;
   padding: 0 14px;
   border-radius: 12px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--green-200);
 }
 .toast-action:active {
@@ -1164,7 +1156,7 @@ input[type='time'].input {
 }
 .sheet-title {
   font-size: 21px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.2;
 }
 .sheet-tracker-title {
@@ -1199,7 +1191,7 @@ input[type='time'].input {
 }
 .sheet-subtitle {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
 }
 @keyframes sheet-in {
   from {
@@ -1226,7 +1218,7 @@ input[type='time'].input {
 }
 .dialog-title {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.2;
 }
 .dialog-msg {
@@ -1284,7 +1276,7 @@ input[type='time'].input {
   border-top: 1px solid var(--line);
 }
 .entry-time {
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   font-size: 15px;
 }
@@ -1363,7 +1355,7 @@ input[type='time'].input {
 .color-group-label {
   margin: 4px 0 -2px;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
 }
 .color-grid {
@@ -1381,7 +1373,7 @@ input[type='time'].input {
   padding: 0 14px;
   border-radius: 14px;
   border: 1.5px dashed var(--text-2);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 15px;
   color: var(--text);
   cursor: pointer;
@@ -1459,7 +1451,7 @@ input[type='time'].input {
   border-radius: 12px;
   background: var(--primary-soft);
   color: var(--primary);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 19px;
 }
 .kind-card.is-on .kind-icon {
@@ -1519,7 +1511,7 @@ input[type='time'].input {
 }
 .calendar-title {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: capitalize;
 }
 .calendar-grid {
@@ -1530,7 +1522,7 @@ input[type='time'].input {
 .calendar-wd {
   text-align: center;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   padding: 4px 0;
 }
@@ -1541,7 +1533,7 @@ input[type='time'].input {
   display: grid;
   place-items: center;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
   background: color-mix(in srgb, var(--text-2) 7%, transparent);
   color: var(--text);
@@ -1581,7 +1573,7 @@ input[type='time'].input {
   gap: 4px;
   margin-top: 12px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
 }
 .calendar-legend i {
@@ -1606,7 +1598,7 @@ input[type='time'].input {
 }
 .ring-pct {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .stat-list {
   flex: 1;
@@ -1627,15 +1619,25 @@ input[type='time'].input {
 }
 .stat-list dd {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .stat-list small {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
 }
 .streak-num {
   color: var(--amber-text);
+}
+.stats-empty {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  margin: 4px 0;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--text-2) 6%, transparent);
+  color: var(--text-2);
+  font-size: 14px;
 }
 .stats-tracker {
   --tc: var(--primary);
@@ -1653,7 +1655,7 @@ input[type='time'].input {
   flex: 1;
   min-width: 0;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .bar-chart {
   width: 100%;
@@ -1676,7 +1678,7 @@ input[type='time'].input {
 }
 .stat-grid dd {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .stats-foot {
   font-size: 14px;
@@ -1710,7 +1712,7 @@ input[type='time'].input {
 }
 .achievement strong {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.25;
 }
 .achievement-detail {
@@ -1728,7 +1730,7 @@ input[type='time'].input {
 }
 .achievement.is-on .achievement-detail {
   color: var(--amber-text);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* ---------- Ajustes ---------- */
@@ -1752,7 +1754,7 @@ input[type='time'].input {
   min-height: 56px;
   padding: 8px 12px 8px 16px;
   text-align: left;
-  font-weight: 700;
+  font-weight: 600;
 }
 .settings-row.stack {
   flex-direction: column;
@@ -1765,7 +1767,7 @@ input[type='time'].input {
 }
 .settings-link {
   color: var(--primary);
-  font-weight: 800;
+  font-weight: 600;
 }
 .settings-link:active {
   background: var(--primary-soft);
@@ -1795,7 +1797,7 @@ input[type='time'].input {
 }
 .about-name {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 600;
   margin-top: 6px;
 }
 
@@ -1835,7 +1837,7 @@ input[type='time'].input {
 }
 .onb-brand {
   font-size: 46px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.03em;
   margin-top: 18px;
   animation: fade-in 500ms var(--ease) 900ms both;
@@ -1848,7 +1850,7 @@ input[type='time'].input {
 }
 .onb-title {
   font-size: 30px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.12;
 }
@@ -1867,7 +1869,7 @@ input[type='time'].input {
   border-radius: 16px;
   background: var(--card);
   border: 2px solid var(--line);
-  font-weight: 800;
+  font-weight: 600;
   text-align: left;
   transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast) var(--ease);
 }
@@ -1994,7 +1996,7 @@ input[type='time'].input {
 .calendar-list li { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 8px; padding: 12px 14px; min-height: 48px; }
 .calendar-list li + li { border-top: 1px solid var(--line); }
 .calendar-icon { font-size: 22px; line-height: 1; }
-.calendar-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .calendar-when { color: var(--text-2); font-size: 15px; }
 .calendar-tips { display: grid; gap: 8px; }
 .calendar-tips .field-hint { margin: 0; }
@@ -2023,7 +2025,7 @@ input[type='time'].input {
   margin-top: 2px;
   font-size: 15px;
   color: var(--text-2);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* código de acesso (Ajustes) */
@@ -2038,7 +2040,7 @@ input[type='time'].input {
 }
 .code-on {
   flex: 1;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--primary);
 }
 
@@ -2049,7 +2051,7 @@ input[type='time'].input {
   border: 0;
   padding: 0;
   font: inherit;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -2060,7 +2062,7 @@ input[type='time'].input {
 .milestone-note {
   display: inline-block;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.3;
   color: var(--primary);
   text-decoration: none;
@@ -2098,7 +2100,7 @@ input[type='time'].input {
 .wn-title {
   margin: 0 0 10px;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .wn-list {
   list-style: none;
@@ -2140,7 +2142,7 @@ input[type='time'].input {
 }
 .plan-title-other {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text-2);
   opacity: 0.7;

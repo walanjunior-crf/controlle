@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from 'react'
+import { IconFlame } from './icons'
 import type { Weekday } from '../domain/types'
 
 /* ---------- StreakChip ---------- */
@@ -19,9 +20,10 @@ export function StreakChip({
     (unit === 'week'
       ? `${count} ${count === 1 ? 'semana seguida' : 'semanas seguidas'}`
       : `${count} ${count === 1 ? 'dia seguido' : 'dias seguidos'}`)
+  if (count === 0 && !label) return null
   return (
-    <span className={`streak-chip streak-${size}${count === 0 ? ' is-zero' : ''}`} aria-label={text} title={text}>
-      <span aria-hidden="true">🔥</span>
+    <span className={`streak-chip streak-${size}`} aria-label={text} title={text}>
+      <IconFlame size={size === 'md' ? 16 : 14} />
       <span className="num">{count}</span>
       {unit === 'week' && <span className="streak-unit">sem</span>}
     </span>

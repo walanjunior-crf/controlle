@@ -1,4 +1,5 @@
 import { PushPrompt } from '../account/PushControls'
+import { IconPeople } from '../../components/icons'
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { SegmentedControl } from '../../components/controls'
@@ -29,7 +30,7 @@ export function SocialPage() {
         <div aria-busy="true" />
       ) : !session ? (
         <div className="card soc-empty soc-intro">
-          <span className="soc-big" aria-hidden="true">🤝</span>
+          <span className="soc-big" aria-hidden="true"><IconPeople size={32} /></span>
           <h2>Hábitos com os amigos</h2>
           <p className="muted">Crie um grupo, chame a turma pelo link e façam desafios juntos, como 7 dias bebendo água. Para isso, entre na sua conta.</p>
           <button type="button" className="btn btn-primary" onClick={() => setLogin(true)}>

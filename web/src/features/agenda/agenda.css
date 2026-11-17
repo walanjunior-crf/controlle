@@ -15,7 +15,7 @@
 .ag-month {
   margin-top: 2px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
 }
 .ag-head-actions {
@@ -58,7 +58,7 @@
   padding: 10px 12px;
   border-radius: 12px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   text-align: left;
   color: var(--text);
 }
@@ -92,7 +92,7 @@
   min-width: 0;
   padding-left: 4px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   text-align: center;
 }
@@ -159,7 +159,7 @@
 }
 .ag-wday-name {
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   text-transform: lowercase;
 }
@@ -170,7 +170,7 @@
   height: 34px;
   border-radius: 50%;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .ag-wday.is-today .ag-wday-num {
   color: var(--primary);
@@ -208,7 +208,7 @@
   align-items: center;
   gap: 8px;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 .ag-today-chip {
@@ -217,14 +217,12 @@
   background: var(--primary-soft);
   color: var(--primary-strong);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .ag-sub {
   margin-bottom: 8px;
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 600;
   color: var(--text-2);
 }
 .ag-skeleton {
@@ -260,7 +258,7 @@
   transform: scale(0.98);
 }
 .ag-allday-title {
-  font-weight: 800;
+  font-weight: 600;
   font-size: 16px;
   line-height: 1.25;
 }
@@ -300,13 +298,13 @@
 .ag-time {
   padding-top: 12px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   text-align: right;
 }
 .ag-row.is-habit .ag-time {
   padding-top: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .ag-row.is-past {
   opacity: 0.6;
@@ -343,7 +341,7 @@
 }
 .ag-event-title {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
@@ -352,7 +350,7 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
 }
 .ag-repeat-icon {
@@ -418,7 +416,7 @@
 }
 .ag-habit-name,
 .ag-chip-name {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -430,7 +428,7 @@
 }
 .ag-habit-state {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
 }
 .ag-row.is-done .ag-habit-state {
@@ -466,7 +464,7 @@
 }
 .ag-now-time {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--danger);
   text-align: right;
 }
@@ -505,7 +503,7 @@
   min-height: 48px;
   border-radius: 14px;
   color: var(--primary);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 15px;
 }
 .ag-add-line:active {
@@ -538,7 +536,7 @@
 }
 .ag-empty-title {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .ag-empty .muted {
   max-width: 30ch;
@@ -573,7 +571,7 @@
   display: flex;
   flex-direction: column;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text);
 }
 .ag-form-row.stack .ag-form-label {
@@ -593,7 +591,7 @@
   padding: 0 12px;
   border-color: transparent;
   background: color-mix(in srgb, var(--text-2) 9%, transparent);
-  font-weight: 700;
+  font-weight: 600;
   text-align: right;
 }
 .input.ag-input-inline:focus {
@@ -656,7 +654,7 @@
 }
 .ag-switch-label {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .ag-switch-hint {
   font-size: 13px;
@@ -734,7 +732,7 @@
   min-width: 0;
 }
 .ag-check-label {
-  font-weight: 800;
+  font-weight: 600;
 }
 .ag-check-detail {
   font-size: 14px;
@@ -768,7 +766,7 @@
 }
 .ag-import-summary {
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .ag-file-name {
   margin-bottom: 10px;
@@ -806,7 +804,7 @@
   min-width: 0;
 }
 .ag-import-title {
-  font-weight: 700;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -836,7 +834,7 @@
 }
 .ag-upcoming-title {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .ag-upcoming-link {
   display: inline-flex;
@@ -845,7 +843,7 @@
   min-height: 44px;
   padding: 0 4px 0 12px;
   color: var(--primary);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 15px;
   text-decoration: none;
 }
@@ -878,7 +876,7 @@
   min-width: 0;
 }
 .ag-upcoming-name {
-  font-weight: 800;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -935,7 +933,7 @@
 .ag-mgrid-head span {
   text-align: center;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
 }
 .ag-mgrid-head .is-weekend {
@@ -987,7 +985,7 @@
   height: 24px;
   border-radius: 12px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .ag-mcell.is-weekend .ag-mnum {
   color: var(--text-2);
@@ -1016,7 +1014,7 @@
   border-radius: 4px;
   font-size: 10px;
   line-height: 1.25;
-  font-weight: 800;
+  font-weight: 600;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -1051,14 +1049,14 @@
   --ev: #8a8f8a;
   background: transparent;
   color: var(--text-2);
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: none;
   padding-left: 3px;
   font-style: italic;
 }
 .ag-mmore {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   text-align: left;
   padding-left: 3px;
@@ -1077,7 +1075,7 @@
   padding: 0 12px;
   border-radius: 999px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   background: color-mix(in srgb, #c0463a 16%, var(--card));
   color: color-mix(in srgb, #c0463a 70%, var(--text));
 }

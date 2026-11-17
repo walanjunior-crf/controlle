@@ -12,13 +12,13 @@
   align-items: baseline;
   gap: 8px;
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
 }
 .col-summary-count strong {
   font-size: 34px;
   line-height: 1;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text);
 }
 .col-summary-text {
@@ -59,7 +59,7 @@
 .col-cat-title h2 {
   margin: 0;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.2;
 }
 .col-cat-title p {
@@ -74,7 +74,7 @@
   border-radius: 999px;
   text-align: center;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   background: color-mix(in srgb, var(--text-2) 10%, transparent);
 }
@@ -132,7 +132,7 @@
 .col-item-wearing {
   flex: none;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--primary);
 }
 .col-item-body {
@@ -147,14 +147,14 @@
 }
 .col-item-line strong {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.25;
 }
 .col-tier {
   padding: 1px 8px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.02em;
   background: color-mix(in srgb, var(--text-2) 10%, transparent);
 }
@@ -195,7 +195,7 @@
 }
 .col-item.is-on .col-item-state {
   opacity: 1;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--primary);
 }
 .col-item.is-on.tier-1 .col-item-art {
@@ -228,13 +228,13 @@
 }
 .col-item.is-next .col-item-sub {
   color: var(--text-2);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .col-done {
   margin: 4px 0 8px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--amber-text);
 }
 .col-foot {

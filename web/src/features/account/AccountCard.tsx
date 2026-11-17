@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { IconAlert, IconCloud } from '../../components/icons'
 import { Sheet } from '../../components/Sheet'
 import { useToast } from '../../components/Toast'
 import { signOut, useSession } from '../../platform/cloud/client'
@@ -34,7 +35,7 @@ export function AccountChip() {
     return (
       <>
         <button type="button" className="account-chip" onClick={() => setLogin(true)}>
-          <span aria-hidden="true">☁️</span> Guardar na nuvem
+          <IconCloud size={16} /> Guardar na nuvem
         </button>
         <LoginSheet
           open={login}
@@ -62,7 +63,7 @@ export function AccountChip() {
   return (
     <>
       <button type="button" className={`account-chip is-on${error ? ' is-error' : ''}`} onClick={() => setDetails(true)} aria-label={`Conta: ${line}`}>
-        <span aria-hidden="true">{error ? '⚠️' : '☁️'}</span> {short}
+        {error ? <IconAlert size={16} /> : <IconCloud size={16} />} {short}
       </button>
       <Sheet
         open={details}

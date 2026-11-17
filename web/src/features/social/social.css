@@ -49,7 +49,7 @@
 .soc-intro h2 {
   margin: 0;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .soc-actions {
   display: flex;
@@ -116,7 +116,7 @@
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--primary);
   background: color-mix(in srgb, var(--primary) 11%, transparent);
 }
@@ -222,7 +222,7 @@
 .soc-more {
   margin-left: 4px;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
 }
 .soc-old-toggle {
@@ -263,7 +263,7 @@
 .soc-ch-title h3 {
   margin: 0;
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .soc-ch-title p {
   margin: 2px 0 0;
@@ -289,7 +289,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .soc-board li.is-me .soc-board-name {
   color: var(--primary);
@@ -312,14 +312,14 @@
   min-width: 34px;
   text-align: right;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
 }
 .soc-today {
   flex: none;
   width: 20px;
   text-align: center;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-2);
 }
 .soc-today.is-on {
@@ -373,7 +373,7 @@
 }
 .soc-cheer .num {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .soc-cheer.is-on {
   background: color-mix(in srgb, var(--amber) 24%, transparent);
@@ -387,7 +387,7 @@
   margin: 14px 0 4px;
   text-align: center;
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.18em;
 }
 
@@ -461,7 +461,7 @@
   line-height: 1.4;
 }
 .soc-ch-status {
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text);
 }
 .soc-ch-status a {
@@ -477,7 +477,7 @@
   gap: 10px;
   margin-top: 10px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
 }
 .soc-toggle input {
   width: 20px;
@@ -496,7 +496,7 @@
 .soc-rank {
   width: 16px;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-2);
   text-align: center;
 }
@@ -507,7 +507,7 @@
 }
 .soc-done-today {
   margin: 0 0 14px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--primary);
 }
 .soc-checkins {
@@ -565,7 +565,7 @@
 }
 .soc-react .num {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .soc-react.is-on {
   background: color-mix(in srgb, var(--amber) 24%, transparent);
@@ -608,7 +608,7 @@
   border: 2px dashed color-mix(in srgb, var(--primary) 40%, transparent);
   background: color-mix(in srgb, var(--primary) 6%, transparent);
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--primary);
   overflow: hidden;
 }

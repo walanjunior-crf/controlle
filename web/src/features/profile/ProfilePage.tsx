@@ -4,7 +4,7 @@ import { saveProfile } from '../../db/db'
 import type { AvatarChoice, Profile } from '../../domain/types'
 import { BrandText } from '../../components/BrandText'
 import { ColorPicker } from '../../components/pickers'
-import { IconCamera, IconGear, IconTrash, IconUpload } from '../../components/icons'
+import { IconCamera, IconGear, IconGift, IconPeople, IconTrash, IconTrophy, IconUpload } from '../../components/icons'
 import { useToast } from '../../components/Toast'
 import { ICONS, safeBg } from './icons'
 import { ITEMS } from '../collection/items'
@@ -94,7 +94,7 @@ export function ProfilePage() {
         <section className="profile-section" aria-label="Seu nível">
           <LevelCard level={rewards.level} credits={rewards.credits.balance} />
           <Link to="/colecao" className="card col-entry">
-            <span className="col-entry-icon" aria-hidden="true">🎁</span>
+            <span className="col-entry-icon" aria-hidden="true"><IconGift size={20} /></span>
             <span className="col-entry-text">
               <strong>Coleção</strong>
               <span className="muted">
@@ -104,7 +104,7 @@ export function ProfilePage() {
             <span className="col-entry-go" aria-hidden="true">›</span>
           </Link>
           <Link to="/juntos" className="card col-entry">
-            <span className="col-entry-icon" aria-hidden="true">🤝</span>
+            <span className="col-entry-icon" aria-hidden="true"><IconPeople size={20} /></span>
             <span className="col-entry-text">
               <strong>Amigos e grupos</strong>
               <span className="muted">Desafios com a turma</span>
@@ -112,7 +112,7 @@ export function ProfilePage() {
             <span className="col-entry-go" aria-hidden="true">›</span>
           </Link>
           <Link to="/conquistas" className="card col-entry">
-            <span className="col-entry-icon" aria-hidden="true">🏆</span>
+            <span className="col-entry-icon" aria-hidden="true"><IconTrophy size={20} /></span>
             <span className="col-entry-text">
               <strong>Conquistas</strong>
               <span className="muted">

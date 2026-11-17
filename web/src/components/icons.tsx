@@ -177,3 +177,47 @@ export const IconGear = ({ size = 24, className }: IconProps) => (
     <circle cx="12" cy="12" r="3" />
   </svg>
 )
+
+/* ---------- ícones que substituem emojis de interface (unslop) ---------- */
+export const IconFlame = ({ size = 16, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M12 21c-3.6 0-6.5-2.6-6.5-6.2 0-3.4 2.4-5.4 3.7-7.6.5 1.4 1.4 2.4 2.5 3 0-2.8 1.3-5.5 3.3-7.2.2 3 3.5 5.6 3.5 10.3 0 4.2-2.9 7.7-6.5 7.7z" />
+    <path d="M12 21c-1.6 0-2.8-1.2-2.8-2.9 0-1.8 1.4-2.8 2.4-4.1 1.6 1.3 3.2 2.5 3.2 4.4 0 1.5-1.2 2.6-2.8 2.6z" />
+  </svg>
+)
+
+export const IconGift = ({ size = 20, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <rect x="3.5" y="8" width="17" height="4" rx="1" />
+    <path d="M5 12v7.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V12M12 8v12.5" />
+    <path d="M12 8C10.5 5.5 7.5 4.5 7 6.3 6.6 7.8 9.5 8 12 8zM12 8c1.5-2.5 4.5-3.5 5-1.7.4 1.5-2.5 1.7-5 1.7z" />
+  </svg>
+)
+
+export const IconTrophy = ({ size = 20, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M7.5 4h9v5.5a4.5 4.5 0 0 1-9 0z" />
+    <path d="M7.5 6H4.5c0 3 1.3 4.5 3.4 4.8M16.5 6h3c0 3-1.3 4.5-3.4 4.8" />
+    <path d="M12 14v3.5M8.5 20.5h7M9.5 20.5c0-1.8 1.1-3 2.5-3s2.5 1.2 2.5 3" />
+  </svg>
+)
+
+export const IconCloud = ({ size = 18, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M7 18.5h10.5a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 7.5 9.2 4.7 4.7 0 0 0 7 18.5z" />
+  </svg>
+)
+
+export const IconCoin = ({ size = 16, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M14.5 9.2c-.5-.9-1.4-1.4-2.5-1.4-1.5 0-2.6.8-2.6 2s1.1 1.7 2.6 2.1 2.6.9 2.6 2.1-1.1 2-2.6 2c-1.1 0-2-.5-2.5-1.4M12 6.3v1.5M12 16.2v1.5" />
+  </svg>
+)
+
+export const IconAlert = ({ size = 18, className }: IconProps) => (
+  <svg {...base(size)} className={className}>
+    <path d="M12 4 21 19.5H3z" />
+    <path d="M12 10v4M12 17v.01" />
+  </svg>
+)

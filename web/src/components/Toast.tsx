@@ -25,8 +25,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const show = useCallback<ToastApi['show']>((message, action) => {
     const id = ++seq.current
-    // pilha curta: no máximo 3 visíveis
-    setItems((xs) => [...xs.slice(-2), { id, message, actionLabel: action?.label, onAction: action?.onAction }])
+    // fila: um aviso de cada vez (no máximo 4 esperando)
+    setItems((xs) => [...xs.slice(-3), { id, message, actionLabel: action?.label, onAction: action?.onAction }])
   }, [])
 
   const api = useMemo(() => ({ show }), [show])
@@ -35,23 +35,22 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={api}>
       {children}
       <div className="toast-stack" role="status" aria-live="polite">
-        {items.map((t) => (
-          <ToastView key={t.id} item={t} onDone={() => dismiss(t.id)} />
-        ))}
+        {items[0] && <ToastView key={items[0].id} item={items[0]} waiting={items.length > 1} onDone={() => dismiss(items[0].id)} />}
       </div>
     </ToastContext.Provider>
   )
 }
 
-function ToastView({ item, onDone }: { item: ToastItem; onDone: () => void }) {
+function ToastView({ item, waiting, onDone }: { item: ToastItem; waiting: boolean; onDone: () => void }) {
   const done = useRef(onDone)
   useEffect(() => {
     done.current = onDone
   })
   useEffect(() => {
-    const timer = window.setTimeout(() => done.current(), DURATION)
+    // com outro aviso na fila, este fica menos tempo
+    const timer = window.setTimeout(() => done.current(), waiting ? 3000 : DURATION)
     return () => window.clearTimeout(timer)
-  }, [])
+  }, [waiting])
 
   return (
     <div className="toast">

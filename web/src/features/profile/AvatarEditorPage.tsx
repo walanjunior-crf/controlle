@@ -4,7 +4,7 @@ import { ACHIEVEMENTS } from '../../domain'
 import type { AchievementId, AvatarConfig } from '../../domain'
 import { saveProfile } from '../../db/db'
 import { BrandText } from '../../components/BrandText'
-import { IconChevronLeft } from '../../components/icons'
+import { IconChevronLeft, IconCoin } from '../../components/icons'
 import { useToast } from '../../components/Toast'
 import { useRewards } from '../../hooks/useRewards'
 import { Avatar, useProfileLoaded } from './Avatar'
@@ -216,7 +216,7 @@ export function AvatarEditorPage() {
       <section className="ae-stage" aria-label="Pré-visualização">
         <Avatar profile={preview} size={150} ring alive pettable />
         <p className="ae-wallet">
-          <span className="ae-coins num">🪙 {credits.balance}</span> {credits.balance === 1 ? 'crédito' : 'créditos'} · Nível {level.level} ({level.title})
+          <span className="ae-coins num"><IconCoin size={15} /> {credits.balance}</span> {credits.balance === 1 ? 'crédito' : 'créditos'} · Nível {level.level} ({level.title})
         </p>
         <p className="muted ae-tip">Toque no avatar para fazer carinho. Cada nível novo dá créditos para trocar por peças.</p>
       </section>

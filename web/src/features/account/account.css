@@ -7,7 +7,7 @@
   padding: 0 12px;
   border-radius: 999px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-2);
   background: color-mix(in srgb, var(--text-2) 9%, transparent);
   cursor: pointer;
@@ -23,7 +23,7 @@
 .account-email {
   margin: 0;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 .account-line {
@@ -54,7 +54,7 @@
 .push-title {
   margin: 0 0 8px;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .push-settings .ag-group {
   margin-bottom: 0;
@@ -146,7 +146,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 14px;
   color: #fff;
   background: var(--primary);
