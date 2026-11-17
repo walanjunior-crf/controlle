@@ -115,6 +115,16 @@ alter table public.checkins add column if not exists auto boolean not null defau
 create unique index if not exists checkins_auto_once on public.checkins (challenge_id, user_id, day) where auto;
 create index if not exists checkins_by_member on public.checkins (challenge_id, user_id, day);
 
+-- desafios antigos (modo automático): os dias já cumpridos viram check-ins automáticos,
+-- para ninguém perder o que já tinha no placar
+insert into public.checkins (challenge_id, user_id, day, caption, auto)
+select m.challenge_id, m.user_id, d, '', true
+from public.challenge_members m
+join public.challenges c on c.id = m.challenge_id
+cross join lateral unnest(m.done_days) as d
+where c.mode = 'auto'
+on conflict (challenge_id, user_id, day) where auto do nothing;
+
 drop policy if exists "checkin: grupo vê" on public.checkins;
 drop policy if exists "checkin: participantes veem" on public.checkins;
 create policy "checkin: participantes veem" on public.checkins
