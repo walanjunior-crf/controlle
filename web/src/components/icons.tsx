@@ -194,11 +194,11 @@ export const IconGift = ({ size = 20, className }: IconProps) => (
   </svg>
 )
 
-export const IconTrophy = ({ size = 20, className }: IconProps) => (
+export const IconTrophy = ({ size = 26, className }: IconProps) => (
   <svg {...base(size)} className={className}>
-    <path d="M7.5 4h9v5.5a4.5 4.5 0 0 1-9 0z" />
-    <path d="M7.5 6H4.5c0 3 1.3 4.5 3.4 4.8M16.5 6h3c0 3-1.3 4.5-3.4 4.8" />
-    <path d="M12 14v3.5M8.5 20.5h7M9.5 20.5c0-1.8 1.1-3 2.5-3s2.5 1.2 2.5 3" />
+    <path d="M6.5 3.5h11v6a5.5 5.5 0 0 1-11 0z" />
+    <path d="M6.5 5.5H3c0 3.6 1.6 5.4 4.2 5.8M17.5 5.5H21c0 3.6-1.6 5.4-4.2 5.8" />
+    <path d="M12 15v3.2M7.5 21h9M8.8 21c0-1.7 1.4-2.8 3.2-2.8s3.2 1.1 3.2 2.8" />
   </svg>
 )
 
