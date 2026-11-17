@@ -24,7 +24,7 @@ export function LevelCard({ level, credits }: { level: LevelInfo; credits?: numb
         {level.maxed ? 'Nível máximo. Você é lenda.' : `Faltam ${left} ${left === 1 ? 'check' : 'checks'} para o nível ${level.level + 1}.`}
       </p>
       <p className="level-next">
-        <IconCoin size={16} /> 
+        <IconCoin size={16} className="inline-icon" />
         {credits !== undefined ? `${credits} ${credits === 1 ? 'crédito' : 'créditos'} para o avatar. ` : ''}
         {level.maxed ? '' : `+${CREDITS_PER_LEVEL} no nível ${level.level + 1}.`}
       </p>

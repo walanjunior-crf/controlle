@@ -153,13 +153,13 @@ export function TodayPage() {
             <p className="today-date">
               {name && <BrandText>{name}</BrandText>} {rewards.ready && <LevelChip level={rewards.level.level} />}
             </p>
-            <h1 className="today-greet">{formatDayLong(today)}</h1>
           </div>
         </div>
         <Link to="/tracker/new" className="icon-btn icon-btn-filled" aria-label="Criar tracker">
           <IconPlus />
         </Link>
       </header>
+      <h1 className="today-greet">{formatDayLong(today)}</h1>
 
       <InstallBanner />
 
@@ -245,7 +245,7 @@ export function TodayPage() {
               ) : (
                 milestone?.next && (
                   <Link to="/colecao" className="milestone-note">
-                    <IconGift size={16} /> {milestone.next.left === 1 ? 'Falta' : 'Faltam'} <span className="num">{milestone.next.left}</span> {milestone.next.left === 1 ? 'check' : 'checks'} para {itemFor(milestone.category, milestone.next.tier).name}
+                    <IconGift size={16} className="inline-icon" />{milestone.next.left === 1 ? 'Falta' : 'Faltam'} <span className="num">{milestone.next.left}</span> {milestone.next.left === 1 ? 'check' : 'checks'} para {itemFor(milestone.category, milestone.next.tier).name}
                   </Link>
                 )
               )}
